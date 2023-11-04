@@ -24,6 +24,8 @@ public:
     static FApplication& GetInstance() { return *m_ApplicationInstance; }
 
     const FCommandLineArguments& GetCommandLineArguments() const { return m_CommandLineArguments; }
+
+    const FApplicationSpecification& GetSpecification() const { return m_ApplicationSpecification; }
 private:
     inline static FApplication* m_ApplicationInstance = nullptr;
 

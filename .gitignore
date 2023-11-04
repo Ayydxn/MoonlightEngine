@@ -2,6 +2,9 @@
 Binaries/
 Intermediate/
 
+# Moonlight Engine
+Editor/Logs/
+
 # Misc
 .idea/
 .vs/

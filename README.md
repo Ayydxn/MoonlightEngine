@@ -42,5 +42,5 @@ Please note that while the issue tracker is open to feature requests, developmen
 ---
 
 ## 📃 License
-~~~~
+
 Moonlight Engine is licensed under the free and open-source license, Apache 2.0. For more information, please read the [license](https://choosealicense.com/licenses/apache-2.0/#).

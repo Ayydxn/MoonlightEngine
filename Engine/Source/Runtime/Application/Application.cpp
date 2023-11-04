@@ -8,22 +8,14 @@ FApplication::FApplication(const FApplicationSpecification& Specification)
 {
     m_ApplicationInstance = this;
 
-    std::cout << "Welcome to Moonlight Engine!\n";
-    std::cout << "Command Line Arguments:\n";
+    FLogging::Initialize();
 
-    if (!m_CommandLineArguments.IsEmpty())
-    {
-        for (const std::string& CommandLineArgument : m_CommandLineArguments)
-            std::cout << "  " << CommandLineArgument << "\n";
-    }
-    else
-    {
-        std::cout << "  No command line arguments were passed! :(\n";
-    }
+    ENGINE_LOG_INFO_TAG("Core", "Initializing Moonlight Engine...");
 }
 
 FApplication::~FApplication()
 {
+    ENGINE_LOG_INFO_TAG("Core", "Shutting down...");
 }
 
 void FApplication::Start()

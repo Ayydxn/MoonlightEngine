@@ -25,6 +25,8 @@
 #include <vector>
 
 #include "Runtime/Core/CoreTypes.h"
+#include "Runtime/Core/Logging/Logging.h"
+#include "Runtime/Core/Misc/AssertionMacros.h"
 
 #ifdef MOONLIGHT_PLATFORM_WIN64
     #include <Windows.h>
