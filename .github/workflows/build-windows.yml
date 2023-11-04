@@ -10,6 +10,7 @@ permissions:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         os: [ windows-latest ]
         build-configs: [ Debug, Release, Distribution ]
