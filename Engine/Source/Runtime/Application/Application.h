@@ -1,7 +1,9 @@
 ﻿#pragma once
 
+#include "Window.h"
 #include "Core/Misc/CommandLineArguments.h"
 #include "Events/Event.h"
+#include "Events/WindowEvents.h"
 
 #include <mutex>
 #include <queue>
@@ -10,7 +12,13 @@
 struct FApplicationSpecification
 {
     std::string Name = "Moonlight Engine";
-
+    uint32 WindowWidth = 1600;
+    uint32 WindowHeight = 900;
+    EWindowMode WindowMode = EWindowMode::Windowed;
+    bool bEnableVSync = true;
+    bool bEnableWindowDecoration = false;
+    bool bEnableWindowResizing = true;
+    
     FCommandLineArguments CommandLineArguments;
 };
 
@@ -40,8 +48,13 @@ public:
     const FApplicationSpecification& GetSpecification() const { return m_ApplicationSpecification; }
 private:
     void ProcessEvents();
+
+    bool OnWindowClose();
+    bool OnWindowMinimize(const FWindowMinimizeEvent& WindowMinimizeEvent);
 private:
     inline static FApplication* m_ApplicationInstance = nullptr;
+
+    std::shared_ptr<FWindow> m_ApplicationWindow = nullptr;
 
     FApplicationSpecification m_ApplicationSpecification;
     FCommandLineArguments m_CommandLineArguments;
@@ -49,6 +62,7 @@ private:
     std::mutex m_EventQueueMutex;
     std::queue<std::function<void()>> m_EventQueue;
 
+    bool bIsWindowMinimized = false;
     bool bIsRunning = true;
 };
 

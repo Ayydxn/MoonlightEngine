@@ -30,5 +30,6 @@
 
 #ifdef MOONLIGHT_PLATFORM_WIN64
     #include <Windows.h>
+    #include <windowsx.h>
     #include <WinUser.h>
 #endif

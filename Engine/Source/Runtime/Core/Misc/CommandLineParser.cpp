@@ -6,7 +6,7 @@ bool FCommandLineParser::Param(const FCommandLineArguments& CommandLineArguments
     return std::ranges::find(CommandLineArguments, Argument) != CommandLineArguments.end();
 }
 
-bool FCommandLineParser::Parse(const FCommandLineArguments& CommandLineArguments, const std::string& Argument, int32* Value)
+bool FCommandLineParser::Value(const FCommandLineArguments& CommandLineArguments, const std::string& Argument, int32* Value)
 {
     return std::ranges::any_of(CommandLineArguments, [Argument, Value](const std::string& CommandLineArgument) mutable
     {
@@ -23,7 +23,7 @@ bool FCommandLineParser::Parse(const FCommandLineArguments& CommandLineArguments
     });
 }
 
-bool FCommandLineParser::Parse(const FCommandLineArguments& CommandLineArguments, const std::string& Argument, float* Value)
+bool FCommandLineParser::Value(const FCommandLineArguments& CommandLineArguments, const std::string& Argument, float* Value)
 {
     return std::ranges::any_of(CommandLineArguments, [Argument, Value](const std::string& CommandLineArgument) mutable
     {
@@ -40,7 +40,7 @@ bool FCommandLineParser::Parse(const FCommandLineArguments& CommandLineArguments
     });
 }
 
-bool FCommandLineParser::Parse(const FCommandLineArguments& CommandLineArguments, const std::string& Argument, double* Value)
+bool FCommandLineParser::Value(const FCommandLineArguments& CommandLineArguments, const std::string& Argument, double* Value)
 {
     return std::ranges::any_of(CommandLineArguments, [Argument, Value](const std::string& CommandLineArgument) mutable
     {
@@ -57,7 +57,7 @@ bool FCommandLineParser::Parse(const FCommandLineArguments& CommandLineArguments
     });
 }
 
-bool FCommandLineParser::Parse(const FCommandLineArguments& CommandLineArguments, const std::string& Argument, std::string* Value)
+bool FCommandLineParser::Value(const FCommandLineArguments& CommandLineArguments, const std::string& Argument, std::string* Value)
 {
     return std::ranges::any_of(CommandLineArguments, [Argument, Value](const std::string& CommandLineArgument) mutable
     {
