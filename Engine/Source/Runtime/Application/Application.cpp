@@ -68,11 +68,15 @@ FApplication::~FApplication()
 
     m_ApplicationWindow->SetEventCallbackFunction(nullptr);
 
+    for (FLayer* Layer : m_LayerStack)
+    {
+        Layer->OnDetach();
+        delete Layer;
+    }
+
     // Clearing the event queue.
     // This also ensures that we free the memory used by it.
     std::queue<std::function<void()>>().swap(m_EventQueue);
-    
-    DispatchEvent<FApplicationShutdownEvent>();
 }
 
 void FApplication::OnEvent(FEvent& Event)
@@ -80,18 +84,81 @@ void FApplication::OnEvent(FEvent& Event)
     FEventDispatcher EventDispatcher(Event);
     EventDispatcher.Dispatch<FWindowCloseEvent>([this](const FWindowCloseEvent&) { return OnWindowClose(); });
     EventDispatcher.Dispatch<FWindowMinimizeEvent>([this](const FWindowMinimizeEvent& WindowMinimizeEvent) { return OnWindowMinimize(WindowMinimizeEvent); });
+
+    for (const auto& Layer : m_LayerStack)
+    {
+        Layer->OnEvent(Event);
+
+        if (Event.bIsHandled)
+            break;
+    }
 }
 
 void FApplication::Start()
 {
     while (bIsRunning)
     {
-        ProcessEvents();
+        OnInitialize();
 
-        if (!bIsWindowMinimized)
+        DispatchEvent<FApplicationInitializeEvent>();
+        
+        while (bIsRunning)
         {
-            m_ApplicationWindow->SwapBuffers();
+            /*-----------------*/
+            /* --  Updating -- */
+            /*-----------------*/
+
+            OnUpdate();
+
+            for (FLayer* Layer : m_LayerStack)
+                Layer->OnUpdate();
+
+            ProcessEvents();
+
+            DispatchEvent<FApplicationUpdateEvent>();
+
+            /*-----------------*/
+            /* -- Rendering -- */
+            /*-----------------*/
+
+            // Rendering will only happen if the window isn't minimized. (TODO: (Ayydan) The render loop should be executed on a separate render thread)
+            if (!bIsWindowMinimized)
+            {
+                OnPreRender();
+
+                for (FLayer* Layer : m_LayerStack)
+                    Layer->OnPreRender();
+
+                OnRender();
+
+                for (FLayer* Layer : m_LayerStack)
+                    Layer->OnRender();
+
+                DispatchEvent<FApplicationRenderEvent>();
+            
+                OnPostRender();
+
+                for (FLayer* Layer : m_LayerStack)
+                    Layer->OnPostRender();
+
+                m_ApplicationWindow->SwapBuffers();
+            }
+
+            /*---------------*/
+            /* -- Ticking -- */
+            /*---------------*/
+
+            OnTick();
+
+            for (FLayer* Layer : m_LayerStack)
+                Layer->OnTick();
+
+            DispatchEvent<FApplicationTickEvent>();
         }
+
+        OnShutdown();
+
+        DispatchEvent<FApplicationShutdownEvent>();
     }
 }
 
@@ -104,21 +171,6 @@ void FApplication::Close()
 {
     bIsRunning = false;
     bIsApplicationRunning = false;
-}
-
-void FApplication::ProcessEvents()
-{
-    m_ApplicationWindow->ProcessEvents();
-    
-    std::scoped_lock<std::mutex> Lock(m_EventQueueMutex);
-
-    while (!m_EventQueue.empty())
-    {
-        auto& EventFunction = m_EventQueue.front();
-        EventFunction();
-
-        m_EventQueue.pop();
-    }
 }
 
 template<typename Event, typename ... EventArgs>
@@ -135,6 +187,41 @@ void FApplication::QueueEvent(EventFunction&& EventFunc)
 {
     std::scoped_lock<std::mutex> Lock(m_EventQueueMutex);
     m_EventQueue.push(EventFunc);
+}
+
+void FApplication::PushLayer(FLayer* Layer)
+{
+    m_LayerStack.PushLayer(Layer);
+}
+
+void FApplication::PushOverlay(FLayer* Overlay)
+{
+    m_LayerStack.PushOverlay(Overlay);
+}
+
+void FApplication::PopLayer(FLayer* Layer)
+{
+    m_LayerStack.PopLayer(Layer);
+}
+
+void FApplication::PopOverlay(FLayer* Overlay)
+{
+    m_LayerStack.PopOverlay(Overlay);
+}
+
+void FApplication::ProcessEvents()
+{
+    m_ApplicationWindow->ProcessEvents();
+    
+    std::scoped_lock<std::mutex> Lock(m_EventQueueMutex);
+
+    while (!m_EventQueue.empty())
+    {
+        auto& EventFunction = m_EventQueue.front();
+        EventFunction();
+
+        m_EventQueue.pop();
+    }
 }
 
 bool FApplication::OnWindowClose()

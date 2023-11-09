@@ -4,6 +4,7 @@
 #include "Core/Misc/CommandLineArguments.h"
 #include "Events/Event.h"
 #include "Events/WindowEvents.h"
+#include "Layers/LayerStack.h"
 
 #include <mutex>
 #include <queue>
@@ -29,7 +30,14 @@ public:
     FApplication(const FApplicationSpecification& Specification = FApplicationSpecification());
     virtual ~FApplication();
 
+    virtual void OnInitialize() {}
+    virtual void OnUpdate() {}
     virtual void OnEvent(FEvent& Event);
+    virtual void OnPreRender() {}
+    virtual void OnRender() {}
+    virtual void OnPostRender() {}
+    virtual void OnTick() {}
+    virtual void OnShutdown() {}
 
     void Start();
     void Restart();
@@ -40,6 +48,11 @@ public:
 
     template<typename EventFunction>
     void QueueEvent(EventFunction&& EventFunc);
+
+    void PushLayer(FLayer* Layer);
+    void PushOverlay(FLayer* Overlay);
+    void PopLayer(FLayer* Layer);
+    void PopOverlay(FLayer* Overlay);
     
     static FApplication& GetInstance() { return *m_ApplicationInstance; }
 
@@ -58,6 +71,7 @@ private:
 
     FApplicationSpecification m_ApplicationSpecification;
     FCommandLineArguments m_CommandLineArguments;
+    FLayerStack m_LayerStack;
 
     std::mutex m_EventQueueMutex;
     std::queue<std::function<void()>> m_EventQueue;
