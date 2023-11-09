@@ -80,19 +80,6 @@ void FApplication::OnEvent(FEvent& Event)
     FEventDispatcher EventDispatcher(Event);
     EventDispatcher.Dispatch<FWindowCloseEvent>([this](const FWindowCloseEvent&) { return OnWindowClose(); });
     EventDispatcher.Dispatch<FWindowMinimizeEvent>([this](const FWindowMinimizeEvent& WindowMinimizeEvent) { return OnWindowMinimize(WindowMinimizeEvent); });
-
-    if (Event.GetEventType() == EEventType::KeyPressed)
-    {
-        auto KeyPressedEvent = static_cast<FKeyPressedEvent&>(Event);
-        if (KeyPressedEvent.GetKey() == 0x20)
-        {
-            m_ApplicationWindow->EnableResizing(true);
-        }
-        else
-        {
-            m_ApplicationWindow->EnableResizing(false);
-        }
-    }
 }
 
 void FApplication::Start()
