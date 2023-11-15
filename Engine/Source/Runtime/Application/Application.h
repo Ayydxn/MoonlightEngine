@@ -17,7 +17,7 @@ struct FApplicationSpecification
     uint32 WindowHeight = 900;
     EWindowMode WindowMode = EWindowMode::Windowed;
     bool bEnableVSync = true;
-    bool bEnableWindowDecoration = false;
+    bool bEnableWindowDecoration = true;
     bool bEnableWindowResizing = true;
     
     FCommandLineArguments CommandLineArguments;

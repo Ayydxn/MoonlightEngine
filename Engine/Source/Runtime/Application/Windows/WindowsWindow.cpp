@@ -27,6 +27,12 @@ void FWindowsWindow::Initialize()
     uint32 WindowStyle = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
     constexpr uint32 WindowExStyle = WS_EX_APPWINDOW;
 
+    if (!m_Specification.bEnableDecoration)
+    {
+        WindowStyle &= ~WindowStyle;
+        WindowStyle |= WS_POPUP | WS_BORDER;
+    }
+
     if (m_Specification.bEnableResizing)
         WindowStyle |= WS_THICKFRAME;
 
@@ -44,11 +50,11 @@ void FWindowsWindow::Initialize()
     
     verifyEnginef(m_WindowHandle, "Failed to create window '{}'!", m_WindowState.Title)
 
-    ShowWindow(m_WindowHandle, SW_SHOW);
-    
     SetWindowLongPtrW(m_WindowHandle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&m_WindowState));
     
-    CenterOnScreen();
+    ShowWindow(m_WindowHandle, SW_SHOW);
+
+    SetWindowMode(m_Specification.WindowMode);
 }
 
 void FWindowsWindow::ProcessEvents()
@@ -97,21 +103,58 @@ void FWindowsWindow::EnableVSync(bool bEnableVSync)
 
 void FWindowsWindow::SetWindowMode(EWindowMode NewWindowMode) const
 {
-    // TODO: (Ayydan) Implement.
-    switch (m_Specification.WindowMode)
+    switch (NewWindowMode)
     {
         case EWindowMode::Windowed:
         {
+            int32 WindowedWindowStyle = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+            
+            if (!m_WindowState.bIsDecorationEnabled)
+                WindowedWindowStyle |= WS_POPUP | WS_BORDER;
+
+            if (m_WindowState.bIsResizingEnabled)
+                WindowedWindowStyle |= WS_THICKFRAME;
+
+            const uint32 WindowXPosition = GetSystemMetrics(SM_CXSCREEN) / 2 - m_WindowState.Width / 2;
+            const uint32 WindowYPosition = GetSystemMetrics(SM_CYSCREEN) / 2 - m_WindowState.Height / 2;
+
+            SetWindowLongW(m_WindowHandle, GWL_STYLE, WindowedWindowStyle);
+
+            SetWindowPos(m_WindowHandle, HWND_TOP, static_cast<int32>(WindowXPosition), static_cast<int32>(WindowYPosition),
+                static_cast<int32>(m_Specification.Width), static_cast<int32>(m_Specification.Height), SWP_SHOWWINDOW | SWP_FRAMECHANGED);
+            
             break;
         }
 
         case EWindowMode::WindowedFullscreen:
         {
+            ShowWindow(m_WindowHandle, SW_RESTORE);
+            
+            RECT ClientRect;
+            GetClientRect(m_WindowHandle, &ClientRect);
+
+            const HMONITOR Monitor = MonitorFromWindow(m_WindowHandle, MONITOR_DEFAULTTONEAREST);
+
+            MONITORINFO MonitorInfo;
+            MonitorInfo.cbSize = sizeof(MONITORINFO);
+
+            GetMonitorInfoW(Monitor, &MonitorInfo);
+
+            const int32 MonitorWidth = MonitorInfo.rcMonitor.right - MonitorInfo.rcMonitor.left;
+            const int32 MonitorHeight = MonitorInfo.rcMonitor.bottom - MonitorInfo.rcMonitor.top;
+
+            SetWindowLongW(m_WindowHandle, GWL_STYLE, WS_POPUP);
+
+            SetWindowPos(m_WindowHandle, nullptr, MonitorInfo.rcMonitor.left, MonitorInfo.rcMonitor.top, MonitorWidth, MonitorHeight,
+                SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE);
+            
             break;
         }
 
+        // TODO: (Ayydan) Implement
         case EWindowMode::Fullscreen:
         {
+            verifyEnginef(false, "FWindowsWindow doesn't support fullscreen windows!")
             break;
         }
     }
