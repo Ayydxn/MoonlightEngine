@@ -3,14 +3,14 @@
 
 bool FCommandLineParser::Param(const FCommandLineArguments& CommandLineArguments, const std::string& Argument)
 {
-    return std::ranges::find(CommandLineArguments, Argument) != CommandLineArguments.end();
+    return std::ranges::find(CommandLineArguments, '-' + Argument) != CommandLineArguments.end();
 }
 
 bool FCommandLineParser::Value(const FCommandLineArguments& CommandLineArguments, const std::string& Argument, int32* Value)
 {
     return std::ranges::any_of(CommandLineArguments, [Argument, Value](const std::string& CommandLineArgument) mutable
     {
-        if (CommandLineArgument.find(Argument) != std::string::npos)
+        if (CommandLineArgument.find('-' + Argument) != std::string::npos)
         {
             const std::string ArgumentValueString = CommandLineArgument.substr(CommandLineArgument.find('=') + 1);
 
@@ -27,7 +27,7 @@ bool FCommandLineParser::Value(const FCommandLineArguments& CommandLineArguments
 {
     return std::ranges::any_of(CommandLineArguments, [Argument, Value](const std::string& CommandLineArgument) mutable
     {
-        if (CommandLineArgument.find(Argument) != std::string::npos)
+        if (CommandLineArgument.find('-' + Argument) != std::string::npos)
         {
             const std::string ArgumentValueString = CommandLineArgument.substr(CommandLineArgument.find('=') + 1);
 
@@ -44,7 +44,7 @@ bool FCommandLineParser::Value(const FCommandLineArguments& CommandLineArguments
 {
     return std::ranges::any_of(CommandLineArguments, [Argument, Value](const std::string& CommandLineArgument) mutable
     {
-        if (CommandLineArgument.find(Argument) != std::string::npos)
+        if (CommandLineArgument.find('-' + Argument) != std::string::npos)
         {
             const std::string ArgumentValueString = CommandLineArgument.substr(CommandLineArgument.find('=') + 1);
 
@@ -61,7 +61,7 @@ bool FCommandLineParser::Value(const FCommandLineArguments& CommandLineArguments
 {
     return std::ranges::any_of(CommandLineArguments, [Argument, Value](const std::string& CommandLineArgument) mutable
     {
-        if (CommandLineArgument.find(Argument) != std::string::npos)
+        if (CommandLineArgument.find('-' + Argument) != std::string::npos)
         {
             *Value = CommandLineArgument.substr(CommandLineArgument.find('=') + 1);
 

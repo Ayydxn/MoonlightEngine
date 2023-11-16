@@ -48,6 +48,10 @@ workspace "Moonlight Engine"
 	filter "configurations:Distribution"
 		optimize "Full"
 		symbols "Off"
+		
+group "Dependencies"
+    include "Engine/ThirdParty/GLFW"
+group ""
 
 group "Core"
     include "Engine"

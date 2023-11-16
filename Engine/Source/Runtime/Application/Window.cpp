@@ -1,8 +1,8 @@
 ﻿#include "MoonlightPCH.h"
 #include "Window.h"
 
-#ifdef MOONLIGHT_PLATFORM_WIN64
-    #include "Windows/WindowsWindow.h"
+#if defined(MOONLIGHT_PLATFORM_WIN64) || defined(MOONLIGHT_PLATFORM_MAC) || defined(MOONLIGHT_PLATFORM_LINUX)
+    #include "DesktopWindow.h"
 #endif
 
 std::shared_ptr<FWindow> FWindow::Create(const FWindowSpecification& Specification)
@@ -17,8 +17,8 @@ std::shared_ptr<FWindow> FWindow::Create(const FWindowSpecification& Specificati
     m_WindowState.bIsVSyncEnabled = Specification.bEnableVSync;
     m_WindowState.bIsResizingEnabled = Specification.bEnableResizing;
 
-    #ifdef MOONLIGHT_PLATFORM_WIN64
-        return std::make_shared<FWindowsWindow>();
+    #if defined(MOONLIGHT_PLATFORM_WIN64) || defined(MOONLIGHT_PLATFORM_MAC) || defined(MOONLIGHT_PLATFORM_LINUX)
+        return std::make_shared<FDesktopWindow>();
     #else
         verifyEnginef(false, "Failed to create window '{}'! Unknown/unsupported platform!", Specification.Title)
         return nullptr;

@@ -2,13 +2,13 @@
 
 #include "Application/Window.h"
 
-#include <Windows.h>
+struct GLFWwindow;
 
-class FWindowsWindow : public FWindow
+class FDesktopWindow : public FWindow
 {
 public:
-    FWindowsWindow() = default;
-    ~FWindowsWindow() override = default;
+    FDesktopWindow() = default;
+    ~FDesktopWindow() override;
 
      void Initialize() override;
      void ProcessEvents() override;
@@ -28,7 +28,5 @@ public:
 
      void* GetHandle() const override { return m_WindowHandle; }
 private:
-    static LRESULT CALLBACK WindowProcedure(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam);
-private:
-    HWND m_WindowHandle;
+    GLFWwindow* m_WindowHandle;
 };
