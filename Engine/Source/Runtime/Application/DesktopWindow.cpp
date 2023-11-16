@@ -49,6 +49,9 @@ void FDesktopWindow::Initialize()
 
     SetWindowMode(m_Specification.WindowMode);
 
+    m_RendererContext = FRendererContext::Create(m_WindowHandle);
+    m_RendererContext->Initialize();
+
     EnableVSync(m_Specification.bEnableVSync);
 
     if (glfwRawMouseMotionSupported())
@@ -210,7 +213,7 @@ void FDesktopWindow::ProcessEvents()
 
 void FDesktopWindow::SwapBuffers() const
 {
-    // TODO: (Ayydan) Implement per graphics API.
+    m_RendererContext->SwapBuffers();
 }
 
 std::pair<float, float> FDesktopWindow::GetPosition() const
@@ -237,7 +240,7 @@ void FDesktopWindow::CenterOnScreen() const
 
 void FDesktopWindow::EnableVSync(bool bEnableVSync)
 {
-    // TODO: (Ayydan) Implement per graphics API.
+    m_RendererContext->SetVSync(bEnableVSync);
 
     m_WindowState.bIsVSyncEnabled = bEnableVSync;
 }

@@ -21,6 +21,7 @@ project "Moonlight Engine"
     {
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.GLFW}",
+        "%{IncludeDir.Glad}",
         
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",
@@ -29,7 +30,10 @@ project "Moonlight Engine"
     
     links
     {
-        "GLFW"
+        "GLFW",
+        "Glad",
+        
+        "opengl32.lib",
     }
 
     filter "system:windows"

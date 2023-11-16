@@ -7,20 +7,6 @@ class FMoonlightEditorLayer : public FLayer
 public:
     FMoonlightEditorLayer()
         : FLayer("Moonlight Editor Layer") {}
-
-    void OnAttach() override
-    {
-        APPLICATION_LOG_INFO_TAG("Core", "Hello from the Moonlight Editor Layer!");
-    }
-
-    void OnUpdate() override
-    {
-        if (FInput::GetKeyDown(FKeys::Space))
-            APPLICATION_LOG_DEBUG("Space Key Pressed!");
-
-        if (FInput::GetMouseButtonDown(FKeys::LeftMouseButton))
-            APPLICATION_LOG_DEBUG("Left Mouse Button Pressed!");
-    }
 };
 
 class FMoonlightEditorApplication : public FApplication
