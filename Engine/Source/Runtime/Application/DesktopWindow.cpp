@@ -3,6 +3,8 @@
 #include "Events/KeyboardEvents.h"
 #include "Events/MouseEvents.h"
 #include "Events/WindowEvents.h"
+#include "Input/CoreInputTypes.h"
+#include "Input/Input.h"
 
 #include <GLFW/glfw3.h>
 
@@ -64,21 +66,30 @@ void FDesktopWindow::Initialize()
         {
             case GLFW_PRESS:
             {
-                FKeyPressedEvent KeyPressedEvent(Key, false);
+                const FKey PressedKey = FKey::GetKeyFromKeyCode(static_cast<uint16>(Key));
+                FInput::UpdateKeyState(PressedKey, EKeyState::Pressed);
+
+                FKeyPressedEvent KeyPressedEvent(PressedKey, false);
                 WindowState.EventCallbackFunc(KeyPressedEvent);
                 break;
             }
 
             case GLFW_RELEASE:
             {
-                FKeyReleasedEvent KeyReleasedEvent(Key);
+                const FKey ReleasedKey = FKey::GetKeyFromKeyCode(static_cast<uint16>(Key));
+                FInput::UpdateKeyState(ReleasedKey, EKeyState::Released);
+
+                FKeyReleasedEvent KeyReleasedEvent(ReleasedKey);
                 WindowState.EventCallbackFunc(KeyReleasedEvent);
                 break;
             }
 
             case GLFW_REPEAT:
             {
-                FKeyPressedEvent KeyPressedEvent(Key, true);
+                const FKey HeldDownKey = FKey::GetKeyFromKeyCode(static_cast<uint16>(Key));
+                FInput::UpdateKeyState(HeldDownKey, EKeyState::Pressed);
+
+                FKeyPressedEvent KeyPressedEvent(HeldDownKey, true);
                 WindowState.EventCallbackFunc(KeyPressedEvent);
                 break;
             }
@@ -104,14 +115,20 @@ void FDesktopWindow::Initialize()
         {
             case GLFW_PRESS:
             {
-                FMouseButtonPressedEvent MouseButtonPressedEvent(Button);
+                const FKey PressedMouseButton = FKey::GetKeyFromKeyCode(static_cast<uint32>(Button));
+                FInput::UpdateMouseButtonState(PressedMouseButton, EKeyState::Pressed);
+
+                FMouseButtonPressedEvent MouseButtonPressedEvent(PressedMouseButton);
                 WindowState.EventCallbackFunc(MouseButtonPressedEvent);
                 break;
             }
 
             case GLFW_RELEASE:
             {
-                FMouseButtonReleasedEvent MouseButtonReleasedEvent(Button);
+                const FKey ReleasedMouseButton = FKey::GetKeyFromKeyCode(static_cast<uint32>(Button));
+                FInput::UpdateMouseButtonState(ReleasedMouseButton, EKeyState::Released);
+
+                FMouseButtonReleasedEvent MouseButtonReleasedEvent(ReleasedMouseButton);
                 WindowState.EventCallbackFunc(MouseButtonReleasedEvent);
                 break;
             }

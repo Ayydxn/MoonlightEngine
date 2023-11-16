@@ -3,6 +3,7 @@
 #include "Core/Misc/CommandLineParser.h"
 #include "Events/ApplicationEvents.h"
 #include "Events/KeyboardEvents.h"
+#include "Input/Input.h"
 
 extern bool bIsApplicationRunning;
 
@@ -58,6 +59,8 @@ FApplication::FApplication(const FApplicationSpecification& Specification)
     m_ApplicationWindow = FWindow::Create(ApplicationWindowSpecification);
     m_ApplicationWindow->Initialize();
     m_ApplicationWindow->SetEventCallbackFunction([this](FEvent& Event) { return OnEvent(Event); });
+
+    FInput::Initialize();
 
     DispatchEvent<FApplicationInitializeEvent>();
 }
@@ -211,6 +214,9 @@ void FApplication::PopOverlay(FLayer* Overlay)
 
 void FApplication::ProcessEvents()
 {
+    FInput::TransitionPressedKeys();
+    FInput::TransitionPressedMouseButtons();
+    
     m_ApplicationWindow->ProcessEvents();
     
     std::scoped_lock<std::mutex> Lock(m_EventQueueMutex);

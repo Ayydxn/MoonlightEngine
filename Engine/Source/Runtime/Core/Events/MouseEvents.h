@@ -2,32 +2,33 @@
 
 #include "Event.h"
 #include "Core/CoreTypes.h"
+#include "Input/CoreInputTypes.h"
 
 #include <sstream>
 
 class FMouseButtonEvent : public FEvent
 {
 public:
-    uint32 GetMouseButton() const { return m_MouseButton; }
+    uint32 GetMouseButton() const { return m_MouseButton.GetKeyCode(); }
 
     SET_CLASS_EVENT_CATEGORY(InputCategory | MouseCategory | MouseButtonCategory)
 protected:
-    FMouseButtonEvent(const uint32 MouseButton)
+    FMouseButtonEvent(const FKey& MouseButton)
         : m_MouseButton(MouseButton) {}
 
-    uint32 m_MouseButton;
+    FKey m_MouseButton;
 };
 
 class FMouseButtonPressedEvent : public FMouseButtonEvent
 {
 public:
-    FMouseButtonPressedEvent(const uint32 MouseButton)
+    FMouseButtonPressedEvent(const FKey& MouseButton)
         : FMouseButtonEvent(MouseButton) {}
 
     std::string ToString() const override
     {
         std::stringstream StringStream;
-        StringStream << "MouseButtonPressedEvent: " << m_MouseButton;
+        StringStream << "MouseButtonPressedEvent: " << m_MouseButton.GetDisplayName();
         return StringStream.str();
     }
 
@@ -37,13 +38,13 @@ public:
 class FMouseButtonReleasedEvent : public FMouseButtonEvent
 {
 public:
-    FMouseButtonReleasedEvent(const uint32 MouseButton)
+    FMouseButtonReleasedEvent(const FKey& MouseButton)
         : FMouseButtonEvent(MouseButton) {}
 
     std::string ToString() const override
     {
         std::stringstream StringStream;
-        StringStream << "MouseButtonReleasedEvent: " << m_MouseButton;
+        StringStream << "MouseButtonReleasedEvent: " << m_MouseButton.GetDisplayName();
         return StringStream.str();
     }
 

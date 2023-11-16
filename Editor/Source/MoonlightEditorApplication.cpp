@@ -1,5 +1,6 @@
 ﻿#include "Application/Application.h"
 #include "Application/ApplicationEntryPoint.h"
+#include "Input/Input.h"
 
 class FMoonlightEditorLayer : public FLayer
 {
@@ -10,6 +11,15 @@ public:
     void OnAttach() override
     {
         APPLICATION_LOG_INFO_TAG("Core", "Hello from the Moonlight Editor Layer!");
+    }
+
+    void OnUpdate() override
+    {
+        if (FInput::GetKeyDown(FKeys::Space))
+            APPLICATION_LOG_DEBUG("Space Key Pressed!");
+
+        if (FInput::GetMouseButtonDown(FKeys::LeftMouseButton))
+            APPLICATION_LOG_DEBUG("Left Mouse Button Pressed!");
     }
 };
 

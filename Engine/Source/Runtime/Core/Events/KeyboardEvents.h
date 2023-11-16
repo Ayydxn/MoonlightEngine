@@ -2,26 +2,27 @@
 
 #include "Event.h"
 #include "Core/CoreTypes.h"
+#include "Input/CoreInputTypes.h"
 
 #include <sstream>
 
 class FKeyboardEvent : public FEvent
 {
 public:
-    uint32 GetKey() const { return m_Key; }
+    uint32 GetKey() const { return m_Key.GetKeyCode(); }
 
     SET_CLASS_EVENT_CATEGORY(InputCategory | KeyboardCategory)
 protected:
-    FKeyboardEvent(const uint32 Key)
-        : m_Key(Key) {}
+    FKeyboardEvent(FKey Key)
+        : m_Key(std::move(Key)) {}
 
-    uint32 m_Key;
+    FKey m_Key;
 };
 
 class FKeyPressedEvent : public FKeyboardEvent
 {
 public:
-    FKeyPressedEvent(uint32 Key, bool bIsKeyHeldDown)
+    FKeyPressedEvent(const FKey& Key, bool bIsKeyHeldDown)
         : FKeyboardEvent(Key), bIsHeldDown(bIsKeyHeldDown) {}
 
     bool IsKeyHeldDown() const { return bIsHeldDown; }
@@ -29,7 +30,7 @@ public:
     std::string ToString() const override
     {
         std::stringstream StringStream;
-        StringStream << "KeyPressedEvent: " << m_Key << " (Held Down: " << (bIsHeldDown ? "True" : "False") << ")";
+        StringStream << "KeyPressedEvent: " << m_Key.GetDisplayName() << " (Held Down: " << (bIsHeldDown ? "True" : "False") << ")";
         return StringStream.str();
     }
 
@@ -41,13 +42,13 @@ private:
 class FKeyReleasedEvent : public FKeyboardEvent
 {
 public:
-    FKeyReleasedEvent(const uint32 Key)
+    FKeyReleasedEvent(const FKey& Key)
         : FKeyboardEvent(Key) {}
 
     std::string ToString() const override
     {
         std::stringstream StringStream;
-        StringStream << "KeyReleasedEvent: " << m_Key;
+        StringStream << "KeyReleasedEvent: " << m_Key.GetDisplayName();
         return StringStream.str();
     }
 
@@ -57,15 +58,18 @@ public:
 class FKeyTypedEvent : public FKeyboardEvent
 {
 public:
+    // (Ayydan) We don't have a system for converting ASCII scancodes to regular keycodes. So, this just takes in the scancode.
     FKeyTypedEvent(const uint32 Key)
-        : FKeyboardEvent(Key) {}
+        : FKeyboardEvent(FKey()),  m_KeyCode(Key) {}
 
     std::string ToString() const override
     {
         std::stringstream StringStream;
-        StringStream << "KeyTypedEvent: " << m_Key;
+        StringStream << "KeyTypedEvent: " << m_KeyCode;
         return StringStream.str();
     }
 
     SET_CLASS_EVENT_TYPE(KeyTyped)
+private:
+    uint32 m_KeyCode;
 };
