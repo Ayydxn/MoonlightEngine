@@ -2,8 +2,8 @@
 #include "Application.h"
 #include "Core/Misc/CommandLineParser.h"
 #include "Events/ApplicationEvents.h"
-#include "Events/KeyboardEvents.h"
 #include "Input/Input.h"
+#include "Renderer/Renderer.h"
 
 extern bool bIsApplicationRunning;
 
@@ -15,6 +15,8 @@ FApplication::FApplication(const FApplicationSpecification& Specification)
     FLogging::Initialize();
 
     ENGINE_LOG_INFO_TAG("Core", "Initializing Moonlight Engine...");
+
+    FRenderer::PreInitialize();
 
     FWindowSpecification ApplicationWindowSpecification;
     ApplicationWindowSpecification.Title = m_ApplicationSpecification.Name;
@@ -61,6 +63,7 @@ FApplication::FApplication(const FApplicationSpecification& Specification)
     m_ApplicationWindow->SetEventCallbackFunction([this](FEvent& Event) { return OnEvent(Event); });
 
     FInput::Initialize();
+    FRenderer::Initialize();
 
     DispatchEvent<FApplicationInitializeEvent>();
 }
@@ -80,6 +83,8 @@ FApplication::~FApplication()
     // Clearing the event queue.
     // This also ensures that we free the memory used by it.
     std::queue<std::function<void()>>().swap(m_EventQueue);
+
+    FRenderer::Shutdown();
 }
 
 void FApplication::OnEvent(FEvent& Event)
@@ -132,6 +137,8 @@ void FApplication::Start()
                 for (FLayer* Layer : m_LayerStack)
                     Layer->OnPreRender();
 
+                FRenderer::BeginFrame();
+
                 OnRender();
 
                 for (FLayer* Layer : m_LayerStack)
@@ -143,6 +150,8 @@ void FApplication::Start()
 
                 for (FLayer* Layer : m_LayerStack)
                     Layer->OnPostRender();
+
+                FRenderer::EndFrame();
 
                 m_ApplicationWindow->SwapBuffers();
             }

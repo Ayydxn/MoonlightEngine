@@ -103,13 +103,6 @@ void FLogging::LogAssertMessage(ELogType LogType, std::string_view Prefix, std::
     Logger->error("{}: {}", Prefix, fmt::vformat(Message, fmt::make_format_args(Args...)));
 }
 
-template<>
-inline void FLogging::LogAssertMessage(ELogType LogType, std::string_view Prefix, std::string_view)
-{
-    const auto Logger = LogType == ELogType::Engine ? m_EngineLogger : m_ApplicationLogger;
-    Logger->error("{}", Prefix);
-}
-
 /*-----------------------------*/
 /* -- Engine Logging Macros -- */
 /*-----------------------------*/
