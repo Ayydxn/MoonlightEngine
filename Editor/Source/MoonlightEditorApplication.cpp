@@ -1,6 +1,8 @@
 ﻿#include "Application/Application.h"
 #include "Application/ApplicationEntryPoint.h"
 #include "Input/Input.h"
+#include "Renderer/VertexBufferLayout.h"
+#include "RHICore/GraphicsPipeline.h"
 #include "RHICore/IndexBuffer.h"
 #include "RHICore/VertexBuffer.h"
 
@@ -24,13 +26,29 @@ public:
             0, 1, 2
         };
 
+        const FVertexBufferLayout VertexBufferLayout =
+        {
+            { EShaderDataType::Float3, "Positions" }
+        };
+
+        FGraphicsPipelineSpecification GraphicsPipelineSpecification;
+        GraphicsPipelineSpecification.VertexBufferLayout = VertexBufferLayout;
+
         m_VertexBuffer = FVertexBuffer::Create(Vertices, sizeof(Vertices));
 
         m_IndexBuffer = FIndexBuffer::Create(Indices, sizeof(Indices));
+
+        m_GraphicsPipeline = FGraphicsPipeline::Create(GraphicsPipelineSpecification);
+    }
+
+    void OnRender() override
+    {
+        m_GraphicsPipeline->Bind();
     }
 private:
     std::shared_ptr<FVertexBuffer> m_VertexBuffer;
     std::shared_ptr<FIndexBuffer> m_IndexBuffer;
+    std::shared_ptr<FGraphicsPipeline> m_GraphicsPipeline;
 };
 
 class FMoonlightEditorApplication : public FApplication
