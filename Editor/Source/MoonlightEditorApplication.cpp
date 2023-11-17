@@ -1,6 +1,7 @@
 ﻿#include "Application/Application.h"
 #include "Application/ApplicationEntryPoint.h"
 #include "Input/Input.h"
+#include "Renderer/Renderer.h"
 #include "Renderer/VertexBufferLayout.h"
 #include "RHICore/GraphicsPipeline.h"
 #include "RHICore/IndexBuffer.h"
@@ -39,11 +40,20 @@ public:
         m_IndexBuffer = FIndexBuffer::Create(Indices, sizeof(Indices));
 
         m_GraphicsPipeline = FGraphicsPipeline::Create(GraphicsPipelineSpecification);
+
+        m_VertexBuffer->Bind();
+        m_IndexBuffer->Bind();
     }
 
     void OnRender() override
     {
+        FRHICommandPacket RHICommandPacket;
+        RHICommandPacket.IndexBuffer = m_IndexBuffer;
+
+        FRenderer::ClearColor(0.45f, 0.55f, 0.65f, 1.0f);
+        
         m_GraphicsPipeline->Bind();
+        FRenderer::DrawIndexedPrimitive(RHICommandPacket);
     }
 private:
     std::shared_ptr<FVertexBuffer> m_VertexBuffer;

@@ -3,8 +3,8 @@ project "Glad"
     language "C"
     staticruntime "Off"
     
-    targetdir(BinariesDir)
-    objdir(IntermediateDir)
+    targetdir(getProjectBinariesDir("Glad"))
+    objdir(getProjectIntermediateDir("Glad"))
 
     files
     {

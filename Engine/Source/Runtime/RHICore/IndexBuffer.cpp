@@ -5,6 +5,8 @@
 
 std::shared_ptr<FIndexBuffer> FIndexBuffer::Create(const void* BufferData, uint64 BufferSize)
 {
+    m_Size = static_cast<uint32>(BufferSize);
+    
     switch (FRenderer::GetGraphicsAPI())
     {
         case EGraphicsAPI::OpenGL: return std::make_shared<FOpenGLIndexBuffer>(BufferData, BufferSize);

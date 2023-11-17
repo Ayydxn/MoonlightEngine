@@ -10,16 +10,31 @@ void FRenderer::PreInitialize()
 
 void FRenderer::Initialize()
 {
+    m_RHIBackend = FRHIBackend::Create();
+    m_RHIBackend->Initialize();
 }
 
 void FRenderer::Shutdown()
 {
+    m_RHIBackend->Shutdown();
 }
 
 void FRenderer::BeginFrame()
 {
+    m_RHIBackend->BeginFrame();
 }
 
 void FRenderer::EndFrame()
 {
+    m_RHIBackend->EndFrame();
+}
+
+void FRenderer::DrawIndexedPrimitive(const FRHICommandPacket& RHICommandPacket)
+{
+    m_RHIBackend->DrawIndexedPrimitive(RHICommandPacket);
+}
+
+void FRenderer::ClearColor(const float Red, const float Green, const float Blue, const float Alpha)
+{
+    m_RHIBackend->ClearColor(Red, Green, Blue, Alpha);
 }
