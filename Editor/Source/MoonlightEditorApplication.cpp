@@ -5,6 +5,7 @@
 #include "Renderer/VertexBufferLayout.h"
 #include "RHICore/GraphicsPipeline.h"
 #include "RHICore/IndexBuffer.h"
+#include "RHICore/Shader.h"
 #include "RHICore/VertexBuffer.h"
 
 class FMoonlightEditorLayer : public FLayer
@@ -35,6 +36,8 @@ public:
         FGraphicsPipelineSpecification GraphicsPipelineSpecification;
         GraphicsPipelineSpecification.VertexBufferLayout = VertexBufferLayout;
 
+        m_Shader = FShader::Create("Resources/Shaders/DefaultShader.glsl");
+
         m_VertexBuffer = FVertexBuffer::Create(Vertices, sizeof(Vertices));
 
         m_IndexBuffer = FIndexBuffer::Create(Indices, sizeof(Indices));
@@ -51,11 +54,13 @@ public:
         RHICommandPacket.IndexBuffer = m_IndexBuffer;
 
         FRenderer::ClearColor(0.45f, 0.55f, 0.65f, 1.0f);
-        
+
+        m_Shader->Bind();
         m_GraphicsPipeline->Bind();
         FRenderer::DrawIndexedPrimitive(RHICommandPacket);
     }
 private:
+    std::shared_ptr<FShader> m_Shader;
     std::shared_ptr<FVertexBuffer> m_VertexBuffer;
     std::shared_ptr<FIndexBuffer> m_IndexBuffer;
     std::shared_ptr<FGraphicsPipeline> m_GraphicsPipeline;

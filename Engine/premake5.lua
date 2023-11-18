@@ -22,10 +22,16 @@ project "Moonlight Engine"
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
+        "%{IncludeDir.Vulkan}",
         
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",
         "%{prj.location}/Source/Runtime/Core"
+    }
+    
+    libdirs
+    {
+        "%{LibraryDir.Vulkan}"
     }
     
     links
@@ -59,6 +65,11 @@ project "Moonlight Engine"
         }
 
     filter "configurations:Debug"
+        links
+        {
+            "%{Library.Shaderc_Debug}"
+        }
+        
         defines
         {
             "MOONLIGHT_BUILD_DEBUG"
@@ -74,4 +85,10 @@ project "Moonlight Engine"
         defines
         {
             "MOONLIGHT_BUILD_DISTRIBUTION"
+        }
+        
+    filter { "configurations:Release or Distribution" }
+        links
+        {
+            "%{Library.Shaderc_Release}"
         }

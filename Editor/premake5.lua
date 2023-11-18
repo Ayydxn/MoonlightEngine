@@ -11,7 +11,9 @@ project "Moonlight Editor"
     files
     {
         "%{prj.location}/Source/**.cpp",
-        "%{prj.location}/Source/**.h"
+        "%{prj.location}/Source/**.h",
+        
+        "%{prj.location}/Resources/**.*",
     }
 
     includedirs
