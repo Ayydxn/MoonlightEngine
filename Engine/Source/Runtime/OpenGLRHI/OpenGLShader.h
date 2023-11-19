@@ -15,7 +15,7 @@ private:
 private:
     std::unordered_map<uint32, std::vector<uint32>> m_ShaderSPIRV;
 
-    std::string m_ShaderFilepath;
+    std::filesystem::path m_ShaderFilepath;
     
     uint32 m_ShaderProgramHandle = 0;
 };
