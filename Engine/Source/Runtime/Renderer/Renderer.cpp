@@ -1,5 +1,6 @@
 ﻿#include "MoonlightPCH.h"
 #include "Renderer.h"
+#include "ShaderLibrary.h"
 
 void FRenderer::PreInitialize()
 {
@@ -12,10 +13,15 @@ void FRenderer::Initialize()
 {
     m_RHIBackend = FRHIBackend::Create();
     m_RHIBackend->Initialize();
+
+    FShaderLibrary::Initialize();
+    FShaderLibrary::GetInstance().Load("Resources/Shaders/DefaultShader.glsl");
 }
 
 void FRenderer::Shutdown()
 {
+    FShaderLibrary::GetInstance().Shutdown();
+    
     m_RHIBackend->Shutdown();
 }
 

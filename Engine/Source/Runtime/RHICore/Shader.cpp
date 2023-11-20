@@ -5,6 +5,8 @@
 
 std::shared_ptr<FShader> FShader::Create(const std::filesystem::path& Filepath)
 {
+    m_Name = Filepath.stem().string();
+    
     switch (FRenderer::GetGraphicsAPI())
     {
         case EGraphicsAPI::OpenGL: return std::make_shared<FOpenGLShader>(Filepath);

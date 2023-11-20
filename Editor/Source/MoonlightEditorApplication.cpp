@@ -2,6 +2,7 @@
 #include "Application/ApplicationEntryPoint.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
+#include "Renderer/ShaderLibrary.h"
 #include "Renderer/VertexBufferLayout.h"
 #include "RHICore/GraphicsPipeline.h"
 #include "RHICore/IndexBuffer.h"
@@ -36,7 +37,7 @@ public:
         FGraphicsPipelineSpecification GraphicsPipelineSpecification;
         GraphicsPipelineSpecification.VertexBufferLayout = VertexBufferLayout;
 
-        m_Shader = FShader::Create("Resources/Shaders/DefaultShader.glsl");
+        m_Shader = FShaderLibrary::GetInstance().GetShader("DefaultShader");
 
         m_VertexBuffer = FVertexBuffer::Create(Vertices, sizeof(Vertices));
 
