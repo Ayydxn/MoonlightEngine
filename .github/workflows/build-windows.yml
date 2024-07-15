@@ -1,0 +1,38 @@
+﻿# Automatically build the project and run any configured tests for every push and submitted pull request on Windows.
+# This can help catch issues and provides a first line of defense against bad commits.
+
+name: Build Moonlight Engine (Windows)
+on: [pull_request, push]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        build-configs: [Debug, Release, Distribution]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
+        with:
+          msbuild-architecture: x64
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.4"
+      - name: Setup Premake
+        uses: abel0b/setup-premake@v2.4
+        with:
+          version: "5.0.0-beta2"
+          path: "Engine/ThirdParty/Premake"
+      - name: Setup Moonlight for Building
+        run: cmd /c .\Setup.bat
+      - name: Build Moonlight Engine
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: msbuild /m /p:Configuration=${{matrix.build-configs}} ${{env.SOLUTION_FILE_PATH}}

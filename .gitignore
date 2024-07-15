@@ -1,0 +1,13 @@
+﻿# Build
+Binaries/
+Intermediate/
+__pycache__
+
+# Project Files
+*.vcxproj
+*.vcxproj.*
+*.sln
+
+# Misc
+.idea/
+.vs/
