@@ -1,12 +1,12 @@
 import PythonPackageUtils
 
+PythonPackageUtils.AreRequiredPackagesInstalled()
+
 import colorama
 from colorama import Fore, Style
 
 import subprocess
 import sys
-
-PythonPackageUtils.AreRequiredPackagesInstalled()
 
 colorama.init()
 
