@@ -13,15 +13,19 @@ struct CApplicationSpecification
 class MOONLIGHT_API CApplication
 {
 public:
-    CApplication(const CApplicationSpecification& ApplicationSpecification = CApplicationSpecification());
+    CApplication(CApplicationSpecification ApplicationSpecification = CApplicationSpecification());
     virtual ~CApplication();
 
     void Start();
     void Close();
 
     static CApplication& GetInstance() { return *m_ApplicationInstance; }
+
+    const CApplicationSpecification& GetSpecification() const { return m_ApplicationSpecification; }
 private:
     static CApplication* m_ApplicationInstance;
+
+    CApplicationSpecification m_ApplicationSpecification;
 
     bool bIsRunning = true;
 };

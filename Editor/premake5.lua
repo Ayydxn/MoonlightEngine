@@ -17,6 +17,8 @@ project "Moonlight Editor"
 
     includedirs
     {
+        "%{IncludeDir.spdlog}",
+        
         "%{prj.location}/Source",
 
         "%{wks.location}/Engine/Source",

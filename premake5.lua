@@ -1,4 +1,5 @@
 include "./Scripts/Lua/PremakeUtils.lua"
+include "./Dependencies.lua"
 
 function firstToUpper(str)
     return (str:gsub("^%l", string.upper))
@@ -27,6 +28,11 @@ workspace "Moonlight Engine"
             "/EHsc",
             "/Zc:preprocessor",
             "/Zc:__cplusplus"
+        }
+    
+        disablewarnings
+        {
+            "4251"
         }
 
     filter "configurations:Debug"

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Application.h"
+#include "Logging/Logging.h"
 
 extern CApplication* CreateApplication(char** Arguments, int32 ArgumentCount);
 
@@ -9,6 +10,8 @@ inline int32 MoonlightMain(char** Arguments, int32 ArgumentCount)
     CApplication* Application = CreateApplication(Arguments, ArgumentCount);
     Application->Start();
     delete Application;
+
+    CLogging::Shutdown();
 
     return 0;
 }

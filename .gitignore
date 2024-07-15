@@ -3,6 +3,9 @@ Binaries/
 Intermediate/
 __pycache__
 
+# Moonlight Engine
+Editor/Logs/
+
 # Project Files
 *.vcxproj
 *.vcxproj.*

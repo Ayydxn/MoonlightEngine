@@ -3,15 +3,19 @@
 
 CApplication* CApplication::m_ApplicationInstance = nullptr;
 
-CApplication::CApplication(const CApplicationSpecification& ApplicationSpecification)
+CApplication::CApplication(CApplicationSpecification ApplicationSpecification)
+    : m_ApplicationSpecification(std::move(ApplicationSpecification))
 {
     m_ApplicationInstance = this;
     
-    printf("Hello from %s! (Powered by Moonlight Engine)", ApplicationSpecification.Name.c_str());
+    CLogging::Initialize();
+    
+    ENGINE_LOG_INFO_TAG("Core", "Initializing Moonlight Engine...");
 }
 
 CApplication::~CApplication()
 {
+    ENGINE_LOG_INFO_TAG("Core", "Shutting down...");
 }
 
 void CApplication::Start()
