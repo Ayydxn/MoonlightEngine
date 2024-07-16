@@ -8,26 +8,26 @@
 class CMouseButtonEvent : public IEvent
 {
 public:
-    uint32 GetMouseButton() const { return m_MouseButton; }
+    uint32 GetMouseButton() const { return m_MouseButton.GetKeyCode(); }
 
     SET_CLASS_EVENT_CATEGORY(InputCategory | MouseCategory | MouseButtonCategory)
 protected:
-    CMouseButtonEvent(const uint32 MouseButton)
+    CMouseButtonEvent(const CKey& MouseButton)
         : m_MouseButton(MouseButton) {}
 
-    uint32 m_MouseButton;
+    CKey m_MouseButton;
 };
 
 class CMouseButtonPressedEvent : public CMouseButtonEvent
 {
 public:
-    CMouseButtonPressedEvent(const uint32 MouseButton)
+    CMouseButtonPressedEvent(const CKey& MouseButton)
         : CMouseButtonEvent(MouseButton) {}
 
     std::string ToString() const override
     {
         std::stringstream StringStream;
-        StringStream << "MouseButtonPressedEvent: " << m_MouseButton;
+        StringStream << "MouseButtonPressedEvent: " << m_MouseButton.GetDisplayName();
         return StringStream.str();
     }
 
@@ -37,13 +37,13 @@ public:
 class CMouseButtonReleasedEvent : public CMouseButtonEvent
 {
 public:
-    CMouseButtonReleasedEvent(const uint32 MouseButton)
+    CMouseButtonReleasedEvent(const CKey& MouseButton)
         : CMouseButtonEvent(MouseButton) {}
 
     std::string ToString() const override
     {
         std::stringstream StringStream;
-        StringStream << "MouseButtonReleasedEvent: " << m_MouseButton;
+        StringStream << "MouseButtonReleasedEvent: " << m_MouseButton.GetDisplayName();
         return StringStream.str();
     }
 

@@ -1,6 +1,7 @@
 ﻿#include "MoonlightPCH.h"
 #include "Application.h"
 #include "Events/ApplicationEvents.h"
+#include "Input/Input.h"
 #include "Misc/CommandLineParser.h"
 
 CApplication* CApplication::m_ApplicationInstance = nullptr;
@@ -57,6 +58,8 @@ CApplication::CApplication(const CApplicationSpecification& ApplicationSpecifica
     m_ApplicationWindow = IWindow::Create(ApplicationWindowSpecification);
     m_ApplicationWindow->Initialize();
     m_ApplicationWindow->SetEventCallbackFunction([this](IEvent& Event) { return OnEvent(Event); });
+
+    CInput::Initialize();
     
     DispatchEvent<CApplicationInitializeEvent>();
 }
@@ -194,6 +197,9 @@ void CApplication::PopOverlay(CLayer* Overlay)
 
 void CApplication::ProcessEvents()
 {
+    CInput::TransitionPressedKeys();
+    CInput::TransitionPressedMouseButtons();
+    
     m_ApplicationWindow->ProcessEvents();
     
     std::scoped_lock<std::mutex> Lock(m_EventQueueMutex);
