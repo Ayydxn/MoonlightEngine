@@ -6,6 +6,7 @@
 #include "Events/Event.h"
 #include "Events/WindowEvents.h"
 #include "Layers/LayerStack.h"
+#include "Misc/CommandLineArguments.h"
 
 #include <mutex>
 #include <queue>
@@ -20,12 +21,14 @@ struct CApplicationSpecification
     bool bEnableVSync = true;
     bool bEnableWindowDecoration = true;
     bool bEnableWindowResizing = true;
+
+    CCommandLineArguments CommandLineArguments;
 };
 
 class MOONLIGHT_API CApplication
 {
 public:
-    CApplication(CApplicationSpecification ApplicationSpecification = CApplicationSpecification());
+    CApplication(const CApplicationSpecification& ApplicationSpecification = CApplicationSpecification());
     virtual ~CApplication();
 
     virtual void OnInitialize() {}
@@ -67,6 +70,7 @@ private:
     std::shared_ptr<IWindow> m_ApplicationWindow;
 
     CApplicationSpecification m_ApplicationSpecification;
+    CCommandLineArguments m_CommandLineArguments;
     CLayerStack m_LayerStack;
     
     std::mutex m_EventQueueMutex;

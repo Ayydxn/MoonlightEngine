@@ -27,6 +27,7 @@ CApplication* CreateApplication(char** Arguments, int32 ArgumentCount)
 {
     CApplicationSpecification MoonlightEditorApplicationSpecification;
     MoonlightEditorApplicationSpecification.Name = "Moonlight Editor";
+    MoonlightEditorApplicationSpecification.CommandLineArguments = CCommandLineArguments(Arguments, ArgumentCount);
 
     return new CMoonlightEditorApplication(MoonlightEditorApplicationSpecification);
 }

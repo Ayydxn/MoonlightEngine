@@ -248,6 +248,7 @@ void CDesktopWindow::SetWindowMode(EWindowMode NewWindowMode) const
             break;
         }
 
+        // TODO: (Ayydxn) This should also request the currently in use graphics API to start running in fullscreen exclusive.
         case EWindowMode::Fullscreen:
         {
             glfwSetWindowMonitor(m_WindowHandle, glfwGetPrimaryMonitor(), 0, 0, static_cast<int32>(m_Specification.Width),

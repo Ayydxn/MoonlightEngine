@@ -1,11 +1,12 @@
 ﻿#include "MoonlightPCH.h"
 #include "Application.h"
 #include "Events/ApplicationEvents.h"
+#include "Misc/CommandLineParser.h"
 
 CApplication* CApplication::m_ApplicationInstance = nullptr;
 
-CApplication::CApplication(CApplicationSpecification ApplicationSpecification)
-    : m_ApplicationSpecification(std::move(ApplicationSpecification))
+CApplication::CApplication(const CApplicationSpecification& ApplicationSpecification)
+    : m_ApplicationSpecification(ApplicationSpecification), m_CommandLineArguments(ApplicationSpecification.CommandLineArguments)
 {
     m_ApplicationInstance = this;
     
@@ -21,6 +22,37 @@ CApplication::CApplication(CApplicationSpecification ApplicationSpecification)
     ApplicationWindowSpecification.bEnableVSync = m_ApplicationSpecification.bEnableVSync;
     ApplicationWindowSpecification.bEnableDecoration = m_ApplicationSpecification.bEnableWindowDecoration;
     ApplicationWindowSpecification.bEnableResizing = m_ApplicationSpecification.bEnableWindowResizing;
+    
+    /*-----------------------------------------------------*/
+    /* -- Parsing window related command line arguments -- */
+    /*-----------------------------------------------------*/
+
+    if (CCommandLineParser::Param(m_CommandLineArguments, "windowed"))
+        ApplicationWindowSpecification.WindowMode = EWindowMode::Windowed;
+    
+    if (CCommandLineParser::Param(m_CommandLineArguments, "windowedFullscreen"))
+        ApplicationWindowSpecification.WindowMode = EWindowMode::WindowedFullscreen;
+    
+    if (CCommandLineParser::Param(m_CommandLineArguments, "fullscreen"))
+        ApplicationWindowSpecification.WindowMode = EWindowMode::Fullscreen;
+
+    if (ApplicationWindowSpecification.WindowMode == EWindowMode::Windowed || ApplicationWindowSpecification.WindowMode == EWindowMode::Fullscreen)
+    {
+        int32 CmdLineWindowWidth = 0;
+        int32 CmdLineWindowHeight = 0;
+
+        if (CCommandLineParser::Value(m_CommandLineArguments, "ResolutionX", &CmdLineWindowWidth))
+        {
+            if (CmdLineWindowWidth != 0)
+                ApplicationWindowSpecification.Width = CmdLineWindowWidth;
+        }
+
+        if (CCommandLineParser::Value(m_CommandLineArguments, "ResolutionY", &CmdLineWindowHeight))
+        {
+            if (CmdLineWindowHeight != 0)
+                ApplicationWindowSpecification.Height = CmdLineWindowHeight;
+        }
+    }
 
     m_ApplicationWindow = IWindow::Create(ApplicationWindowSpecification);
     m_ApplicationWindow->Initialize();
@@ -40,8 +72,6 @@ CApplication::~CApplication()
         Layer->OnDetach();
         delete Layer;
     }
-
-    DispatchEvent<CApplicationShutdownEvent>();
 }
 
 void CApplication::Start()
@@ -102,6 +132,8 @@ void CApplication::Start()
     }
 
     OnShutdown();
+
+    DispatchEvent<CApplicationShutdownEvent>();
 }
 
 void CApplication::Close()
