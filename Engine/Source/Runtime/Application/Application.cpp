@@ -35,28 +35,73 @@ CApplication::~CApplication()
 
     m_ApplicationWindow->SetEventCallbackFunction(nullptr);
 
+    for (CLayer* Layer : m_LayerStack)
+    {
+        Layer->OnDetach();
+        delete Layer;
+    }
+
     DispatchEvent<CApplicationShutdownEvent>();
 }
 
 void CApplication::Start()
 {
+    OnInitialize();
+    
     while (bIsRunning)
     {
+        /*-----------------*/
+        /* --  Updating -- */
+        /*-----------------*/
+        
+        OnUpdate();
+
+        for (CLayer* Layer : m_LayerStack)
+            Layer->OnUpdate();
+        
         ProcessEvents();
 
         DispatchEvent<CApplicationUpdateEvent>();
 
+        /*-----------------*/
+        /* -- Rendering -- */
+        /*-----------------*/
+
         if (!bIsWindowMinizmied)
         {
-            // TODO: (Ayydxn) Rendering operations go here in between an update and tick.
+            OnPreRender();
 
-          DispatchEvent<CApplicationRenderEvent>();
+            for (CLayer* Layer : m_LayerStack)
+                Layer->OnPreRender();
+
+            OnRender();
+
+            for (CLayer* Layer : m_LayerStack)
+                Layer->OnRender();
+
+            DispatchEvent<CApplicationRenderEvent>();
+
+            OnPostRender();
+
+            for (CLayer* Layer : m_LayerStack)
+                Layer->OnPostRender();
 
             m_ApplicationWindow->SwapBuffers();
         }
         
+        /*---------------*/
+        /* -- Ticking -- */
+        /*---------------*/
+
+        OnTick();
+
+        for (CLayer* Layer : m_LayerStack)
+            Layer->OnTick();
+
         DispatchEvent<CApplicationTickEvent>();
     }
+
+    OnShutdown();
 }
 
 void CApplication::Close()
@@ -69,6 +114,14 @@ void CApplication::OnEvent(IEvent& Event)
     CEventDispatcher EventDispatcher(Event);
     EventDispatcher.Dispatch<CWindowCloseEvent>([this](const CWindowCloseEvent&) { return OnWindowClose(); });
     EventDispatcher.Dispatch<CWindowMinimizeEvent>([this](const CWindowMinimizeEvent& WindowMinimizeEvent) { return OnWindowMinimized(WindowMinimizeEvent); });
+
+    for (const auto& Layer : m_LayerStack)
+    {
+        Layer->OnEvent(Event);
+
+        if (Event.bIsHandled)
+            break;
+    }
 }
 
 template<typename Event, typename ... EventArgs>
@@ -85,6 +138,26 @@ void CApplication::QueueEvent(EventFunction&& EventFunc)
 {
     std::scoped_lock<std::mutex> Lock(m_EventQueueMutex);
     m_EventQueue.push(EventFunc);
+}
+
+void CApplication::PushLayer(CLayer* Layer)
+{
+    m_LayerStack.PushLayer(Layer);
+}
+
+void CApplication::PushOverlay(CLayer* Overlay)
+{
+    m_LayerStack.PushOverlay(Overlay);
+}
+
+void CApplication::PopLayer(CLayer* Layer)
+{
+    m_LayerStack.PopLayer(Layer);
+}
+
+void CApplication::PopOverlay(CLayer* Overlay)
+{
+    m_LayerStack.PopOverlay(Overlay);
 }
 
 void CApplication::ProcessEvents()

@@ -5,6 +5,7 @@
 #include "Core/CoreTypes.h"
 #include "Events/Event.h"
 #include "Events/WindowEvents.h"
+#include "Layers/LayerStack.h"
 
 #include <mutex>
 #include <queue>
@@ -27,7 +28,14 @@ public:
     CApplication(CApplicationSpecification ApplicationSpecification = CApplicationSpecification());
     virtual ~CApplication();
 
+    virtual void OnInitialize() {}
+    virtual void OnUpdate() {}
     virtual void OnEvent(IEvent& Event);
+    virtual void OnPreRender() {}
+    virtual void OnRender() {}
+    virtual void OnPostRender() {}
+    virtual void OnTick() {}
+    virtual void OnShutdown() {}
     
     void Start();
     void Close();
@@ -38,6 +46,11 @@ public:
     template<typename EventFunction>
     void QueueEvent(EventFunction&& EventFunc);
 
+    void PushLayer(CLayer* Layer);
+    void PushOverlay(CLayer* Overlay);
+    void PopLayer(CLayer* Layer);
+    void PopOverlay(CLayer* Overlay);
+    
     static CApplication& GetInstance() { return *m_ApplicationInstance; }
 
     const IWindow& GetWindow() const { return *m_ApplicationWindow; }
@@ -54,7 +67,8 @@ private:
     std::shared_ptr<IWindow> m_ApplicationWindow;
 
     CApplicationSpecification m_ApplicationSpecification;
-
+    CLayerStack m_LayerStack;
+    
     std::mutex m_EventQueueMutex;
     std::queue<std::function<void()>> m_EventQueue;
 
