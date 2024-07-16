@@ -7,8 +7,7 @@ python --version > NUL
 if ERRORLEVEL 1 goto PythonNotInstalledError
 
 REM Execution of all the appropriate scripts necessary for setting up Moonlight to be built and run.
-cd Scripts
-call py Python\Setup.py
+call py Scripts\Python\Setup.py
 
 PAUSE
 exit /b 0

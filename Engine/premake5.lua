@@ -20,10 +20,16 @@ project "Moonlight Engine"
     includedirs
     {
         "%{IncludeDir.spdlog}",
+        "%{IncludeDir.GLFW}",
         
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",
         "%{prj.location}/Source/Runtime/Core"
+    }
+
+    links
+    {
+        "GLFW"
     }
 
     defines

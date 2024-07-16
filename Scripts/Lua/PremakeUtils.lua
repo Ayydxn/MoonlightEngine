@@ -1,7 +1,7 @@
 ﻿function getProjectBinariesDir(projectName)
-    return "../Binaries/" .. projectName .. "/%{cfg.buildcfg}-" .. firstToUpper(os.target()) .. "-%{cfg.architecture}"
+    return "%{wks.location}/Binaries/" .. projectName .. "/%{cfg.buildcfg}-" .. firstToUpper(os.target()) .. "-%{cfg.architecture}"
 end
 
 function getProjectIntermediateDir(projectName)
-    return "../Intermediate/" .. projectName .. "/%{cfg.buildcfg}-" .. firstToUpper(os.target()) .. "-%{cfg.architecture}"
+    return "%{wks.location}/Intermediate/" .. projectName .. "/%{cfg.buildcfg}-" .. firstToUpper(os.target()) .. "-%{cfg.architecture}"
 end

@@ -47,6 +47,10 @@ workspace "Moonlight Engine"
 		optimize "Full"
 		symbols "Off"
 
+group "Dependencies"
+    include "Engine/ThirdParty/GLFW"
+group ""
+
 group "Core"
     include "Engine"
 group ""

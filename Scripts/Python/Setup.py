@@ -12,4 +12,4 @@ colorama.init()
 
 if (sys.platform == "win32"):
     print(f"{Fore.GREEN}Running setup for Windows...{Style.RESET_ALL}")
-    subprocess.check_call(["py", "Python/Windows/Setup-Windows.py"])
+    subprocess.check_call(["py", "Scripts/Python/Windows/Setup-Windows.py"])

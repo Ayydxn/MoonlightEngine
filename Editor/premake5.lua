@@ -33,7 +33,8 @@ project "Moonlight Editor"
 
     postbuildcommands
     {
-        '{COPYFILE} "%{getProjectBinariesDir("Engine")}/*.dll" "%{cfg.buildtarget.directory}"'
+        '{COPYFILE} "%{getProjectBinariesDir("Engine")}/*.dll" "%{cfg.buildtarget.directory}"',
+        '{COPYFILE} "%{getProjectBinariesDir("GLFW")}/*.dll" "%{cfg.buildtarget.directory}"'
     }
 
     filter "system:windows"
