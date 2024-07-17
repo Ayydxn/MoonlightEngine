@@ -65,7 +65,7 @@ private:
     bool OnWindowClose();
     bool OnWindowMinimized(const CWindowMinimizeEvent& WindowMinimizeEvent);
 private:
-    static CApplication* m_ApplicationInstance;
+    inline static CApplication* m_ApplicationInstance = nullptr;
 
     std::shared_ptr<IWindow> m_ApplicationWindow;
 

@@ -3,8 +3,7 @@
 #include "Events/ApplicationEvents.h"
 #include "Input/Input.h"
 #include "Misc/CommandLineParser.h"
-
-CApplication* CApplication::m_ApplicationInstance = nullptr;
+#include "Renderer/Renderer.h"
 
 CApplication::CApplication(const CApplicationSpecification& ApplicationSpecification)
     : m_ApplicationSpecification(ApplicationSpecification), m_CommandLineArguments(ApplicationSpecification.CommandLineArguments)
@@ -14,6 +13,8 @@ CApplication::CApplication(const CApplicationSpecification& ApplicationSpecifica
     CLogging::Initialize();
     
     ENGINE_LOG_INFO_TAG("Core", "Initializing Moonlight Engine...");
+
+    CRenderer::PreInitialize();
 
     CWindowSpecification ApplicationWindowSpecification;
     ApplicationWindowSpecification.Title = m_ApplicationSpecification.Name;
@@ -60,6 +61,7 @@ CApplication::CApplication(const CApplicationSpecification& ApplicationSpecifica
     m_ApplicationWindow->SetEventCallbackFunction([this](IEvent& Event) { return OnEvent(Event); });
 
     CInput::Initialize();
+    CRenderer::Initialize();
     
     DispatchEvent<CApplicationInitializeEvent>();
 }
@@ -75,6 +77,12 @@ CApplication::~CApplication()
         Layer->OnDetach();
         delete Layer;
     }
+
+    // Clearing the event queue.
+    // This also ensures that we free the memory used by it.
+    std::queue<std::function<void()>>().swap(m_EventQueue);
+
+    CRenderer::Shutdown();
 }
 
 void CApplication::Start()
@@ -107,6 +115,8 @@ void CApplication::Start()
             for (CLayer* Layer : m_LayerStack)
                 Layer->OnPreRender();
 
+            CRenderer::BeginFrame();
+
             OnRender();
 
             for (CLayer* Layer : m_LayerStack)
@@ -114,6 +124,8 @@ void CApplication::Start()
 
             DispatchEvent<CApplicationRenderEvent>();
 
+            CRenderer::EndFrame();
+            
             OnPostRender();
 
             for (CLayer* Layer : m_LayerStack)

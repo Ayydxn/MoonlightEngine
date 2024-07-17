@@ -4,6 +4,7 @@
 #include "Events/MouseEvents.h"
 #include "Events/WindowEvents.h"
 #include "Input/Input.h"
+#include "Renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
 
@@ -37,10 +38,12 @@ void CDesktopWindow::Initialize()
     }
 
     glfwDefaultWindowHints();
-
     glfwWindowHint(GLFW_DECORATED, m_Specification.bEnableDecoration);
     glfwWindowHint(GLFW_RESIZABLE, m_Specification.bEnableResizing);
 
+    if (CRenderer::GetGraphcisAPI() != EGraphicsAPI::OpenGL)
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    
     m_WindowHandle = glfwCreateWindow(static_cast<int32>(m_Specification.Width), static_cast<int32>(m_Specification.Height),
         m_Specification.Title.c_str(), nullptr, nullptr);
     
