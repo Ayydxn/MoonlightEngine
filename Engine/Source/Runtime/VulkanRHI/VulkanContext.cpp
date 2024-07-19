@@ -59,6 +59,8 @@ CVulkanContext::CVulkanContext(void* WindowHandle)
 
 CVulkanContext::~CVulkanContext()
 {
+    m_VulkanSwapChain->Destroy();
+    
     m_LogicalDevice->Destroy();
     
     if (bEnableValidationLayers)
@@ -130,16 +132,23 @@ void CVulkanContext::Initialize()
     m_LogicalDevice = std::make_shared<CVulkanLogicalDevice>(m_PhysicalDevice);
 
     VULKAN_HPP_DEFAULT_DISPATCHER.init(m_LogicalDevice->GetHandle());
+
+    uint32 WindowWidth = CApplication::GetInstance().GetWindow().GetWidth();
+    uint32 WindowHeight = CApplication::GetInstance().GetWindow().GetHeight();
+
+    m_VulkanSwapChain = std::make_shared<CVulkanSwapChain>();
+    m_VulkanSwapChain->Initialize(m_VulkanInstance, m_PhysicalDevice->GetHandle(), m_LogicalDevice->GetHandle());
+    m_VulkanSwapChain->Create(&WindowWidth, &WindowHeight, CApplication::GetInstance().GetWindow().IsVSyncEnabled());
 }
 
 void CVulkanContext::SwapBuffers()
 {
-    // TODO: (Ayydxn) Implement.
+    m_VulkanSwapChain->Present();
 }
 
 void CVulkanContext::SetVSync(bool bEnableVSync)
 {
-    // TODO: (Ayydxn) Implement.
+    m_VulkanSwapChain->EnableVSync(bEnableVSync);
 }
 
 // (Ayydxn) Thanks Godot <3 (https://github.com/godotengine/godot/blob/master/drivers/vulkan/rendering_context_driver_vulkan.cpp#L163)

@@ -2,6 +2,7 @@
 
 #include "VulkanDevice.h"
 #include "VulkanIncludes.h"
+#include "VulkanSwapChain.h"
 #include "RHICore/RendererContext.h"
 
 class CVulkanContext : public IRendererContext 
@@ -26,6 +27,7 @@ private:
     
     std::shared_ptr<CVulkanPhysicalDevice> m_PhysicalDevice;
     std::shared_ptr<CVulkanLogicalDevice> m_LogicalDevice;
+    std::shared_ptr<CVulkanSwapChain> m_VulkanSwapChain;
     
     vk::Instance m_VulkanInstance;
     vk::DebugUtilsMessengerEXT m_DebugMessenger;

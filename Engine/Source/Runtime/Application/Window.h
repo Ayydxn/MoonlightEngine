@@ -59,7 +59,7 @@ public:
 
     static std::shared_ptr<IWindow> Create(const CWindowSpecification& Specification = CWindowSpecification());
 protected:
-    struct FWindowState
+    struct CWindowState
     {
         std::string Title;
         uint32 Width, Height;
@@ -71,6 +71,6 @@ protected:
         EventCallbackFunction EventCallbackFunc;
     };
 protected:
-    inline static FWindowState m_WindowState = {};
+    inline static CWindowState m_WindowState = {};
     inline static CWindowSpecification m_Specification = {}; 
 };

@@ -56,7 +56,7 @@ public:
     
     static CApplication& GetInstance() { return *m_ApplicationInstance; }
 
-    const IWindow& GetWindow() const { return *m_ApplicationWindow; }
+    IWindow& GetWindow() const { return *m_ApplicationWindow; }
     
     const CApplicationSpecification& GetSpecification() const { return m_ApplicationSpecification; }
 private:

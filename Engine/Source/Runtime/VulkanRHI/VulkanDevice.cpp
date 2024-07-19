@@ -10,9 +10,24 @@ const std::vector<const char*> RequiredPhysicalDeviceExtensions
     VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME
 };
 
-bool CQueueFamilyIndices::IsComplete() const
+CQueueFamilyIndices CQueueFamilyIndices::FindQueueFamilies(const vk::PhysicalDevice& PhysicalDevice)
 {
-    return GraphicsFamily != -1;
+    CQueueFamilyIndices QueueFamilyIndices = {};
+
+    const auto QueueFamilyProperties = PhysicalDevice.getQueueFamilyProperties();
+    int32 QueueFamilyIndex = 0;
+
+    for (int i = 0; i < static_cast<int32>(QueueFamilyProperties.size()) || !QueueFamilyIndices.IsComplete(); i++)
+    {
+        const auto& QueueFamilyProperty = QueueFamilyProperties[i];
+        
+        if ((QueueFamilyProperty.queueFlags & vk::QueueFlagBits::eGraphics) == vk::QueueFlagBits::eGraphics)
+            QueueFamilyIndices.GraphicsFamily = QueueFamilyIndex;
+
+        QueueFamilyIndex++;
+    }
+    
+    return QueueFamilyIndices;
 }
 
 CVulkanPhysicalDevice::CVulkanPhysicalDevice(const vk::Instance& VulkanInstance)
@@ -38,26 +53,6 @@ CVulkanPhysicalDevice::CVulkanPhysicalDevice(const vk::Instance& VulkanInstance)
     ENGINE_LOG_INFO_TAG("Renderer", "   Vendor: {}", GetPhysicalDeviceVendorName(PhysicalDeviceProperties.vendorID));
     ENGINE_LOG_INFO_TAG("Renderer", "   Driver Version: {}", UnpackDriverVersion(PhysicalDeviceProperties.vendorID, PhysicalDeviceProperties.driverVersion));
     ENGINE_LOG_INFO_TAG("Renderer", "   Vulkan API Version: {}", UnpackVulkanAPIVersion(PhysicalDeviceProperties.apiVersion));
-}
-
-CQueueFamilyIndices CVulkanPhysicalDevice::FindQueueFamilies() const
-{
-    CQueueFamilyIndices QueueFamilyIndices = {};
-
-    const auto QueueFamilyProperties = m_PhysicalDevice.getQueueFamilyProperties();
-    int32 QueueFamilyIndex = 0;
-
-    for (int i = 0; i < static_cast<int32>(QueueFamilyProperties.size()) || !QueueFamilyIndices.IsComplete(); i++)
-    {
-        const auto& QueueFamilyProperty = QueueFamilyProperties[i];
-        
-        if ((QueueFamilyProperty.queueFlags & vk::QueueFlagBits::eGraphics) == vk::QueueFlagBits::eGraphics)
-            QueueFamilyIndices.GraphicsFamily = QueueFamilyIndex;
-
-        QueueFamilyIndex++;
-    }
-    
-    return QueueFamilyIndices;
 }
 
 bool CVulkanPhysicalDevice::IsPhysicalDeviceSuitable(const vk::PhysicalDevice& PhysicalDevice)
@@ -133,7 +128,7 @@ std::string CVulkanPhysicalDevice::UnpackVulkanAPIVersion(int32 VulkanAPIVersion
 
 CVulkanLogicalDevice::CVulkanLogicalDevice(const std::shared_ptr<CVulkanPhysicalDevice>& PhysicalDevice)
 {
-    const CQueueFamilyIndices QueueFamilyIndices = PhysicalDevice->FindQueueFamilies();
+    const CQueueFamilyIndices QueueFamilyIndices = CQueueFamilyIndices::FindQueueFamilies(PhysicalDevice->GetHandle());
     const auto AvailableValidationLayers = CVulkanContext::GetAvailableValidationLayers();
     const std::set<uint32> QueueFamilies = { QueueFamilyIndices.GraphicsFamily };
     constexpr float QueuePriority = 1.0f;
@@ -155,8 +150,8 @@ CVulkanLogicalDevice::CVulkanLogicalDevice(const std::shared_ptr<CVulkanPhysical
     LogicalDeviceCreateInfo.sType = vk::StructureType::eDeviceCreateInfo;
     LogicalDeviceCreateInfo.queueCreateInfoCount = static_cast<uint32>(DeviceQueueCreateInfos.size());
     LogicalDeviceCreateInfo.pQueueCreateInfos = DeviceQueueCreateInfos.data();
-    LogicalDeviceCreateInfo.enabledExtensionCount = 0;
-    LogicalDeviceCreateInfo.ppEnabledExtensionNames = nullptr;
+    LogicalDeviceCreateInfo.enabledExtensionCount = static_cast<uint32>(RequiredPhysicalDeviceExtensions.size());
+    LogicalDeviceCreateInfo.ppEnabledExtensionNames = RequiredPhysicalDeviceExtensions.data();
     LogicalDeviceCreateInfo.enabledLayerCount = 0;
     LogicalDeviceCreateInfo.ppEnabledLayerNames = nullptr;
     LogicalDeviceCreateInfo.flags = vk::DeviceCreateFlags();

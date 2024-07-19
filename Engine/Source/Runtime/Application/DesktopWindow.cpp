@@ -54,8 +54,6 @@ void CDesktopWindow::Initialize()
     m_RendererContext = IRendererContext::Create(m_WindowHandle);
     m_RendererContext->Initialize();
 
-    EnableVSync(m_Specification.bEnableVSync);
-
     if (glfwRawMouseMotionSupported())
         glfwSetInputMode(m_WindowHandle, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
     else
@@ -65,7 +63,7 @@ void CDesktopWindow::Initialize()
 
     glfwSetKeyCallback(m_WindowHandle, [](GLFWwindow* Window, int32 Key, int32 Scancode, int32 Action, int32 Modifiers)
     {
-        const auto& WindowState = *static_cast<FWindowState*>(glfwGetWindowUserPointer(Window));
+        const auto& WindowState = *static_cast<CWindowState*>(glfwGetWindowUserPointer(Window));
 
         switch (Action)
         {
@@ -106,7 +104,7 @@ void CDesktopWindow::Initialize()
 
     glfwSetCharCallback(m_WindowHandle, [](GLFWwindow* Window, uint32 Codepoint)
     {
-        const auto& WindowState = *static_cast<FWindowState*>(glfwGetWindowUserPointer(Window));
+        const auto& WindowState = *static_cast<CWindowState*>(glfwGetWindowUserPointer(Window));
 
         CKeyTypedEvent KeyTypedEvent(Codepoint);
         WindowState.EventCallbackFunc(KeyTypedEvent);
@@ -114,7 +112,7 @@ void CDesktopWindow::Initialize()
 
     glfwSetMouseButtonCallback(m_WindowHandle, [](GLFWwindow* Window, int32 Button, int32 Action, int32 Modifiers)
     {
-        const auto& WindowState = *static_cast<FWindowState*>(glfwGetWindowUserPointer(Window));
+        const auto& WindowState = *static_cast<CWindowState*>(glfwGetWindowUserPointer(Window));
 
         switch (Action)
         {
@@ -145,7 +143,7 @@ void CDesktopWindow::Initialize()
 
     glfwSetCursorPosCallback(m_WindowHandle, [](GLFWwindow* Window, double XPosition, double YPosition)
     {
-        const auto& WindowState = *static_cast<FWindowState*>(glfwGetWindowUserPointer(Window));
+        const auto& WindowState = *static_cast<CWindowState*>(glfwGetWindowUserPointer(Window));
 
         CMouseMovedEvent MouseMovedEvent(static_cast<float>(XPosition), static_cast<float>(YPosition));
         WindowState.EventCallbackFunc(MouseMovedEvent);
@@ -153,7 +151,7 @@ void CDesktopWindow::Initialize()
 
     glfwSetScrollCallback(m_WindowHandle, [](GLFWwindow* Window, double XScroll, double YScroll)
     {
-        const auto& WindowState = *static_cast<FWindowState*>(glfwGetWindowUserPointer(Window));
+        const auto& WindowState = *static_cast<CWindowState*>(glfwGetWindowUserPointer(Window));
 
         CMouseScrolledEvent MouseScrolledEvent(static_cast<float>(XScroll), static_cast<float>(YScroll));
         WindowState.EventCallbackFunc(MouseScrolledEvent);
@@ -161,7 +159,7 @@ void CDesktopWindow::Initialize()
 
     glfwSetWindowCloseCallback(m_WindowHandle, [](GLFWwindow* Window)
     {
-        const auto& WindowState = *static_cast<FWindowState*>(glfwGetWindowUserPointer(Window));
+        const auto& WindowState = *static_cast<CWindowState*>(glfwGetWindowUserPointer(Window));
 
         CWindowCloseEvent WindowCloseEvent;
         WindowState.EventCallbackFunc(WindowCloseEvent);
@@ -169,7 +167,7 @@ void CDesktopWindow::Initialize()
 
     glfwSetWindowIconifyCallback(m_WindowHandle, [](GLFWwindow* Window, int32 Minimized)
     {
-        const auto& WindowState = *static_cast<FWindowState*>(glfwGetWindowUserPointer(Window));
+        const auto& WindowState = *static_cast<CWindowState*>(glfwGetWindowUserPointer(Window));
 
         CWindowMinimizeEvent WindowMinimizeEvent(Minimized == GLFW_TRUE ? true : false);
         WindowState.EventCallbackFunc(WindowMinimizeEvent);
@@ -177,7 +175,7 @@ void CDesktopWindow::Initialize()
 
     glfwSetWindowSizeCallback(m_WindowHandle, [](GLFWwindow* Window, int32 Width, int32 Height)
     {
-        const auto& WindowState = *static_cast<FWindowState*>(glfwGetWindowUserPointer(Window));
+        const auto& WindowState = *static_cast<CWindowState*>(glfwGetWindowUserPointer(Window));
 
         CWindowResizeEvent WindowResizeEvent(Width, Height);
         WindowState.EventCallbackFunc(WindowResizeEvent);
@@ -185,7 +183,7 @@ void CDesktopWindow::Initialize()
 
     glfwSetWindowPosCallback(m_WindowHandle, [](GLFWwindow* Window, int32 XPosition, int32 YPosition)
     {
-        const auto& WindowState = *static_cast<FWindowState*>(glfwGetWindowUserPointer(Window));
+        const auto& WindowState = *static_cast<CWindowState*>(glfwGetWindowUserPointer(Window));
 
         CWindowMovedEvent WindowMovedEvent(XPosition, YPosition);
         WindowState.EventCallbackFunc(WindowMovedEvent);
@@ -193,7 +191,7 @@ void CDesktopWindow::Initialize()
 
     glfwSetWindowFocusCallback(m_WindowHandle, [](GLFWwindow* Window, int32 Focused)
     {
-        const auto& WindowState = *static_cast<FWindowState*>(glfwGetWindowUserPointer(Window));
+        const auto& WindowState = *static_cast<CWindowState*>(glfwGetWindowUserPointer(Window));
 
         if (Focused == GLFW_TRUE)
         {

@@ -5,17 +5,20 @@
 
 struct CQueueFamilyIndices
 {
-    uint32 GraphicsFamily = static_cast<uint32>(-1);
+    static CQueueFamilyIndices FindQueueFamilies(const vk::PhysicalDevice& PhysicalDevice);
 
-    bool IsComplete() const;
+    bool IsComplete() const
+    {
+        return GraphicsFamily != -1;
+    }
+
+    uint32 GraphicsFamily = static_cast<uint32>(-1);
 };
 
 class CVulkanPhysicalDevice
 {
 public:
     CVulkanPhysicalDevice(const vk::Instance& VulkanInstance);
-    
-    CQueueFamilyIndices FindQueueFamilies() const;
     
     const vk::PhysicalDevice& GetHandle() const { return m_PhysicalDevice; }
 private:
