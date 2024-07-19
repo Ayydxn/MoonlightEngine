@@ -1,9 +1,8 @@
 ﻿#pragma once
 
+#include "VulkanDevice.h"
+#include "VulkanIncludes.h"
 #include "RHICore/RendererContext.h"
-
-#define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
-#include <vulkan/vulkan.hpp>
 
 class CVulkanContext : public IRendererContext 
 {
@@ -14,13 +13,20 @@ public:
     void Initialize() override;
     void SwapBuffers() override;
     void SetVSync(bool bEnableVSync) override;
+
+    static std::vector<const char*> GetAvailableValidationLayers();
+    static bool AreValidationLayersEnabled();
 private:
     void CreateDebugMessenger();
     void PopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& DebugMessengerCreateInfo);
     
     std::vector<const char*> GetRequiredInstanceExtensions();
-    std::vector<const char*> GetAvailableValidationLayers();
 private:
+    inline static bool bEnableValidationLayers;
+    
+    std::shared_ptr<CVulkanPhysicalDevice> m_PhysicalDevice;
+    std::shared_ptr<CVulkanLogicalDevice> m_LogicalDevice;
+    
     vk::Instance m_VulkanInstance;
     vk::DebugUtilsMessengerEXT m_DebugMessenger;
     

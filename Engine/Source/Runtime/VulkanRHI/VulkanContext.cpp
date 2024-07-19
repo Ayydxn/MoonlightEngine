@@ -6,12 +6,6 @@
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
-#if defined(MOONLIGHT_BUILD_DEBUG) || defined(MOONLIGHT_BUILD_RELEASE)
-    constexpr bool bEnableValidationLayers = true;
-#else
-    constexpr bool bEnableValidationLayers = false;
-#endif
-
 static VKAPI_ATTR VkBool32 VKAPI_CALL DebugMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity, VkDebugUtilsMessageTypeFlagsEXT MessageType,
     const VkDebugUtilsMessengerCallbackDataEXT* CallbackData, void*)
 {
@@ -54,10 +48,19 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL DebugMessengerCallback(VkDebugUtilsMessage
 }
 
 CVulkanContext::CVulkanContext(void* WindowHandle)
-    : m_WindowHandle(WindowHandle) {}
+    : m_WindowHandle(WindowHandle)
+{
+    #if defined(MOONLIGHT_BUILD_DEBUG) || defined(MOONLIGHT_BUILD_RELEASE)
+        bEnableValidationLayers = true;
+    #else
+        bEnableValidationLayers = false;
+    #endif
+}
 
 CVulkanContext::~CVulkanContext()
 {
+    m_LogicalDevice->Destroy();
+    
     if (bEnableValidationLayers)
         m_VulkanInstance.destroyDebugUtilsMessengerEXT(m_DebugMessenger);
     
@@ -106,7 +109,7 @@ void CVulkanContext::Initialize()
         }
         else
         {
-            ENGINE_LOG_WARN_TAG("Renderer", "No validation layers were found by the Vulkan Loader. Validation will be unavailable.");
+            ENGINE_LOG_WARN_TAG("Renderer", "No validation layers were found by the Vulkan Loader. Validation will be unavailable. (VkInstance)");
         }
     }
     
@@ -122,6 +125,11 @@ void CVulkanContext::Initialize()
     VULKAN_HPP_DEFAULT_DISPATCHER.init(m_VulkanInstance);
 
     CreateDebugMessenger();
+
+    m_PhysicalDevice = std::make_shared<CVulkanPhysicalDevice>(m_VulkanInstance);
+    m_LogicalDevice = std::make_shared<CVulkanLogicalDevice>(m_PhysicalDevice);
+
+    VULKAN_HPP_DEFAULT_DISPATCHER.init(m_LogicalDevice->GetHandle());
 }
 
 void CVulkanContext::SwapBuffers()
@@ -132,51 +140,6 @@ void CVulkanContext::SwapBuffers()
 void CVulkanContext::SetVSync(bool bEnableVSync)
 {
     // TODO: (Ayydxn) Implement.
-}
-
-void CVulkanContext::CreateDebugMessenger()
-{
-    if (!bEnableValidationLayers)
-        return;
-
-    vk::DebugUtilsMessengerCreateInfoEXT DebugMessengerCreateInfo;
-    PopulateDebugMessengerCreateInfo(DebugMessengerCreateInfo);
-
-    try
-    {
-        m_DebugMessenger = m_VulkanInstance.createDebugUtilsMessengerEXT(DebugMessengerCreateInfo);
-    }
-    catch (const vk::SystemError& VulkanSystemError)
-    {
-        ENGINE_LOG_ERROR_TAG("Renderer", "Failed to create Vulkan debug messenger! ({})", VulkanSystemError.what());
-    }
-}
-
-void CVulkanContext::PopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& DebugMessengerCreateInfo)
-{
-    DebugMessengerCreateInfo.sType = vk::StructureType::eDebugUtilsMessengerCreateInfoEXT;
-    DebugMessengerCreateInfo.messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
-    DebugMessengerCreateInfo.messageType = vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation;
-    DebugMessengerCreateInfo.pfnUserCallback = DebugMessengerCallback;
-    DebugMessengerCreateInfo.pUserData = nullptr;
-    DebugMessengerCreateInfo.flags = vk::DebugUtilsMessengerCreateFlagsEXT();
-}
-
-std::vector<const char*> CVulkanContext::GetRequiredInstanceExtensions()
-{
-    uint32 GLFWExtensionCount = 0;
-    const char** GLFWExtensions = glfwGetRequiredInstanceExtensions(&GLFWExtensionCount);
-
-    auto RequiredInstanceExtensions = std::vector(GLFWExtensions, GLFWExtensions + GLFWExtensionCount);
-    
-    if (bEnableValidationLayers)
-        RequiredInstanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-
-    #ifdef MOONLIGHT_PLATFORM_MAC
-        RequiredInstanceExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-    #endif
- 
-    return RequiredInstanceExtensions;
 }
 
 // (Ayydxn) Thanks Godot <3 (https://github.com/godotengine/godot/blob/master/drivers/vulkan/rendering_context_driver_vulkan.cpp#L163)
@@ -224,4 +187,54 @@ std::vector<const char*> CVulkanContext::GetAvailableValidationLayers()
     }
     
     return AvailableValidationLayers;
+}
+
+bool CVulkanContext::AreValidationLayersEnabled()
+{
+    return bEnableValidationLayers;
+}
+
+void CVulkanContext::CreateDebugMessenger()
+{
+    if (!bEnableValidationLayers)
+        return;
+
+    vk::DebugUtilsMessengerCreateInfoEXT DebugMessengerCreateInfo;
+    PopulateDebugMessengerCreateInfo(DebugMessengerCreateInfo);
+
+    try
+    {
+        m_DebugMessenger = m_VulkanInstance.createDebugUtilsMessengerEXT(DebugMessengerCreateInfo);
+    }
+    catch (const vk::SystemError& VulkanSystemError)
+    {
+        ENGINE_LOG_ERROR_TAG("Renderer", "Failed to create Vulkan debug messenger! ({})", VulkanSystemError.what());
+    }
+}
+
+void CVulkanContext::PopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& DebugMessengerCreateInfo)
+{
+    DebugMessengerCreateInfo.sType = vk::StructureType::eDebugUtilsMessengerCreateInfoEXT;
+    DebugMessengerCreateInfo.messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
+    DebugMessengerCreateInfo.messageType = vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation;
+    DebugMessengerCreateInfo.pfnUserCallback = DebugMessengerCallback;
+    DebugMessengerCreateInfo.pUserData = nullptr;
+    DebugMessengerCreateInfo.flags = vk::DebugUtilsMessengerCreateFlagsEXT();
+}
+
+std::vector<const char*> CVulkanContext::GetRequiredInstanceExtensions()
+{
+    uint32 GLFWExtensionCount = 0;
+    const char** GLFWExtensions = glfwGetRequiredInstanceExtensions(&GLFWExtensionCount);
+
+    auto RequiredInstanceExtensions = std::vector(GLFWExtensions, GLFWExtensions + GLFWExtensionCount);
+    
+    if (bEnableValidationLayers)
+        RequiredInstanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
+    #ifdef MOONLIGHT_PLATFORM_MAC
+        RequiredInstanceExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+    #endif
+ 
+    return RequiredInstanceExtensions;
 }
