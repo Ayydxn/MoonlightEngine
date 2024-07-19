@@ -48,8 +48,6 @@ void CVulkanSwapChain::Initialize(const vk::Instance& VulkanInstance, const vk::
 void CVulkanSwapChain::Create(uint32* Width, uint32* Height, bool bEnableVSync)
 {
     verifyEnginef(bIsInitialized, "You must initialize a Vulkan swap chain before creating it!")
-
-    ENGINE_LOG_DEBUG_TAG("Renderer", "Creating Swap Chain ({} x {} - {})", *Width, *Height, bEnableVSync ? "VSync" : "No VSync");
     
     m_SwapChainState.bIsVSyncEnabled = bEnableVSync;
 
