@@ -7,11 +7,6 @@ class CMoonlightEditorLayer : public CLayer
 public:
     CMoonlightEditorLayer()
         : CLayer("Moonlight Editor Layer") {}
-
-    void OnAttach() override
-    {
-        APPLICATION_LOG_INFO_TAG("Core", "Hello from the Moonlight Editor Layer!");
-    }
 };
 
 class CMoonlightEditorApplication : public CApplication

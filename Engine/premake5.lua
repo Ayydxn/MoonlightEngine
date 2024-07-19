@@ -21,6 +21,7 @@ project "Moonlight Engine"
     {
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.GLFW}",
+        "%{IncludeDir.Vulkan}",
         
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",

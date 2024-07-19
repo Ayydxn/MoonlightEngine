@@ -23,3 +23,18 @@ void CRenderer::BeginFrame()
 void CRenderer::EndFrame()
 {
 }
+
+std::string CRenderer::GetGraphicsAPIString()
+{
+    switch (m_GraphicsAPI)
+    {
+        case EGraphicsAPI::OpenGL: return "OpenGL";
+        case EGraphicsAPI::Vulkan: return "Vulkan";
+        case EGraphicsAPI::Direct3D11: return "DirectX 11";
+        case EGraphicsAPI::Direct3D12: return "DirectX 12";
+        case EGraphicsAPI::Metal: return "Metal";
+        default: verifyEnginef(false, "Failed to get string for unknown/unsupported graphics API");
+    }
+
+    return "Unknown Graphics API";
+}

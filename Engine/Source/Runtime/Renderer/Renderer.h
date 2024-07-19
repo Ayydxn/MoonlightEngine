@@ -19,7 +19,8 @@ public:
     static void BeginFrame();
     static void EndFrame();
 
-    static EGraphicsAPI GetGraphcisAPI() { return m_GraphicsAPI; }
+    static EGraphicsAPI GetGraphicsAPI() { return m_GraphicsAPI; }
+    static std::string GetGraphicsAPIString();
     static void SetGraphicsAPI(EGraphicsAPI NewGraphicsAPI) { m_GraphicsAPI = NewGraphicsAPI; }
 private:
     inline static EGraphicsAPI m_GraphicsAPI;

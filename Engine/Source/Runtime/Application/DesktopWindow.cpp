@@ -41,7 +41,7 @@ void CDesktopWindow::Initialize()
     glfwWindowHint(GLFW_DECORATED, m_Specification.bEnableDecoration);
     glfwWindowHint(GLFW_RESIZABLE, m_Specification.bEnableResizing);
 
-    if (CRenderer::GetGraphcisAPI() != EGraphicsAPI::OpenGL)
+    if (CRenderer::GetGraphicsAPI() != EGraphicsAPI::OpenGL)
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     
     m_WindowHandle = glfwCreateWindow(static_cast<int32>(m_Specification.Width), static_cast<int32>(m_Specification.Height),
@@ -50,6 +50,9 @@ void CDesktopWindow::Initialize()
     verifyEnginef(m_WindowHandle, "Failed to create window '{}'!", m_Specification.Title)
 
     SetWindowMode(m_Specification.WindowMode);
+    
+    m_RendererContext = IRendererContext::Create(m_WindowHandle);
+    m_RendererContext->Initialize();
 
     EnableVSync(m_Specification.bEnableVSync);
 
@@ -212,7 +215,7 @@ void CDesktopWindow::ProcessEvents()
 
 void CDesktopWindow::SwapBuffers() const
 {
-    // TODO: (Ayydxn) Implement on a per graphics API basis.
+    m_RendererContext->SwapBuffers();
 }
 
 std::pair<float, float> CDesktopWindow::GetPosition() const
@@ -239,7 +242,7 @@ void CDesktopWindow::CenterOnScreen() const
 
 void CDesktopWindow::EnableVSync(bool bEnableVSync)
 {
-    // TODO: (Ayydxn) V-Sync will have to be toggled on a per graphics API basis.
+    m_RendererContext->SetVSync(bEnableVSync);
 
     m_WindowState.bIsVSyncEnabled = bEnableVSync;
 }
