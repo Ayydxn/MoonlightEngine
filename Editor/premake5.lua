@@ -12,7 +12,9 @@ project "Moonlight Editor"
     files
     {
         "%{prj.location}/Source/**.cpp",
-        "%{prj.location}/Source/**.h"
+        "%{prj.location}/Source/**.h",
+        
+        "%{prj.location}/Resources/Shaders/**.glsl"
     }
 
     includedirs
@@ -76,4 +78,16 @@ project "Moonlight Editor"
         defines
         {
             "MOONLIGHT_BUILD_DISTRIBUTION"
+        }
+        
+    filter { "system:windows", "configurations:Debug" }
+        postbuildcommands
+        {
+            '{COPYFILE} "../Engine/ThirdParty/Shaderc/Binaries/Windows/shaderc_sharedd.dll" "%{cfg.buildtarget.directory}"'
+        }
+        
+    filter { "system:windows", "configurations:Release or configurations:Distribution" }
+        postbuildcommands
+        {
+            '{COPYFILE} "../Engine/ThirdParty/Shaderc/Binaries/Windows/shaderc_shared.dll" "%{cfg.buildtarget.directory}"'
         }

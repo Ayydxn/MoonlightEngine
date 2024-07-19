@@ -5,8 +5,6 @@
 
 std::shared_ptr<IRendererContext> IRendererContext::Create(void* WindowHandle)
 {
-    ENGINE_LOG_INFO_TAG("Renderer", "Creating renderer context... (Chosen Graphcis API: {})", CRenderer::GetGraphicsAPIString());
-    
     switch (CRenderer::GetGraphicsAPI())
     {
         case EGraphicsAPI::OpenGL: verifyEnginef(false, "Failed to create renderer context! OpenGL isn't supported!") return nullptr;

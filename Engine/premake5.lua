@@ -22,6 +22,7 @@ project "Moonlight Engine"
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Vulkan}",
+        "%{IncludeDir.Shaderc}",
         
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",
@@ -40,7 +41,7 @@ project "Moonlight Engine"
 
     filter "system:windows"
         systemversion "latest"
-
+        
         defines
         {
             "MOONLIGHT_PLATFORM_WIN64",
@@ -77,4 +78,16 @@ project "Moonlight Engine"
         defines
         {
             "MOONLIGHT_BUILD_DISTRIBUTION"
+        }
+        
+    filter { "system:windows", "configurations:Debug" }
+        links
+        {
+            "%{Library.Shaderc_Windows_Debug}"
+        }
+        
+    filter { "system:windows", "configurations:Release or configurations:Distribution" }
+        links
+        {
+            "%{Library.Shaderc_Windows_Release}"
         }
