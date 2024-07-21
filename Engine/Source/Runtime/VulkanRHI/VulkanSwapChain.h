@@ -13,6 +13,8 @@ public:
 
     void Present();
     void EnableVSync(bool bEnableVSync);
+
+    const vk::Extent2D& GetExtent() const { return m_Extent; }
 private:
     struct CSwapChainState
     {

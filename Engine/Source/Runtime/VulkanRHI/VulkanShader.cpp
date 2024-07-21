@@ -25,7 +25,7 @@ namespace
 }
 
 CVulkanShader::CVulkanShader(const std::string& Name, const std::string& Source, EShaderStage ShaderStage)
-    : m_LogicalDevice(reinterpret_cast<CVulkanContext*>(CRenderer::GetContext().get())->GetLogicalDevice()->GetHandle())
+    : m_LogicalDevice(CVulkanContext::GetInstance()->GetLogicalDevice()->GetHandle()), m_Name(Name)
 {
     IShaderCompiler& ShaderCompiler = IShaderCompiler::GetInstance();
     std::vector<uint32> ShaderBytecode;
@@ -38,7 +38,7 @@ CVulkanShader::CVulkanShader(const std::string& Name, const std::string& Source,
 }
 
 CVulkanShader::CVulkanShader(const std::filesystem::path& Filepath)
-    : m_LogicalDevice(reinterpret_cast<CVulkanContext*>(CRenderer::GetContext().get())->GetLogicalDevice()->GetHandle())
+    : m_LogicalDevice(CVulkanContext::GetInstance()->GetLogicalDevice()->GetHandle()), m_Name(Filepath.stem().string())
 {
     std::vector<std::filesystem::path> ShadersToCompile = {};
     IShaderCompiler& ShaderCompiler = IShaderCompiler::GetInstance();

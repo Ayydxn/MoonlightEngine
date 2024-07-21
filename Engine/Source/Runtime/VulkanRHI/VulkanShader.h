@@ -11,6 +11,9 @@ public:
     CVulkanShader(const std::string& Name, const std::string& Source, EShaderStage ShaderStage);
     CVulkanShader(const std::filesystem::path& Filepath);
     ~CVulkanShader() override;
+
+    const std::vector<vk::PipelineShaderStageCreateInfo>& GetPipelineShaderStageCreateInfos() const { return m_PipelineShaderStageCreateInfos; }
+    const std::string& GetName() const override { return m_Name; }
 private:
     void CreateShaderModules();
 private:
@@ -19,4 +22,5 @@ private:
     std::vector<vk::ShaderModule> m_ShaderModules;
 
     vk::Device m_LogicalDevice;
+    std::string m_Name;
 };

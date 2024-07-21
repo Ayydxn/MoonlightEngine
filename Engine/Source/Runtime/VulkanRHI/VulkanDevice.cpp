@@ -61,8 +61,9 @@ bool CVulkanPhysicalDevice::IsPhysicalDeviceSuitable(const vk::PhysicalDevice& P
     const bool bIsPhysicalDeviceDiscreteOrIntegrated = PhysicalDeviceProperties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu ||
         PhysicalDeviceProperties.deviceType == vk::PhysicalDeviceType::eIntegratedGpu;
     const bool bDoesPhysicalDeviceSupportRequiredExtensions = DoesPhysicalDeviceSupportRequiredExtensions(PhysicalDevice);
+    const bool bDoesPhysicalDeviceSupportRequiredFeatures = DoesPhysicalDeviceSupportRequiredFeatures(PhysicalDevice);
     
-    return bIsPhysicalDeviceDiscreteOrIntegrated && bDoesPhysicalDeviceSupportRequiredExtensions;
+    return bIsPhysicalDeviceDiscreteOrIntegrated && bDoesPhysicalDeviceSupportRequiredExtensions && bDoesPhysicalDeviceSupportRequiredFeatures;
 }
 
 bool CVulkanPhysicalDevice::DoesPhysicalDeviceSupportRequiredExtensions(const vk::PhysicalDevice& PhysicalDevice)
@@ -74,6 +75,19 @@ bool CVulkanPhysicalDevice::DoesPhysicalDeviceSupportRequiredExtensions(const vk
         RequiredExtensions.erase(AvailablePhysicalDeviceExtension.extensionName);
 
     return RequiredExtensions.empty();
+}
+
+bool CVulkanPhysicalDevice::DoesPhysicalDeviceSupportRequiredFeatures(const vk::PhysicalDevice& PhysicalDevice)
+{
+    vk::PhysicalDeviceVulkan13Features PhysicalDeviceVulkan13Features;
+    PhysicalDeviceVulkan13Features.sType = vk::StructureType::ePhysicalDeviceVulkan13Features;
+
+    vk::PhysicalDeviceFeatures2 PhysicalDeviceFeatures2;
+    PhysicalDeviceFeatures2.pNext = &PhysicalDeviceVulkan13Features;
+
+    PhysicalDevice.getFeatures2(&PhysicalDeviceFeatures2);
+
+    return PhysicalDeviceVulkan13Features.dynamicRendering && PhysicalDeviceVulkan13Features.synchronization2;
 }
 
 std::string CVulkanPhysicalDevice::GetPhysicalDeviceVendorName(int32 VendorID)
@@ -145,6 +159,14 @@ CVulkanLogicalDevice::CVulkanLogicalDevice(const std::shared_ptr<CVulkanPhysical
 
         DeviceQueueCreateInfos.push_back(DeviceQueueCreateInfo);
     }
+    
+    vk::PhysicalDeviceVulkan13Features PhysicalDeviceVulkan13Features;
+    PhysicalDeviceVulkan13Features.sType = vk::StructureType::ePhysicalDeviceVulkan13Features;
+
+    vk::PhysicalDeviceFeatures2 PhysicalDeviceFeatures;
+    PhysicalDeviceFeatures.pNext = &PhysicalDeviceVulkan13Features;
+
+    PhysicalDevice->GetHandle().getFeatures2(&PhysicalDeviceFeatures);
 
     vk::DeviceCreateInfo LogicalDeviceCreateInfo;
     LogicalDeviceCreateInfo.sType = vk::StructureType::eDeviceCreateInfo;
@@ -154,6 +176,7 @@ CVulkanLogicalDevice::CVulkanLogicalDevice(const std::shared_ptr<CVulkanPhysical
     LogicalDeviceCreateInfo.ppEnabledExtensionNames = RequiredPhysicalDeviceExtensions.data();
     LogicalDeviceCreateInfo.enabledLayerCount = 0;
     LogicalDeviceCreateInfo.ppEnabledLayerNames = nullptr;
+    LogicalDeviceCreateInfo.pNext = &PhysicalDeviceFeatures;
     LogicalDeviceCreateInfo.flags = vk::DeviceCreateFlags();
 
     if (CVulkanContext::AreValidationLayersEnabled())

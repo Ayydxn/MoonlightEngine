@@ -24,6 +24,7 @@ public:
 private:
     bool IsPhysicalDeviceSuitable(const vk::PhysicalDevice& PhysicalDevice);
     bool DoesPhysicalDeviceSupportRequiredExtensions(const vk::PhysicalDevice& PhysicalDevice);
+    bool DoesPhysicalDeviceSupportRequiredFeatures(const vk::PhysicalDevice& PhysicalDevice);
 
     std::string GetPhysicalDeviceVendorName(int32 VendorID);
     std::string UnpackDriverVersion(int32 VendorID, int32 DriverVersion);

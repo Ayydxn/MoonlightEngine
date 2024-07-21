@@ -3,6 +3,7 @@
 #include "VulkanDevice.h"
 #include "VulkanIncludes.h"
 #include "VulkanSwapChain.h"
+#include "Renderer/Renderer.h"
 #include "RHICore/RendererContext.h"
 
 class CVulkanContext : public IRendererContext 
@@ -15,10 +16,13 @@ public:
     void SwapBuffers() override;
     void SetVSync(bool bEnableVSync) override;
 
+    static std::shared_ptr<CVulkanContext> GetInstance() { return std::dynamic_pointer_cast<CVulkanContext>(CRenderer::GetContext()); }
+    
     static std::vector<const char*> GetAvailableValidationLayers();
     static bool AreValidationLayersEnabled();
 
     const std::shared_ptr<CVulkanLogicalDevice>& GetLogicalDevice() const { return m_LogicalDevice; }
+    const std::shared_ptr<CVulkanSwapChain>& GetSwapChain() const { return m_VulkanSwapChain; }
 private:
     void CreateDebugMessenger();
     void PopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& DebugMessengerCreateInfo);

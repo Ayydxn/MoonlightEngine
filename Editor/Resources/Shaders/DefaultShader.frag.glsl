@@ -1,8 +1,7 @@
 ﻿#version 460 core
 
-layout(location = 0) out vec4 o_Color;
+layout(location = 0) out vec4 o_OutColor;
 
-void main()
-{
-    o_Color = vec4(0.8, 0.3, 0.2, 1.0);
+void main() {
+    o_OutColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
