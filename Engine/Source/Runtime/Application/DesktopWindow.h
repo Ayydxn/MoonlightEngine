@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "Window.h"
-#include "RHICore/RendererContext.h"
 
 struct GLFWwindow;
 
@@ -27,6 +26,7 @@ public:
     
     void SetTitle(const std::string& Title) const override;
 
+    std::shared_ptr<IRendererContext> GetRendererContext() override { return m_RendererContext; }
     void* GetHandle() const override { return m_WindowHandle; }
 private:
     std::shared_ptr<IRendererContext> m_RendererContext;

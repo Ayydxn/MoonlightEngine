@@ -13,10 +13,10 @@ public:
     static void Init();
 
     virtual void Initialize() = 0;
-    virtual void Destroy() = 0;
+    virtual void Shutdown() = 0;
 
-    virtual std::vector<uint32> CompileShader(const std::string& ShaderName, const std::string& ShaderSource, EShaderStage ShaderStage) = 0;
-    virtual std::vector<uint32> CompileShaderFromFile(const std::filesystem::path& ShaderFilepath, EShaderStage ShaderStage) = 0;
+    virtual void CompileShader(const std::string& ShaderName, const std::string& ShaderSource, EShaderStage ShaderStage, std::vector<uint32>& OutputShaderBytecode) = 0;
+    virtual void CompileShaderFromFile(const std::filesystem::path& ShaderFilepath, EShaderStage ShaderStage, std::vector<uint32>& OutputShaderBytecode) = 0;
 
     static IShaderCompiler& GetInstance() { return *m_ShaderCompilerInstance; }
 private:

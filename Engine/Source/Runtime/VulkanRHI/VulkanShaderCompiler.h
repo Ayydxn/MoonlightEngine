@@ -11,10 +11,10 @@ public:
     ~CVulkanShaderCompiler() override = default;
 
     void Initialize() override;
-    void Destroy() override {}
+    void Shutdown() override {}
 
-    std::vector<uint32> CompileShader(const std::string& ShaderName, const std::string& ShaderSource, EShaderStage ShaderStage) override;
-    std::vector<uint32> CompileShaderFromFile(const std::filesystem::path& ShaderFilepath, EShaderStage ShaderStage) override;
+    void CompileShader(const std::string& ShaderName, const std::string& ShaderSource, EShaderStage ShaderStage, std::vector<uint32>& OutputShaderBytecode) override;
+    void CompileShaderFromFile(const std::filesystem::path& ShaderFilepath, EShaderStage ShaderStage, std::vector<uint32>& OutputShaderBytecode) override;
 private:
     shaderc::Compiler m_ShaderCompilerHandle;
     shaderc::CompileOptions m_ShaderCompilerOptions;

@@ -14,15 +14,11 @@ void CRenderer::PreInitialize()
 void CRenderer::Initialize()
 {
     IShaderCompiler::Init();
-
-    // TEMP: Shader compiler test
-    IShaderCompiler::GetInstance().CompileShaderFromFile("Resources/Shaders/DefaultShader.vert.glsl", EShaderStage::Vertex);
-    IShaderCompiler::GetInstance().CompileShaderFromFile("Resources/Shaders/DefaultShader.frag.glsl", EShaderStage::Fragment);
 }
 
 void CRenderer::Shutdown()
 {
-    IShaderCompiler::GetInstance().Destroy();
+    IShaderCompiler::GetInstance().Shutdown();
 }
 
 void CRenderer::BeginFrame()

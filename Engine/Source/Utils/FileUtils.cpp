@@ -35,6 +35,11 @@ std::string CFileUtils::ReadFile(const std::filesystem::path& Filepath)
     return Result;
 }
 
+std::filesystem::path CFileUtils::GetFileParentDirectory(const std::filesystem::path& File)
+{
+    return File.has_parent_path() ? File.parent_path() : std::filesystem::current_path().string();
+}
+
 int CFileUtils::SkipByteOrderMark(std::istream& FileReader)
 {
     char Empty[4] = {};

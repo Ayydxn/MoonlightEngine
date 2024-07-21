@@ -17,6 +17,8 @@ public:
 
     static std::vector<const char*> GetAvailableValidationLayers();
     static bool AreValidationLayersEnabled();
+
+    const std::shared_ptr<CVulkanLogicalDevice>& GetLogicalDevice() const { return m_LogicalDevice; }
 private:
     void CreateDebugMessenger();
     void PopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& DebugMessengerCreateInfo);

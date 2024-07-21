@@ -83,11 +83,11 @@ project "Moonlight Editor"
     filter { "system:windows", "configurations:Debug" }
         postbuildcommands
         {
-            '{COPYFILE} "../Engine/ThirdParty/Shaderc/Binaries/Windows/shaderc_sharedd.dll" "%{cfg.buildtarget.directory}"'
+            '{COPYFILE} "%{wks.location}/Engine/ThirdParty/Shaderc/Binaries/Windows/shaderc_sharedd.dll" "%{cfg.buildtarget.directory}"'
         }
         
     filter { "system:windows", "configurations:Release or configurations:Distribution" }
         postbuildcommands
         {
-            '{COPYFILE} "../Engine/ThirdParty/Shaderc/Binaries/Windows/shaderc_shared.dll" "%{cfg.buildtarget.directory}"'
+            '{COPYFILE} "%{wks.location}/Engine/ThirdParty/Shaderc/Binaries/Windows/shaderc_shared.dll" "%{cfg.buildtarget.directory}"'
         }

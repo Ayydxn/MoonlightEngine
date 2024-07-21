@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "RHICore/RendererContext.h"
+
 enum class EWindowMode : uint8
 {
     Windowed,
@@ -55,6 +57,7 @@ public:
 
     const CWindowSpecification& GetSpecification() const { return m_Specification; }
 
+    virtual std::shared_ptr<IRendererContext> GetRendererContext() = 0;
     virtual void* GetHandle() const = 0;
 
     static std::shared_ptr<IWindow> Create(const CWindowSpecification& Specification = CWindowSpecification());
