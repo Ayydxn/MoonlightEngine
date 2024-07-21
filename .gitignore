@@ -1,5 +1,5 @@
 ﻿# Build
-Binaries/
+/Binaries/
 Intermediate/
 __pycache__
 
