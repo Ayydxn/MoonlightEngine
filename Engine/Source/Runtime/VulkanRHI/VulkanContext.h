@@ -21,6 +21,7 @@ public:
     static std::vector<const char*> GetAvailableValidationLayers();
     static bool AreValidationLayersEnabled();
 
+    const std::shared_ptr<CVulkanPhysicalDevice>& GetPhysicalDevice() const { return m_PhysicalDevice; }
     const std::shared_ptr<CVulkanLogicalDevice>& GetLogicalDevice() const { return m_LogicalDevice; }
     const std::shared_ptr<CVulkanSwapChain>& GetSwapChain() const { return m_VulkanSwapChain; }
 private:

@@ -19,9 +19,12 @@ class CVulkanPhysicalDevice
 {
 public:
     CVulkanPhysicalDevice(const vk::Instance& VulkanInstance);
-    
+
+    vk::Format GetDepthFormat() const { return m_DepthFormat; }
     const vk::PhysicalDevice& GetHandle() const { return m_PhysicalDevice; }
 private:
+    vk::Format FindDepthFormat() const;
+    
     bool IsPhysicalDeviceSuitable(const vk::PhysicalDevice& PhysicalDevice);
     bool DoesPhysicalDeviceSupportRequiredExtensions(const vk::PhysicalDevice& PhysicalDevice);
     bool DoesPhysicalDeviceSupportRequiredFeatures(const vk::PhysicalDevice& PhysicalDevice);
@@ -30,6 +33,7 @@ private:
     std::string UnpackDriverVersion(int32 VendorID, int32 DriverVersion);
     std::string UnpackVulkanAPIVersion(int32 VulkanAPIVersion);
 private:
+    vk::Format m_DepthFormat;
     vk::PhysicalDevice m_PhysicalDevice;
 };
 

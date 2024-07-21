@@ -53,6 +53,21 @@ CVulkanPhysicalDevice::CVulkanPhysicalDevice(const vk::Instance& VulkanInstance)
     ENGINE_LOG_INFO_TAG("Renderer", "   Vendor: {}", GetPhysicalDeviceVendorName(PhysicalDeviceProperties.vendorID));
     ENGINE_LOG_INFO_TAG("Renderer", "   Driver Version: {}", UnpackDriverVersion(PhysicalDeviceProperties.vendorID, PhysicalDeviceProperties.driverVersion));
     ENGINE_LOG_INFO_TAG("Renderer", "   Vulkan API Version: {}", UnpackVulkanAPIVersion(PhysicalDeviceProperties.apiVersion));
+
+    m_DepthFormat = FindDepthFormat();
+}
+
+vk::Format CVulkanPhysicalDevice::FindDepthFormat() const
+{
+    // The list we're iterating through represents potential depth format that we can use.
+    for (const vk::Format DepthFormat : { vk::Format::eD32SfloatS8Uint, vk::Format::eD32Sfloat, vk::Format::eD24UnormS8Uint, vk::Format::eD16UnormS8Uint, vk::Format::eD16Unorm })
+    {
+        const vk::FormatProperties FormatProperties = m_PhysicalDevice.getFormatProperties(DepthFormat);
+        if ((FormatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eDepthStencilAttachment) == vk::FormatFeatureFlagBits::eDepthStencilAttachment)
+            return DepthFormat;
+    }
+    
+    return vk::Format::eUndefined;
 }
 
 bool CVulkanPhysicalDevice::IsPhysicalDeviceSuitable(const vk::PhysicalDevice& PhysicalDevice)

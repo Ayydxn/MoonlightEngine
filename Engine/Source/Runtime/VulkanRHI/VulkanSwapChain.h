@@ -14,6 +14,7 @@ public:
     void Present();
     void EnableVSync(bool bEnableVSync);
 
+    vk::Format GetImageFormat() const { return m_ImageFormat; }
     const vk::Extent2D& GetExtent() const { return m_Extent; }
 private:
     struct CSwapChainState

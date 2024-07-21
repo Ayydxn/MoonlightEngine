@@ -66,6 +66,9 @@ void CVulkanGraphicsPipeline::Invalidate()
     ENGINE_LOG_DEBUG_TAG("Renderer", "Creating Vulkan graphics pipeline '{}'...", m_PipelineSpecification.DebugName);
     
     const auto& VulkanShader = std::dynamic_pointer_cast<CVulkanShader>(m_PipelineSpecification.Shader);
+    const auto& VulkanSwapChain = CVulkanContext::GetInstance()->GetSwapChain();
+    const vk::Format SwapChainImageFormat = VulkanSwapChain->GetImageFormat();
+    const vk::Format DepthFormat = CVulkanContext::GetInstance()->GetPhysicalDevice()->GetDepthFormat();
     
     const std::vector<vk::DynamicState> DynamicStates =
     {
@@ -76,8 +79,8 @@ void CVulkanGraphicsPipeline::Invalidate()
     vk::Viewport Viewport;
     Viewport.x = 0.0f;
     Viewport.y = 0.0f;
-    Viewport.width = static_cast<float>(CVulkanContext::GetInstance()->GetSwapChain()->GetExtent().width);
-    Viewport.height = static_cast<float>(CVulkanContext::GetInstance()->GetSwapChain()->GetExtent().height);
+    Viewport.width = static_cast<float>(VulkanSwapChain->GetExtent().width);
+    Viewport.height = static_cast<float>(VulkanSwapChain->GetExtent().height);
     Viewport.minDepth = 0.0f;
     Viewport.maxDepth = 1.0f;
 
@@ -169,6 +172,10 @@ void CVulkanGraphicsPipeline::Invalidate()
 
     vk::PipelineRenderingCreateInfoKHR PipelineRenderingCreateInfo;
     PipelineRenderingCreateInfo.sType = vk::StructureType::ePipelineRenderingCreateInfoKHR;
+    PipelineRenderingCreateInfo.colorAttachmentCount = 1;
+    PipelineRenderingCreateInfo.pColorAttachmentFormats = &SwapChainImageFormat;
+    PipelineRenderingCreateInfo.depthAttachmentFormat = DepthFormat;
+    PipelineRenderingCreateInfo.stencilAttachmentFormat = DepthFormat;
     
     vk::GraphicsPipelineCreateInfo GraphicsPipelineCreateInfo;
     GraphicsPipelineCreateInfo.sType = vk::StructureType::eGraphicsPipelineCreateInfo;
