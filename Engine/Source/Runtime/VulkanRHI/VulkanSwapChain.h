@@ -14,8 +14,10 @@ public:
     void Present();
     void EnableVSync(bool bEnableVSync);
 
+    uint32 GetImageCount() const { return m_Images.size(); }
     vk::Format GetImageFormat() const { return m_ImageFormat; }
     const vk::Extent2D& GetExtent() const { return m_Extent; }
+    uint32 GetCurrentFrameIndex() const { return m_CurrentFrameIndex; }
 private:
     struct CSwapChainState
     {
@@ -39,8 +41,9 @@ private:
     vk::Instance m_VulkanInstance;
     vk::PhysicalDevice m_PhysicalDevice;
     vk::Device m_LogicalDevice;
-
+    
     uint32 m_PresentFamily = -1;
+    uint32 m_CurrentFrameIndex = -1;
     
     bool bIsInitialized = false;
 };

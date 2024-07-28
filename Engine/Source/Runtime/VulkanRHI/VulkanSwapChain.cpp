@@ -205,7 +205,10 @@ void CVulkanSwapChain::Destroy() const
 }
 
 void CVulkanSwapChain::Present()
-{
+{ 
+    // TODO: (Ayydxn) Implement.
+
+    m_CurrentFrameIndex = (m_CurrentFrameIndex + 1) % GetImageCount();
 }
 
 void CVulkanSwapChain::EnableVSync(bool bEnableVSync)

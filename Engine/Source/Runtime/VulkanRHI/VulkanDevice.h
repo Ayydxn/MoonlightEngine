@@ -43,7 +43,8 @@ public:
     CVulkanLogicalDevice(const std::shared_ptr<CVulkanPhysicalDevice>& PhysicalDevice);
 
     void Destroy() const;
-    
+
+    const vk::Queue& GetGraphicsQueue() const { return m_GraphicsQueue; }
     const vk::Device& GetHandle() const { return m_LogicalDevice; }
 private:
     vk::Device m_LogicalDevice;
