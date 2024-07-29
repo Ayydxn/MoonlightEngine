@@ -7,7 +7,7 @@ void IShaderCompiler::Init()
 {
     if (m_ShaderCompilerInstance != nullptr)
     {
-        ENGINE_LOG_ERROR_TAG("Renderer", "Moonliught's shader compiler can only be initialized once!");
+        ENGINE_LOG_ERROR_TAG("Renderer", "Moonlight's shader compiler can only be initialized once!");
         return;
     }
 
