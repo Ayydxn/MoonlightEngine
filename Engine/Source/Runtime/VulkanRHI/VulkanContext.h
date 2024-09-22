@@ -14,6 +14,7 @@ public:
 
     void Initialize() override;
     void SwapBuffers() override;
+    void OnWindowResize(uint32 NewWidth, uint32 NewHeight) override;
     void SetVSync(bool bEnableVSync) override;
 
     static std::shared_ptr<CVulkanContext> GetInstance() { return std::dynamic_pointer_cast<CVulkanContext>(CRenderer::GetContext()); }

@@ -5,7 +5,9 @@
 
 #include <GLFW/glfw3.h>
 
+#include "VulkanContext.h"
 #include "VulkanDevice.h"
+#include "Renderer/Renderer.h"
 
 void CVulkanSwapChain::Initialize(const vk::Instance& VulkanInstance, const vk::PhysicalDevice& PhysicalDevice, const vk::Device& LogicalDevice)
 {
@@ -191,6 +193,8 @@ void CVulkanSwapChain::Create(uint32* Width, uint32* Height, bool bEnableVSync)
     m_Images = m_LogicalDevice.getSwapchainImagesKHR(m_SwapChain);
 
     CreateImageViews();
+    CreateCommandBuffers(GraphicsFamily);
+    CreateSynchronizationObjects();
 }
 
 void CVulkanSwapChain::Destroy() const
@@ -200,15 +204,64 @@ void CVulkanSwapChain::Destroy() const
     for (const vk::ImageView& ImageView : m_ImageViews)
         m_LogicalDevice.destroyImageView(ImageView);
     
+    for (const vk::Semaphore& PresentCompleteSemaphore : m_PresentCompleteSemaphores)
+        m_LogicalDevice.destroySemaphore(PresentCompleteSemaphore);
+
+    for (const vk::Semaphore& RenderCompleteSemaphore : m_RenderCompleteSemaphores)
+        m_LogicalDevice.destroySemaphore(RenderCompleteSemaphore);
+
+    for (const vk::Fence& WaitFence : m_WaitFences)
+        m_LogicalDevice.destroyFence(WaitFence);
+
+    m_LogicalDevice.destroyCommandPool(m_CommandPool);
     m_LogicalDevice.destroySwapchainKHR(m_SwapChain);
     m_VulkanInstance.destroySurfaceKHR(m_WindowSurface);
 }
 
 void CVulkanSwapChain::Present()
 { 
-    // TODO: (Ayydxn) Implement.
+    constexpr vk::PipelineStageFlags PipelineStageFlag = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    const vk::Fence WaitFence = m_WaitFences[m_CurrentFrameIndex];
+    const vk::Queue GraphicsQueue = CVulkanContext::GetInstance()->GetLogicalDevice()->GetGraphicsQueue();
+    const uint32 SwapChainImageIndex = m_LogicalDevice.acquireNextImageKHR(m_SwapChain, UINT64_MAX, m_PresentCompleteSemaphores[m_CurrentFrameIndex],
+        VK_NULL_HANDLE).value;
+    
+    vk::SubmitInfo SubmitInfo;
+    SubmitInfo.sType = vk::StructureType::eSubmitInfo;
+    SubmitInfo.pWaitDstStageMask = &PipelineStageFlag;
+    SubmitInfo.pWaitSemaphores = &m_PresentCompleteSemaphores[m_CurrentFrameIndex];
+    SubmitInfo.waitSemaphoreCount = 1;
+    SubmitInfo.pSignalSemaphores = &m_RenderCompleteSemaphores[m_CurrentFrameIndex];
+    SubmitInfo.signalSemaphoreCount = 1;
+    SubmitInfo.pCommandBuffers = &m_CommandBuffers[m_CurrentFrameIndex];
+    SubmitInfo.commandBufferCount = 1;
+
+    vk::PresentInfoKHR PresentInfo;
+    PresentInfo.sType = vk::StructureType::ePresentInfoKHR;
+    PresentInfo.pSwapchains = &m_SwapChain;
+    PresentInfo.swapchainCount = 1;
+    PresentInfo.pImageIndices = &SwapChainImageIndex;
+    PresentInfo.pWaitSemaphores = &m_RenderCompleteSemaphores[m_CurrentFrameIndex];
+
+    m_LogicalDevice.resetFences(WaitFence);
+    GraphicsQueue.submit(SubmitInfo, WaitFence);
+
+    const vk::Result PresentResult = GraphicsQueue.presentKHR(PresentInfo);
+    if (PresentResult != vk::Result::eSuccess)
+    {
+        if (PresentResult == vk::Result::eErrorOutOfDateKHR || PresentResult == vk::Result::eSuboptimalKHR)
+        {
+            OnWindowResize(m_SwapChainState.Width, m_SwapChainState.Height);
+        }
+        else
+        {
+            assertEnginef(PresentResult == vk::Result::eSuccess, "Failed to present the current frame to the window!")
+        }
+    }
 
     m_CurrentFrameIndex = (m_CurrentFrameIndex + 1) % GetImageCount();
+
+    assertEngine(m_LogicalDevice.waitForFences(WaitFence, VK_TRUE, UINT64_MAX) == vk::Result::eSuccess);
 }
 
 void CVulkanSwapChain::EnableVSync(bool bEnableVSync)
@@ -218,6 +271,16 @@ void CVulkanSwapChain::EnableVSync(bool bEnableVSync)
     m_LogicalDevice.waitIdle();
 
     Create(&m_SwapChainState.Width, &m_SwapChainState.Height, bEnableVSync);
+}
+
+void CVulkanSwapChain::OnWindowResize(uint32 NewWidth, uint32 NewHeight)
+{
+    m_SwapChainState.Width = NewWidth;
+    m_SwapChainState.Height = NewHeight;
+
+    m_LogicalDevice.waitIdle();
+
+    Create(&NewWidth, &NewHeight, m_SwapChainState.bIsVSyncEnabled);
 }
 
 void CVulkanSwapChain::SelectImageFormatAndColorSpace(const vk::PhysicalDevice& PhysicalDevice)
@@ -274,6 +337,73 @@ void CVulkanSwapChain::CreateImageViews()
         catch (const vk::SystemError& VulkanSystemError)
         {
             verifyEnginef(false, "Failed to create Vulkan image view! ({})", VulkanSystemError.what())
+        }
+    }
+}
+
+void CVulkanSwapChain::CreateCommandBuffers(uint32 GraphicsFamily)
+{
+    m_CommandBuffers.resize(GetImageCount());
+
+    vk::CommandPoolCreateInfo CommandPoolCreateInfo;
+    CommandPoolCreateInfo.sType = vk::StructureType::eCommandPoolCreateInfo;
+    CommandPoolCreateInfo.queueFamilyIndex = GraphicsFamily;
+    CommandPoolCreateInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
+
+    try
+    {
+        m_CommandPool = m_LogicalDevice.createCommandPool(CommandPoolCreateInfo);
+    }
+    catch (const vk::SystemError& VulkanSystemError)
+    {
+        verifyEnginef(false, "Failed to create Vulkan command pool! ({})", VulkanSystemError.what())
+    }
+
+    vk::CommandBufferAllocateInfo CommandBufferAllocateInfo;
+    CommandBufferAllocateInfo.sType = vk::StructureType::eCommandBufferAllocateInfo;
+    CommandBufferAllocateInfo.commandPool = m_CommandPool;
+    CommandBufferAllocateInfo.level = vk::CommandBufferLevel::ePrimary;
+    CommandBufferAllocateInfo.commandBufferCount = static_cast<uint32>(m_CommandBuffers.size());
+    
+    try
+    {
+        m_CommandBuffers = m_LogicalDevice.allocateCommandBuffers(CommandBufferAllocateInfo);
+    }
+    catch (const vk::SystemError& VulkanSystemError)
+    {
+        verifyEnginef(false, "Failed to allocate Vulkan swapchain command buffers! ({})", VulkanSystemError.what())
+    }
+}
+
+void CVulkanSwapChain::CreateSynchronizationObjects()
+{
+    const uint32 ImageCount = GetImageCount();
+    
+    if (m_PresentCompleteSemaphores.size() != ImageCount || m_RenderCompleteSemaphores.size() != ImageCount || m_WaitFences.size() != ImageCount)
+    {
+        m_PresentCompleteSemaphores.resize(ImageCount);
+        m_RenderCompleteSemaphores.resize(ImageCount);
+        m_WaitFences.resize(ImageCount);
+
+        vk::SemaphoreCreateInfo SemaphoreCreateInfo;
+        SemaphoreCreateInfo.sType = vk::StructureType::eSemaphoreCreateInfo;
+
+        vk::FenceCreateInfo FenceCreateInfo;
+        FenceCreateInfo.sType = vk::StructureType::eFenceCreateInfo;
+        FenceCreateInfo.flags = vk::FenceCreateFlagBits::eSignaled;
+
+        for (uint32 i = 0; i < ImageCount; ++i)
+        {
+            try
+            {
+                m_PresentCompleteSemaphores[i] = m_LogicalDevice.createSemaphore(SemaphoreCreateInfo);
+                m_RenderCompleteSemaphores[i] = m_LogicalDevice.createSemaphore(SemaphoreCreateInfo);
+                m_WaitFences[i] = m_LogicalDevice.createFence(FenceCreateInfo);
+            }
+            catch (const vk::SystemError& VulkanSystemError)
+            {
+                assertEnginef(false, "Failed to create Vulkan semaphore! ({})", VulkanSystemError.what())
+            }
         }
     }
 }

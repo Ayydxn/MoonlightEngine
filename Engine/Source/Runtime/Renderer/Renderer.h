@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include "Application/Application.h"
 #include "RHICore/RendererContext.h"
 
@@ -20,7 +21,7 @@ public:
 
     static void BeginFrame();
     static void EndFrame();
-
+    
     static std::shared_ptr<IRendererContext> GetContext() { return CApplication::GetInstance().GetWindow().GetRendererContext(); }
     
     static EGraphicsAPI GetGraphicsAPI() { return m_GraphicsAPI; }

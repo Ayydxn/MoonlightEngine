@@ -64,6 +64,7 @@ private:
 
     bool OnWindowClose();
     bool OnWindowMinimized(const CWindowMinimizeEvent& WindowMinimizeEvent);
+    bool OnWindowResize(const CWindowResizeEvent& WindowResizeEvent);
 private:
     inline static CApplication* m_ApplicationInstance = nullptr;
 

@@ -146,6 +146,11 @@ void CVulkanContext::SwapBuffers()
     m_VulkanSwapChain->Present();
 }
 
+void CVulkanContext::OnWindowResize(uint32 NewWidth, uint32 NewHeight)
+{
+    m_VulkanSwapChain->OnWindowResize(NewWidth, NewHeight);
+}
+
 void CVulkanContext::SetVSync(bool bEnableVSync)
 {
     m_VulkanSwapChain->EnableVSync(bEnableVSync);

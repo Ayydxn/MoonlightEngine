@@ -161,6 +161,7 @@ void CApplication::OnEvent(IEvent& Event)
     CEventDispatcher EventDispatcher(Event);
     EventDispatcher.Dispatch<CWindowCloseEvent>([this](const CWindowCloseEvent&) { return OnWindowClose(); });
     EventDispatcher.Dispatch<CWindowMinimizeEvent>([this](const CWindowMinimizeEvent& WindowMinimizeEvent) { return OnWindowMinimized(WindowMinimizeEvent); });
+    EventDispatcher.Dispatch<CWindowResizeEvent>([this](const CWindowResizeEvent& WindowResizeEvent) { return OnWindowResize(WindowResizeEvent); });
 
     for (const auto& Layer : m_LayerStack)
     {
@@ -235,6 +236,13 @@ bool CApplication::OnWindowClose()
 bool CApplication::OnWindowMinimized(const CWindowMinimizeEvent& WindowMinimizeEvent)
 {
     bIsWindowMinizmied = WindowMinimizeEvent.IsWindowMinimized();
+
+    return true;
+}
+
+bool CApplication::OnWindowResize(const CWindowResizeEvent& WindowResizeEvent)
+{
+    CRenderer::GetContext()->OnWindowResize(WindowResizeEvent.GetWidth(), WindowResizeEvent.GetHeight());\
 
     return true;
 }
