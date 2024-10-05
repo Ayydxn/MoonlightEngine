@@ -5,8 +5,8 @@
 void CRenderer::PreInitialize()
 {
     // TODO: (Ayydan) The graphics API we use should come from a configuration file.
-    // But for now, we'll force Vulkan since it's the only one we support.
-    m_GraphicsAPI = EGraphicsAPI::Vulkan;
+    // But for now, we'll force OpenGL since it's the only one we support.
+    m_GraphicsAPI = EGraphicsAPI::OpenGL;
 
     ENGINE_LOG_INFO_TAG("Renderer", "Selected Graphics API: {}", GetGraphicsAPIString());
 }
