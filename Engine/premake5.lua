@@ -23,6 +23,7 @@ project "Moonlight Engine"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Vulkan}",
         "%{IncludeDir.Shaderc}",
+        "%{IncludeDir.Glad}",
         
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",
@@ -31,12 +32,15 @@ project "Moonlight Engine"
 
     links
     {
-        "GLFW"
+        "GLFW",
+        "Glad"
     }
 
     defines
     {
-        "MOONLIGHT_EXPORT_LIBRARY"
+        "MOONLIGHT_EXPORT_LIBRARY",
+        
+        "GLFW_INCLUDE_NONE"
     }
 
     filter "system:windows"

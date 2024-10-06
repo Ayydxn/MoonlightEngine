@@ -30,7 +30,7 @@ project "GLFW"
 	
 	defines
 	{
-	    "_GLFW_BUILD_DLL"	
+	    "_GLFW_BUILD_DLL"
 	}
 
 	filter "system:windows"

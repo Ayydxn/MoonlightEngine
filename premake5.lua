@@ -49,6 +49,7 @@ workspace "Moonlight Engine"
 
 group "Dependencies"
     include "Engine/ThirdParty/GLFW"
+    include "Engine/ThirdParty/Glad"
 group ""
 
 group "Core"
