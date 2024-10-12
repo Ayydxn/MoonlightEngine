@@ -8,7 +8,7 @@ class COpenGLContext : public IRendererContext
 {
 public:
     COpenGLContext(void* WindowHandle);
-    virtual ~COpenGLContext() = default;
+    ~COpenGLContext() override = default;
 
     void Initialize() override;
     void SwapBuffers() override;
