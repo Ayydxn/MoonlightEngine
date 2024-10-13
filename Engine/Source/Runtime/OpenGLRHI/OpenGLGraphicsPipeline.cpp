@@ -35,6 +35,8 @@ COpenGLGraphicsPipeline::COpenGLGraphicsPipeline()
 {
     verifyEnginef(m_Specification.VertexBufferLayout.GetElementCount() != 0, "An OpenGL graphics pipeline requires a non-empty vertex buffer layout!")
 
+    m_Stride = m_Specification.VertexBufferLayout.GetStride();
+    
     COpenGLGraphicsPipeline::Invalidate();
 }
 
@@ -48,7 +50,7 @@ void COpenGLGraphicsPipeline::Invalidate()
     uint32 AttributeIndex = 0;
     
     glCreateVertexArrays(1, &m_VertexArrayHandle);
-
+    
     for (const auto& VertexBufferElement : m_Specification.VertexBufferLayout)
     {
         const uint32 ShaderDataTypeOpenGLBaseType = GetShaderDataTypeOpenGLBaseType(VertexBufferElement.DataType);
@@ -65,9 +67,14 @@ void COpenGLGraphicsPipeline::Invalidate()
             glVertexArrayAttribFormat(m_VertexArrayHandle, AttributeIndex, static_cast<int32>(VertexBufferElement.GetComponentCount()),
                 ShaderDataTypeOpenGLBaseType, VertexBufferElement.bIsNormalized, VertexBufferElement.Offset);
         }
-
+        
         glVertexArrayAttribBinding(m_VertexArrayHandle, AttributeIndex, 0);
         
         AttributeIndex++;
     }
+}
+
+void COpenGLGraphicsPipeline::Bind() const
+{
+    glBindVertexArray(m_VertexArrayHandle);
 }

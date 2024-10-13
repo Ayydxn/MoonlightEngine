@@ -28,6 +28,7 @@
 #include "Runtime/Core/CoreTypes.h"
 #include "Runtime/Core/Assertion/AssertionMacros.h"
 #include "Runtime/Core/Logging/Logging.h"
+#include "Runtime/Core/Misc/Casts.h"
 
 #ifdef MOONLIGHT_PLATFORM_WIN64
     #include <Windows.h>

@@ -14,19 +14,31 @@ void CRenderer::PreInitialize()
 void CRenderer::Initialize()
 {
     IShaderCompiler::Init();
+
+    m_RendererBackend = IRendererBackend::Create();
+    m_RendererBackend->Initialize();
 }
 
 void CRenderer::Shutdown()
 {
     IShaderCompiler::GetInstance().Shutdown();
+
+    m_RendererBackend->Shutdown();
 }
 
 void CRenderer::BeginFrame()
 {
+    m_RendererBackend->BeginFrame();
 }
 
 void CRenderer::EndFrame()
 {
+    m_RendererBackend->EndFrame();
+}
+
+void CRenderer::DrawIndexed(const CRenderPacket& RenderPacket)
+{
+    m_RendererBackend->DrawIndexed(RenderPacket);
 }
 
 std::string CRenderer::GetGraphicsAPIString()

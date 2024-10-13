@@ -12,6 +12,12 @@
 #include <queue>
 #include <string>
 
+#include "RHICore/Shader.h"
+
+class IVertexBuffer;
+class IIndexBuffer;
+class IGraphicsPipeline;
+
 struct CApplicationSpecification
 {
     std::string Name = "Moonlight Engine";
@@ -67,7 +73,7 @@ private:
     bool OnWindowResize(const CWindowResizeEvent& WindowResizeEvent);
 private:
     inline static CApplication* m_ApplicationInstance = nullptr;
-
+    
     std::shared_ptr<IWindow> m_ApplicationWindow;
 
     CApplicationSpecification m_ApplicationSpecification;
@@ -79,6 +85,11 @@ private:
 
     bool bIsWindowMinizmied = false;
     bool bIsRunning = true;
+
+    std::shared_ptr<IVertexBuffer> m_VertexBuffer;
+    std::shared_ptr<IIndexBuffer> m_IndexBuffer;
+    std::shared_ptr<IGraphicsPipeline> m_GraphicsPipeline;
+    std::shared_ptr<IShader> m_Shader;
 };
 
 CApplication* CreateApplication(char** Arguments, int32 ArgumentCount);

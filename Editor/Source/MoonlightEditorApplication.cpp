@@ -1,5 +1,6 @@
 ﻿#include "Application/Application.h"
 #include "Application/ApplicationEntryPoint.h"
+#include "Renderer/Renderer.h"
 
 class CMoonlightEditorLayer : public CLayer
 {

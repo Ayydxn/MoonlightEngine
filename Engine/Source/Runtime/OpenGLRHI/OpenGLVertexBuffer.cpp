@@ -18,12 +18,14 @@ namespace
 }
 
 COpenGLVertexBuffer::COpenGLVertexBuffer(const void* Data, uint64 Size, EVertexBufferUsage Usage)
+    : m_Size(Size)
 {
     glCreateBuffers(1, &m_VertexBufferHandle);
     glNamedBufferData(m_VertexBufferHandle, static_cast<int64>(Size), Data, ConvertMoonlightVertexBufferUsageToOpenGL(Usage));
 }
 
 COpenGLVertexBuffer::COpenGLVertexBuffer(uint64 Size, EVertexBufferUsage Usage)
+    : m_Size(Size)
 {
     glCreateBuffers(1, &m_VertexBufferHandle);
     glNamedBufferData(m_VertexBufferHandle, static_cast<int64>(Size), nullptr, ConvertMoonlightVertexBufferUsageToOpenGL(Usage));

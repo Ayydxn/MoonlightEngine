@@ -64,6 +64,33 @@ CApplication::CApplication(const CApplicationSpecification& ApplicationSpecifica
     CRenderer::Initialize();
     
     DispatchEvent<CApplicationInitializeEvent>();
+
+    /*-----------------------------------------*/
+    /* -- TEMP: REMOVE ASAP - Triangle Test -- */
+    /*-----------------------------------------*/
+
+    constexpr float Vertices[9] =
+    {
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f,
+    };
+
+    constexpr uint32 Indices[] = { 0, 1, 2 };
+
+    const CVertexBufferLayout VertexBufferLayout =
+    {
+        { "Positions", EShaderDataType::Float3 }
+    };
+
+    CGraphicsPipelineSpecification GraphicsPipelineSpecification;
+    GraphicsPipelineSpecification.VertexBufferLayout = VertexBufferLayout;
+
+    m_Shader = IShader::Create("Resources/Shaders/DefaultShader");
+
+    m_VertexBuffer = IVertexBuffer::Create(Vertices, sizeof(Vertices));
+    m_IndexBuffer = IIndexBuffer::Create(Indices, sizeof(Indices));
+    m_GraphicsPipeline = IGraphicsPipeline::Create(GraphicsPipelineSpecification);
 }
 
 CApplication::~CApplication()
@@ -122,6 +149,9 @@ void CApplication::Start()
             for (CLayer* Layer : m_LayerStack)
                 Layer->OnRender();
 
+            /* -- TEMP: REMOVE ASAP - Triangle Test -- */
+            CRenderer::DrawIndexed({ m_Shader, m_VertexBuffer, m_IndexBuffer, m_GraphicsPipeline });
+            
             DispatchEvent<CApplicationRenderEvent>();
 
             CRenderer::EndFrame();

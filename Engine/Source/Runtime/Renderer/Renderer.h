@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Application/Application.h"
+#include "RHICore/RendererBackend.h"
 #include "RHICore/RendererContext.h"
 
 enum class EGraphicsAPI
@@ -21,6 +22,8 @@ public:
 
     static void BeginFrame();
     static void EndFrame();
+
+    static void DrawIndexed(const CRenderPacket& RenderPacket);
     
     static std::shared_ptr<IRendererContext> GetContext() { return CApplication::GetInstance().GetWindow().GetRendererContext(); }
     
@@ -28,5 +31,7 @@ public:
     static std::string GetGraphicsAPIString();
     static void SetGraphicsAPI(EGraphicsAPI NewGraphicsAPI) { m_GraphicsAPI = NewGraphicsAPI; }
 private:
+    inline static std::shared_ptr<IRendererBackend> m_RendererBackend;
+    
     inline static EGraphicsAPI m_GraphicsAPI;
 };
