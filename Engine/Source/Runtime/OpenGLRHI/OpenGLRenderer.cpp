@@ -20,6 +20,7 @@ void COpenGLRenderer::BeginFrame()
     constexpr float ClearColor[4] = { 0.15f, 0.15f, 0.15f, 1.0f };
 
     glClearBufferfv(GL_COLOR, 0, ClearColor);
+    glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
 }
 
 void COpenGLRenderer::EndFrame()

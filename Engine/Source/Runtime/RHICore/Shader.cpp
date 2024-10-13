@@ -5,6 +5,8 @@
 
 std::shared_ptr<IShader> IShader::Create(const std::string& Name, const std::string& Source, EShaderStage ShaderStage)
 {
+    m_Name = Name;
+    
     switch (CRenderer::GetGraphicsAPI())
     {
         case EGraphicsAPI::OpenGL: return std::make_shared<COpenGLShader>(Name, Source, ShaderStage);
@@ -20,6 +22,8 @@ std::shared_ptr<IShader> IShader::Create(const std::string& Name, const std::str
 
 std::shared_ptr<IShader> IShader::Create(const std::filesystem::path& Filepath)
 {
+    m_Name = Filepath.stem().string();
+    
     const std::string VerifyMessage = std::string("When creating a shader via file, you should not specify a file extension, but only the shader's name!")
         .append(" For example:\nCorrect: MyShader\nIncorrect: MyShader.vert.glsl");
 

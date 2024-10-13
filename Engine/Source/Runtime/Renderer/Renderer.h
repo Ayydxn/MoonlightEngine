@@ -3,6 +3,7 @@
 #include "Application/Application.h"
 #include "RHICore/RendererBackend.h"
 #include "RHICore/RendererContext.h"
+#include "Shaders/ShaderLibrary.h"
 
 enum class EGraphicsAPI
 {
@@ -26,12 +27,14 @@ public:
     static void DrawIndexed(const CRenderPacket& RenderPacket);
     
     static std::shared_ptr<IRendererContext> GetContext() { return CApplication::GetInstance().GetWindow().GetRendererContext(); }
+    static std::shared_ptr<CShaderLibrary> GetShaderLibrary() { return m_ShaderLibrary; }
     
     static EGraphicsAPI GetGraphicsAPI() { return m_GraphicsAPI; }
     static std::string GetGraphicsAPIString();
     static void SetGraphicsAPI(EGraphicsAPI NewGraphicsAPI) { m_GraphicsAPI = NewGraphicsAPI; }
 private:
     inline static std::shared_ptr<IRendererBackend> m_RendererBackend;
+    inline static std::shared_ptr<CShaderLibrary> m_ShaderLibrary;
     
     inline static EGraphicsAPI m_GraphicsAPI;
 };

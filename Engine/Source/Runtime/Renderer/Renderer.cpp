@@ -17,6 +17,9 @@ void CRenderer::Initialize()
 
     m_RendererBackend = IRendererBackend::Create();
     m_RendererBackend->Initialize();
+
+    m_ShaderLibrary = std::make_shared<CShaderLibrary>();
+    m_ShaderLibrary->Load("Resources/Shaders/DefaultShader");
 }
 
 void CRenderer::Shutdown()

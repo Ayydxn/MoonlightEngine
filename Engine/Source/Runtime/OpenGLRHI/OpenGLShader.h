@@ -12,13 +12,10 @@ public:
     ~COpenGLShader() override;
 
     void Bind() const;
-
-    const std::string& GetName() const override { return m_Name; }
 private:
     void CreateShaderProgram();
 private:
     std::unordered_map<EShaderStage, std::vector<uint32>> m_ShaderStageToBytecode;
-
-    std::string m_Name;
+    
     uint32 m_ShaderProgramHandle = 0;
 };

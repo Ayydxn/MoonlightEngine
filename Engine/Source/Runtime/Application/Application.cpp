@@ -86,7 +86,7 @@ CApplication::CApplication(const CApplicationSpecification& ApplicationSpecifica
     CGraphicsPipelineSpecification GraphicsPipelineSpecification;
     GraphicsPipelineSpecification.VertexBufferLayout = VertexBufferLayout;
 
-    m_Shader = IShader::Create("Resources/Shaders/DefaultShader");
+    m_Shader = CRenderer::GetShaderLibrary()->GetShader("DefaultShader");
 
     m_VertexBuffer = IVertexBuffer::Create(Vertices, sizeof(Vertices));
     m_IndexBuffer = IIndexBuffer::Create(Indices, sizeof(Indices));

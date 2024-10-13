@@ -23,7 +23,6 @@ namespace
 }
 
 COpenGLShader::COpenGLShader(const std::string& Name, const std::string& Source, EShaderStage ShaderStage)
-    : m_Name(Name)
 {
     IShaderCompiler& ShaderCompiler = IShaderCompiler::GetInstance();
     std::vector<uint32> ShaderBytecode;
@@ -36,7 +35,6 @@ COpenGLShader::COpenGLShader(const std::string& Name, const std::string& Source,
 }
 
 COpenGLShader::COpenGLShader(const std::filesystem::path& Filepath)
-    : m_Name(Filepath.stem().string())
 {
     std::vector<std::filesystem::path> ShadersToCompile = {};
     IShaderCompiler& ShaderCompiler = IShaderCompiler::GetInstance();
