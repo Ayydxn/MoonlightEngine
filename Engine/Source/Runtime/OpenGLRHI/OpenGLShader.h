@@ -12,6 +12,8 @@ public:
     ~COpenGLShader() override;
 
     void Bind() const;
+
+    void SetInt(const std::string& Name, int32 Value) const;
 private:
     void CreateShaderProgram();
 private:

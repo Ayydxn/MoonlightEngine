@@ -69,18 +69,21 @@ CApplication::CApplication(const CApplicationSpecification& ApplicationSpecifica
     /* -- TEMP: REMOVE ASAP - Triangle Test -- */
     /*-----------------------------------------*/
 
-    constexpr float Vertices[9] =
-    {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f,
+    constexpr float Vertices[20] =
+    { 
+        // Positions            // Texture Coords 
+        -0.5f, -0.5f, 0.0f,     0.0f, 0.0f,
+         0.5f, -0.5f, 0.0f,     1.0f, 0.0f,
+         0.5f,  0.5f, 0.0f,     1.0f, 1.0f,
+        -0.5f,  0.5f, 0.0f,     0.0f, 1.0f
     };
 
-    constexpr uint32 Indices[] = { 0, 1, 2 };
+    constexpr uint32 Indices[] = { 0, 1, 2, 2, 3, 0 };
 
     const CVertexBufferLayout VertexBufferLayout =
     {
-        { "Positions", EShaderDataType::Float3 }
+        { "Positions", EShaderDataType::Float3 },
+        { "TextureCoords", EShaderDataType::Float2 }
     };
 
     CGraphicsPipelineSpecification GraphicsPipelineSpecification;
@@ -91,6 +94,8 @@ CApplication::CApplication(const CApplicationSpecification& ApplicationSpecifica
     m_VertexBuffer = IVertexBuffer::Create(Vertices, sizeof(Vertices));
     m_IndexBuffer = IIndexBuffer::Create(Indices, sizeof(Indices));
     m_GraphicsPipeline = IGraphicsPipeline::Create(GraphicsPipelineSpecification);
+
+    m_PlaceholderTexture = ITexture::Create("Resources/Textures/Placeholder.png");
 }
 
 CApplication::~CApplication()
@@ -150,7 +155,7 @@ void CApplication::Start()
                 Layer->OnRender();
 
             /* -- TEMP: REMOVE ASAP - Triangle Test -- */
-            CRenderer::DrawIndexed({ m_Shader, m_VertexBuffer, m_IndexBuffer, m_GraphicsPipeline });
+            CRenderer::DrawIndexed({ m_Shader, m_VertexBuffer, m_IndexBuffer, m_GraphicsPipeline, m_PlaceholderTexture });
             
             DispatchEvent<CApplicationRenderEvent>();
 

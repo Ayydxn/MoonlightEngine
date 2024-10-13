@@ -2,6 +2,10 @@
 
 layout(location = 0) out vec4 o_OutColor;
 
+layout (location = 0) in vec2 o_TextureCoords;
+
+uniform sampler2D u_Texture;
+
 void main() {
-    o_OutColor = vec4(0.2, 0.6, 0.9, 1.0);
+    o_OutColor = texture(u_Texture, o_TextureCoords);
 }

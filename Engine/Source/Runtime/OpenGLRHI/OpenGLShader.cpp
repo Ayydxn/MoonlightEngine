@@ -77,6 +77,11 @@ void COpenGLShader::Bind() const
     glUseProgram(m_ShaderProgramHandle);
 }
 
+void COpenGLShader::SetInt(const std::string& Name, const int32 Value) const
+{
+    glProgramUniform1i(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), Value);
+}
+
 void COpenGLShader::CreateShaderProgram()
 {
     std::vector<uint32> ShaderIDs;

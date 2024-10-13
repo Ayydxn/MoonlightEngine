@@ -6,12 +6,15 @@
 
 #include <memory>
 
+#include "Texture.h"
+
 struct CRenderPacket
 {
     std::shared_ptr<IShader> Shader;
     std::shared_ptr<IVertexBuffer> VertexBuffer;
     std::shared_ptr<IIndexBuffer> IndexBuffer;
     std::shared_ptr<IGraphicsPipeline> GraphicsPipeline;
+    std::shared_ptr<ITexture> Texture;
 };
 
 class IRendererBackend

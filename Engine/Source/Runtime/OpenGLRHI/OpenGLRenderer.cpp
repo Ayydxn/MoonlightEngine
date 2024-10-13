@@ -7,6 +7,8 @@
 
 #include <glad/glad.h>
 
+#include "OpenGLTexture.h"
+
 void COpenGLRenderer::Initialize()
 {
 }
@@ -44,6 +46,13 @@ void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket)
 
     glVertexArrayVertexBuffer(VertexArray->GetHandle(), 0, VertexBuffer->GetHandle(), 0, static_cast<int32>(VertexArray->GetStride()));
     glVertexArrayElementBuffer(VertexArray->GetHandle(), IndexBuffer->GetHandle());
+
+    if (RenderPacket.Texture != nullptr)
+    {
+        Shader->SetInt("u_Texture", 0);
+        
+        Cast<COpenGLTexture>(RenderPacket.Texture)->Bind();
+    }
     
     glDrawElements(GL_TRIANGLES, static_cast<int32>(IndexBuffer->GetCount()), GL_UNSIGNED_INT, nullptr);
 }

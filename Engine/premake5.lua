@@ -14,7 +14,10 @@ project "Moonlight Engine"
     files
     {
         "%{prj.location}/Source/**.cpp",
-        "%{prj.location}/Source/**.h"
+        "%{prj.location}/Source/**.h",
+        
+        "%{prj.location}/ThirdParty/stb_image/**.cpp",
+        "%{prj.location}/ThirdParty/stb_image/**.h"
     }
 
     includedirs
@@ -24,6 +27,7 @@ project "Moonlight Engine"
         "%{IncludeDir.Vulkan}",
         "%{IncludeDir.Shaderc}",
         "%{IncludeDir.Glad}",
+        "%{IncludeDir.stb_image}",
         
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",

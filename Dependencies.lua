@@ -7,6 +7,7 @@ IncludeDir["Vulkan"] = "%{wks.location}/Engine/ThirdParty/Vulkan/Include"
 IncludeDir["Vulkan"] = "%{wks.location}/Engine/ThirdParty/Vulkan/Include"
 IncludeDir["Shaderc"] = "%{wks.location}/Engine/ThirdParty/Shaderc/Include"
 IncludeDir["Glad"] = "%{wks.location}/Engine/ThirdParty/Glad/include"
+IncludeDir["stb_image"] = "%{wks.location}/Engine/ThirdParty/stb_image"
 
 LibraryDir = {}
 LibraryDir["Shaderc_Windows"] = "%{wks.location}/Engine/ThirdParty/Shaderc/Lib/Windows"
