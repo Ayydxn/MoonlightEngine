@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "RendererConfig.h"
 #include "Application/Application.h"
 #include "RHICore/RendererBackend.h"
 #include "RHICore/RendererContext.h"
@@ -28,6 +29,7 @@ public:
     
     static std::shared_ptr<IRendererContext> GetContext() { return CApplication::GetInstance().GetWindow().GetRendererContext(); }
     static std::shared_ptr<CShaderLibrary> GetShaderLibrary() { return m_ShaderLibrary; }
+    static CRendererConfig GetConfig() { return m_RendererConfig; }
     
     static EGraphicsAPI GetGraphicsAPI() { return m_GraphicsAPI; }
     static std::string GetGraphicsAPIString();
@@ -35,6 +37,8 @@ public:
 private:
     inline static std::shared_ptr<IRendererBackend> m_RendererBackend;
     inline static std::shared_ptr<CShaderLibrary> m_ShaderLibrary;
+
+    inline static CRendererConfig m_RendererConfig;
     
     inline static EGraphicsAPI m_GraphicsAPI;
 };

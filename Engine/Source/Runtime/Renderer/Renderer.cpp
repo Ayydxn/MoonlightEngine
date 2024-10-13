@@ -4,6 +4,8 @@
 
 void CRenderer::PreInitialize()
 {
+    m_RendererConfig = CRendererConfig();
+    
     // TODO: (Ayydan) The graphics API we use should come from a configuration file.
     // But for now, we'll force OpenGL since it's the only one we support.
     m_GraphicsAPI = EGraphicsAPI::OpenGL;

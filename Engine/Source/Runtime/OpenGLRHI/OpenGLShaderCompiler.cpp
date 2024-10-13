@@ -2,6 +2,7 @@
 #include "OpenGLShaderCompiler.h"
 #include "Application/Application.h"
 #include "Misc/EnginePaths.h"
+#include "Renderer/Renderer.h"
 #include "Renderer/Shaders/ShaderUtils.h"
 #include "Utils/FileUtils.h"
 
@@ -48,42 +49,50 @@ void COpenGLShaderCompiler::CompileShaderFromFile(const std::filesystem::path& S
 {
     std::string ApplicationName = CApplication::GetInstance().GetSpecification().Name;
     std::string ShaderName = ShaderFilepath.filename().string().substr(0, ShaderFilepath.filename().string().find_first_of('.'));
-
-    // Remove any spaces that may be present in the application's name.
-    ApplicationName.erase(std::ranges::remove_if(ApplicationName, isspace).begin(), ApplicationName.end());
-
-    const std::filesystem::path ShaderCachePath = CEnginePaths::GetShaderCacheDirectory();
-    const std::filesystem::path ShaderCacheFilepath = ShaderCachePath / (ApplicationName + "_" + ShaderName + "_" +
-        CShaderUtils::GetShaderStageCacheFileExtension(ShaderStage).string());
-
-    std::ifstream FileReader(ShaderCacheFilepath.string(), std::ios::in | std::ios::binary);
-    if (FileReader.is_open())
+   
+    if (CRenderer::GetConfig().bEnableShaderCaching)
     {
-        ENGINE_LOG_INFO_TAG("Renderer", "Loading shader '{}' from the shader cache...", ShaderFilepath.string());
+        // Remove any spaces that may be present in the application's name.
+        ApplicationName.erase(std::ranges::remove_if(ApplicationName, isspace).begin(), ApplicationName.end());
 
-        FileReader.seekg(0, std::ios::end);
+        const std::filesystem::path ShaderCachePath = CEnginePaths::GetShaderCacheDirectory();
+        const std::filesystem::path ShaderCacheFilepath = ShaderCachePath / (ApplicationName + "_" + ShaderName + "_" +
+            CShaderUtils::GetShaderStageCacheFileExtension(ShaderStage).string());
 
-        const size_t FileSize = FileReader.tellg();
+        std::ifstream FileReader(ShaderCacheFilepath.string(), std::ios::in | std::ios::binary);
+        if (FileReader.is_open())
+        {
+            ENGINE_LOG_INFO_TAG("Renderer", "Loading shader '{}' from the shader cache...", ShaderFilepath.string());
 
-        FileReader.seekg(0, std::ios::beg);
+            FileReader.seekg(0, std::ios::end);
+
+            const size_t FileSize = FileReader.tellg();
+
+            FileReader.seekg(0, std::ios::beg);
         
-        OutputShaderBytecode.resize(FileSize / sizeof(uint32));
+            OutputShaderBytecode.resize(FileSize / sizeof(uint32));
 
-        FileReader.read(reinterpret_cast<char*>(OutputShaderBytecode.data()), FileSize);
-        return;
-    }
-
-    /*--------------------------------------------------------------------------------------------*/
-    /* -- If a cache file for the shader doesn't exist, we compile it and create a cache file. -- */
-    /*--------------------------------------------------------------------------------------------*/
+            FileReader.read(reinterpret_cast<char*>(OutputShaderBytecode.data()), FileSize);
+        }
+        else
+        {
+            /*--------------------------------------------------------------------------------------------*/
+            /* -- If a cache file for the shader doesn't exist, we compile it and create a cache file. -- */
+            /*--------------------------------------------------------------------------------------------*/
     
-    CompileShader(ShaderFilepath.string(), CFileUtils::ReadFile(ShaderFilepath), ShaderStage, OutputShaderBytecode);
+            CompileShader(ShaderFilepath.string(), CFileUtils::ReadFile(ShaderFilepath), ShaderStage, OutputShaderBytecode);
 
-    std::ofstream FileWriter(ShaderCacheFilepath, std::ios::out | std::ios::binary);
-    if (FileWriter.is_open())
+            std::ofstream FileWriter(ShaderCacheFilepath, std::ios::out | std::ios::binary);
+            if (FileWriter.is_open())
+            {
+                FileWriter.write(reinterpret_cast<char*>(OutputShaderBytecode.data()), static_cast<int32>(OutputShaderBytecode.size()) * sizeof(uint32));
+                FileWriter.flush();
+                FileWriter.close();
+            }
+        }
+    }
+    else
     {
-        FileWriter.write(reinterpret_cast<char*>(OutputShaderBytecode.data()), static_cast<int32>(OutputShaderBytecode.size()) * sizeof(uint32));
-        FileWriter.flush();
-        FileWriter.close();
+        CompileShader(ShaderFilepath.string(), CFileUtils::ReadFile(ShaderFilepath), ShaderStage, OutputShaderBytecode);
     }
 }
