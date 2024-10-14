@@ -16,6 +16,7 @@ public:
     virtual void OnUpdate() {}
     virtual void OnPreRender() {}
     virtual void OnRender() {}
+    virtual void OnImGuiRender() {}
     virtual void OnPostRender() {}
     virtual void OnTick() {}
     virtual void OnEvent(IEvent& Event) {}

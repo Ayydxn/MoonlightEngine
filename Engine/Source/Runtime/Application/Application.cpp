@@ -62,6 +62,9 @@ CApplication::CApplication(const CApplicationSpecification& ApplicationSpecifica
 
     CInput::Initialize();
     CRenderer::Initialize();
+
+    m_ImGuiLayer = IImGuiLayer::Create();
+    PushOverlay(m_ImGuiLayer);
     
     DispatchEvent<CApplicationInitializeEvent>();
 
@@ -149,13 +152,21 @@ void CApplication::Start()
 
             CRenderer::BeginFrame();
 
+            /* -- TEMP: REMOVE ASAP - Triangle Test -- */
+            CRenderer::DrawIndexed({ m_Shader, m_VertexBuffer, m_IndexBuffer, m_GraphicsPipeline, m_PlaceholderTexture });
+
+            // (Ayydxn) We render ImGui first so that it doesn't render underneath any geometry.
+            m_ImGuiLayer->BeginFrame();
+
+            for (CLayer* Layer : m_LayerStack)
+                Layer->OnImGuiRender();
+
+            m_ImGuiLayer->EndFrame();
+
             OnRender();
 
             for (CLayer* Layer : m_LayerStack)
                 Layer->OnRender();
-
-            /* -- TEMP: REMOVE ASAP - Triangle Test -- */
-            CRenderer::DrawIndexed({ m_Shader, m_VertexBuffer, m_IndexBuffer, m_GraphicsPipeline, m_PlaceholderTexture });
             
             DispatchEvent<CApplicationRenderEvent>();
 

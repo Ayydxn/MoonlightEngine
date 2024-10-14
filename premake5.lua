@@ -50,6 +50,7 @@ workspace "Moonlight Engine"
 group "Dependencies"
     include "Engine/ThirdParty/GLFW"
     include "Engine/ThirdParty/Glad"
+    include "Engine/ThirdParty/ImGui"
 group ""
 
 group "Core"

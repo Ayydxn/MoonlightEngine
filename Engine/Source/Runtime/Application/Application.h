@@ -5,6 +5,7 @@
 #include "Core/CoreTypes.h"
 #include "Events/Event.h"
 #include "Events/WindowEvents.h"
+#include "ImGui/ImGuiLayer.h"
 #include "Layers/LayerStack.h"
 #include "Misc/CommandLineArguments.h"
 
@@ -76,6 +77,8 @@ private:
     inline static CApplication* m_ApplicationInstance = nullptr;
     
     std::shared_ptr<IWindow> m_ApplicationWindow;
+
+    IImGuiLayer* m_ImGuiLayer;
 
     CApplicationSpecification m_ApplicationSpecification;
     CCommandLineArguments m_CommandLineArguments;

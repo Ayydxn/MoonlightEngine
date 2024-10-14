@@ -28,6 +28,7 @@ project "Moonlight Engine"
         "%{IncludeDir.Shaderc}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.stb_image}",
+        "%{IncludeDir.ImGui}",
         
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",
@@ -37,7 +38,8 @@ project "Moonlight Engine"
     links
     {
         "GLFW",
-        "Glad"
+        "Glad",
+        "ImGui"
     }
 
     defines
