@@ -67,38 +67,6 @@ CApplication::CApplication(const CApplicationSpecification& ApplicationSpecifica
     PushOverlay(m_ImGuiLayer);
     
     DispatchEvent<CApplicationInitializeEvent>();
-
-    /*-----------------------------------------*/
-    /* -- TEMP: REMOVE ASAP - Triangle Test -- */
-    /*-----------------------------------------*/
-
-    constexpr float Vertices[20] =
-    { 
-        // Positions            // Texture Coords 
-        -0.5f, -0.5f, 0.0f,     0.0f, 0.0f,
-         0.5f, -0.5f, 0.0f,     1.0f, 0.0f,
-         0.5f,  0.5f, 0.0f,     1.0f, 1.0f,
-        -0.5f,  0.5f, 0.0f,     0.0f, 1.0f
-    };
-
-    constexpr uint32 Indices[] = { 0, 1, 2, 2, 3, 0 };
-
-    const CVertexBufferLayout VertexBufferLayout =
-    {
-        { "Positions", EShaderDataType::Float3 },
-        { "TextureCoords", EShaderDataType::Float2 }
-    };
-
-    CGraphicsPipelineSpecification GraphicsPipelineSpecification;
-    GraphicsPipelineSpecification.VertexBufferLayout = VertexBufferLayout;
-
-    m_Shader = CRenderer::GetShaderLibrary()->GetShader("DefaultShader");
-
-    m_VertexBuffer = IVertexBuffer::Create(Vertices, sizeof(Vertices));
-    m_IndexBuffer = IIndexBuffer::Create(Indices, sizeof(Indices));
-    m_GraphicsPipeline = IGraphicsPipeline::Create(GraphicsPipelineSpecification);
-
-    m_PlaceholderTexture = ITexture::Create("Resources/Textures/Placeholder.png");
 }
 
 CApplication::~CApplication()
@@ -182,23 +150,20 @@ void CApplication::Start()
 
             CRenderer::BeginFrame();
 
-            /* -- TEMP: REMOVE ASAP - Triangle Test -- */
-            CRenderer::DrawIndexed({ m_Shader, m_VertexBuffer, m_IndexBuffer, m_GraphicsPipeline, m_PlaceholderTexture });
-
-            // (Ayydxn) We render ImGui first so that it doesn't render underneath any geometry.
-            m_ImGuiLayer->BeginFrame();
-
-            for (CLayer* Layer : m_LayerStack)
-                Layer->OnImGuiRender();
-
-            m_ImGuiLayer->EndFrame();
-
             OnRender();
 
             for (CLayer* Layer : m_LayerStack)
                 Layer->OnRender();
             
             DispatchEvent<CApplicationRenderEvent>();
+
+            // (Ayydxn) Once rendering has been done, we render ImGui so that it doesn't render under any of the geometry.
+            m_ImGuiLayer->BeginFrame();
+
+            for (CLayer* Layer : m_LayerStack)
+                Layer->OnImGuiRender();
+
+            m_ImGuiLayer->EndFrame();
 
             CRenderer::EndFrame();
             

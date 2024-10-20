@@ -1,8 +1,9 @@
 ﻿#pragma once
 
+#include "CoreDefines.h"
 #include "RHICore/Shader.h"
 
-class CShaderLibrary
+class MOONLIGHT_API CShaderLibrary
 {
 public:
     CShaderLibrary() = default;

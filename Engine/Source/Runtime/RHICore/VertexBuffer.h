@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "CoreDefines.h"
+
 #include <initializer_list>
 #include <memory>
 
@@ -119,7 +121,7 @@ private:
     uint32 m_Stride = 0;
 };
 
-class IVertexBuffer
+class MOONLIGHT_API IVertexBuffer
 {
 public:
     virtual ~IVertexBuffer() = default;

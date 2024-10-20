@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "CoreDefines.h"
 #include "RHICore/Shader.h"
 #include "RHICore/VertexBuffer.h"
 
@@ -44,7 +45,7 @@ struct CGraphicsPipelineSpecification
     std::string DebugName;
 };
 
-class IGraphicsPipeline
+class MOONLIGHT_API IGraphicsPipeline
 {
 public:
     virtual ~IGraphicsPipeline() = default;

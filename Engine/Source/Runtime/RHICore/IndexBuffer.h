@@ -1,8 +1,10 @@
 ﻿#pragma once
 
+#include "CoreDefines.h"
+
 #include <memory>
 
-class IIndexBuffer
+class MOONLIGHT_API IIndexBuffer
 {
 public:
     virtual ~IIndexBuffer() = default;

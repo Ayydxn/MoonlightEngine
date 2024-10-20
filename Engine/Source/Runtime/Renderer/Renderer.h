@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "CoreDefines.h"
 #include "RendererConfig.h"
 #include "Application/Application.h"
 #include "RHICore/RendererBackend.h"
@@ -15,7 +16,7 @@ enum class EGraphicsAPI
     Metal
 };
 
-class CRenderer
+class MOONLIGHT_API CRenderer
 {
 public:
     static void PreInitialize();

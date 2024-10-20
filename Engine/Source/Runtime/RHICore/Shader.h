@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "CoreDefines.h"
+
 #include <memory>
 #include <string>
 
@@ -11,7 +13,7 @@ enum class EShaderStage
     Fragment
 };
 
-class IShader
+class MOONLIGHT_API IShader
 {
 public:
     virtual ~IShader() = default;

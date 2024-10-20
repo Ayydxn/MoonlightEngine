@@ -10,9 +10,6 @@
 #include "Misc/Clock.h"
 #include "Misc/CommandLineArguments.h"
 
-#include "RHICore/Shader.h"
-#include "RHICore/Texture.h"
-
 #include <mutex>
 #include <queue>
 #include <string>
@@ -102,12 +99,6 @@ private:
     
     bool bIsWindowMinimized = false;
     bool bIsRunning = true;
-
-    std::shared_ptr<IVertexBuffer> m_VertexBuffer;
-    std::shared_ptr<IIndexBuffer> m_IndexBuffer;
-    std::shared_ptr<IGraphicsPipeline> m_GraphicsPipeline;
-    std::shared_ptr<IShader> m_Shader;
-    std::shared_ptr<ITexture> m_PlaceholderTexture;
 };
 
 CApplication* CreateApplication(char** Arguments, int32 ArgumentCount);

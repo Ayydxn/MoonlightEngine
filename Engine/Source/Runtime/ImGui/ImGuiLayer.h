@@ -11,5 +11,7 @@ public:
     virtual void BeginFrame() = 0;
     virtual void EndFrame() = 0;
 
+    void SetDarkThemeColors();
+    
     static IImGuiLayer* Create();
 };

@@ -1,9 +1,11 @@
 ﻿#pragma once
 
+#include "CoreDefines.h"
+
 #include <filesystem>
 #include <memory>
 
-class ITexture
+class MOONLIGHT_API ITexture
 {
 public:
     virtual ~ITexture() = default;
