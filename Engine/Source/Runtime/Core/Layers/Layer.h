@@ -14,6 +14,7 @@ public:
     virtual void OnAttach() {}
     virtual void OnDetach() {}
     virtual void OnUpdate() {}
+    virtual void OnFixedUpdate(float DeltaTime) {}
     virtual void OnPreRender() {}
     virtual void OnRender() {}
     virtual void OnImGuiRender() {}

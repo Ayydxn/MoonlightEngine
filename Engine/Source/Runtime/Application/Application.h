@@ -7,6 +7,7 @@
 #include "Events/WindowEvents.h"
 #include "ImGui/ImGuiLayer.h"
 #include "Layers/LayerStack.h"
+#include "Misc/Clock.h"
 #include "Misc/CommandLineArguments.h"
 
 #include "RHICore/Shader.h"
@@ -41,6 +42,7 @@ public:
 
     virtual void OnInitialize() {}
     virtual void OnUpdate() {}
+    virtual void OnFixedUpdate(float DeltaTime) {}
     virtual void OnEvent(IEvent& Event);
     virtual void OnPreRender() {}
     virtual void OnRender() {}
@@ -65,6 +67,9 @@ public:
     static CApplication& GetInstance() { return *m_ApplicationInstance; }
 
     IWindow& GetWindow() const { return *m_ApplicationWindow; }
+
+    float GetFrameTime() const { return m_FrameTime; }
+    float GetDeltaTime() const { return m_DeltaTime; }
     
     const CApplicationSpecification& GetSpecification() const { return m_ApplicationSpecification; }
 private:
@@ -83,11 +88,16 @@ private:
     CApplicationSpecification m_ApplicationSpecification;
     CCommandLineArguments m_CommandLineArguments;
     CLayerStack m_LayerStack;
+    CClock m_Clock;
     
     std::mutex m_EventQueueMutex;
     std::queue<std::function<void()>> m_EventQueue;
 
-    bool bIsWindowMinizmied = false;
+    float m_FrameTime = 0.0f;
+    float m_DeltaTime = 0.0f;
+    float m_LastFrameTime = 0.0f;
+    
+    bool bIsWindowMinimized = false;
     bool bIsRunning = true;
 
     std::shared_ptr<IVertexBuffer> m_VertexBuffer;

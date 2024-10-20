@@ -122,18 +122,39 @@ CApplication::~CApplication()
 
 void CApplication::Start()
 {
+    m_Clock.Start();
+    m_Clock.Update();
+
+    m_LastFrameTime = m_Clock.GetElapsedTime();
+    
     OnInitialize();
     
     while (bIsRunning)
     {
+        m_Clock.Update();
+
+        const float ElapsedTime = m_Clock.GetElapsedTime();
+        
+        m_FrameTime = ElapsedTime - m_LastFrameTime;
+        m_DeltaTime = std::min(m_FrameTime, 0.0333f);
+        m_LastFrameTime = ElapsedTime;
+        
         /*-----------------*/
         /* --  Updating -- */
         /*-----------------*/
         
         OnUpdate();
-
+        
         for (CLayer* Layer : m_LayerStack)
             Layer->OnUpdate();
+
+        if (m_FrameTime > 0.0f)
+        {
+            OnFixedUpdate(m_DeltaTime);
+            
+            for (CLayer* Layer : m_LayerStack)
+                Layer->OnFixedUpdate(m_DeltaTime);
+        }
         
         ProcessEvents();
 
@@ -143,7 +164,7 @@ void CApplication::Start()
         /* -- Rendering -- */
         /*-----------------*/
 
-        if (!bIsWindowMinizmied)
+        if (!bIsWindowMinimized)
         {
             OnPreRender();
 
@@ -281,7 +302,7 @@ bool CApplication::OnWindowClose()
 
 bool CApplication::OnWindowMinimized(const CWindowMinimizeEvent& WindowMinimizeEvent)
 {
-    bIsWindowMinizmied = WindowMinimizeEvent.IsWindowMinimized();
+    bIsWindowMinimized = WindowMinimizeEvent.IsWindowMinimized();
 
     return true;
 }
