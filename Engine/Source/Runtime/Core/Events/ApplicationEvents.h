@@ -52,22 +52,6 @@ public:
     SET_CLASS_EVENT_CATEGORY(ApplicationCategory)
 };
 
-class CApplicationTickEvent : public IEvent
-{
-public:
-    CApplicationTickEvent() = default;
-
-    std::string ToString() const override
-    {
-        std::stringstream StringStream;
-        StringStream << "ApplicationTickEvent";
-        return StringStream.str();
-    }
-
-    SET_CLASS_EVENT_TYPE(ApplicationTick)
-    SET_CLASS_EVENT_CATEGORY(ApplicationCategory)
-};
-
 class CApplicationShutdownEvent : public IEvent
 {
 public:

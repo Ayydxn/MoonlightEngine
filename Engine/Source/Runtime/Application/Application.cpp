@@ -122,6 +122,13 @@ CApplication::~CApplication()
 
 void CApplication::Start()
 {
+    // TODO: (Ayydxn) Make this configurable but, for now, the engine will run at 128 ticks per second.
+    constexpr float TicksPerMilliseconds = 1.0f / 128.0f;
+    
+    float LastTime = std::chrono::time_point_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now())
+        .time_since_epoch()
+        .count();
+    
     m_Clock.Start();
     m_Clock.Update();
 
@@ -136,24 +143,26 @@ void CApplication::Start()
         const float ElapsedTime = m_Clock.GetElapsedTime();
         
         m_FrameTime = ElapsedTime - m_LastFrameTime;
-        m_DeltaTime = std::min(m_FrameTime, 0.0333f);
+        m_DeltaTime += std::min(m_FrameTime, 0.0333f) / TicksPerMilliseconds;
         m_LastFrameTime = ElapsedTime;
         
         /*-----------------*/
         /* --  Updating -- */
         /*-----------------*/
         
-        OnUpdate();
-        
-        for (CLayer* Layer : m_LayerStack)
-            Layer->OnUpdate();
-
-        if (m_FrameTime > 0.0f)
+        while (m_DeltaTime >= 1.0f)
         {
+            OnUpdate();
             OnFixedUpdate(m_DeltaTime);
             
             for (CLayer* Layer : m_LayerStack)
+            {
+                Layer->OnUpdate();
                 Layer->OnFixedUpdate(m_DeltaTime);
+            }
+
+            m_TicksPerSecond++;
+            m_DeltaTime--;
         }
         
         ProcessEvents();
@@ -199,18 +208,17 @@ void CApplication::Start()
                 Layer->OnPostRender();
 
             m_ApplicationWindow->SwapBuffers();
+
+            m_FramesPerSecond++;
         }
-        
-        /*---------------*/
-        /* -- Ticking -- */
-        /*---------------*/
 
-        OnTick();
-
-        for (CLayer* Layer : m_LayerStack)
-            Layer->OnTick();
-
-        DispatchEvent<CApplicationTickEvent>();
+        if (std::chrono::time_point_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now()).time_since_epoch().count() - LastTime > 1.0f)
+        {
+            LastTime++;
+            
+            m_FramesPerSecond = 0;
+            m_TicksPerSecond = 0;
+        }
     }
 
     OnShutdown();

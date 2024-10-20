@@ -54,6 +54,8 @@ void CDesktopWindow::Initialize()
     m_RendererContext = IRendererContext::Create(m_WindowHandle);
     m_RendererContext->Initialize();
 
+    EnableVSync(m_Specification.bEnableVSync);
+
     if (glfwRawMouseMotionSupported())
         glfwSetInputMode(m_WindowHandle, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
     else

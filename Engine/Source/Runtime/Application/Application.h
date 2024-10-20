@@ -47,7 +47,6 @@ public:
     virtual void OnPreRender() {}
     virtual void OnRender() {}
     virtual void OnPostRender() {}
-    virtual void OnTick() {}
     virtual void OnShutdown() {}
     
     void Start();
@@ -70,6 +69,8 @@ public:
 
     float GetFrameTime() const { return m_FrameTime; }
     float GetDeltaTime() const { return m_DeltaTime; }
+    int GetFrameRate() const { return m_FramesPerSecond; }
+    int GetTickRate() const { return m_TicksPerSecond; }
     
     const CApplicationSpecification& GetSpecification() const { return m_ApplicationSpecification; }
 private:
@@ -96,6 +97,8 @@ private:
     float m_FrameTime = 0.0f;
     float m_DeltaTime = 0.0f;
     float m_LastFrameTime = 0.0f;
+    int m_FramesPerSecond = 0;
+    int m_TicksPerSecond = 0;
     
     bool bIsWindowMinimized = false;
     bool bIsRunning = true;

@@ -10,7 +10,7 @@ enum class EEventType
     KeyPressed, KeyReleased, KeyTyped,
     MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
     WindowClose, WindowMinimize, WindowResize, WindowMoved, WindowFocus, WindowLostFocus,
-    ApplicationInitialize, ApplicationUpdate, ApplicationRender, ApplicationTick, ApplicationShutdown
+    ApplicationInitialize, ApplicationUpdate, ApplicationRender, ApplicationShutdown
 };
 
 enum EEventCategory

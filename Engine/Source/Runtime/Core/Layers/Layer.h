@@ -19,7 +19,6 @@ public:
     virtual void OnRender() {}
     virtual void OnImGuiRender() {}
     virtual void OnPostRender() {}
-    virtual void OnTick() {}
     virtual void OnEvent(IEvent& Event) {}
 
     const std::string& GetName() const { return m_LayerName; }
