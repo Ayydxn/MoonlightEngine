@@ -25,7 +25,6 @@ namespace
 void COpenGLShaderCompiler::Initialize()
 {
     m_ShaderCompilerOptions.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
-    m_ShaderCompilerOptions.SetOptimizationLevel(shaderc_optimization_level_performance);
 }
 
 void COpenGLShaderCompiler::CompileShader(const std::string& ShaderName, const std::string& ShaderSource, EShaderStage ShaderStage,

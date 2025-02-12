@@ -6,5 +6,5 @@ public:
     CRendererConfig() = default;
     ~CRendererConfig() = default;
 
-    bool bEnableShaderCaching = true;
+    bool bEnableShaderCaching = false;
 };

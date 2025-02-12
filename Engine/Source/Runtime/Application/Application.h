@@ -14,10 +14,6 @@
 #include <queue>
 #include <string>
 
-class IVertexBuffer;
-class IIndexBuffer;
-class IGraphicsPipeline;
-
 struct CApplicationSpecification
 {
     std::string Name = "Moonlight Engine";

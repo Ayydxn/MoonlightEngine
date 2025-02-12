@@ -2,6 +2,8 @@
 
 #include "RHICore/Shader.h"
 
+#include <glm/glm.hpp>
+
 #include <unordered_map>
 
 class COpenGLShader : public IShader
@@ -14,6 +16,7 @@ public:
     void Bind() const;
 
     void SetInt(const std::string& Name, int32 Value) const;
+    void SetMatrix4x4f(const std::string& Name, const glm::mat4& Value) const;
 private:
     void CreateShaderProgram();
 private:

@@ -4,6 +4,8 @@
 #include "RHICore/ShaderCompiler.h"
 #include "Utils/FileUtils.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include <glad/glad.h>
 
 namespace
@@ -80,6 +82,11 @@ void COpenGLShader::Bind() const
 void COpenGLShader::SetInt(const std::string& Name, const int32 Value) const
 {
     glProgramUniform1i(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), Value);
+}
+
+void COpenGLShader::SetMatrix4x4f(const std::string& Name, const glm::mat4& Value) const
+{
+    glProgramUniformMatrix4fv(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), 1, false, glm::value_ptr(Value));
 }
 
 void COpenGLShader::CreateShaderProgram()

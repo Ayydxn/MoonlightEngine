@@ -2,11 +2,12 @@
 
 #include "GraphicsPipeline.h"
 #include "IndexBuffer.h"
+#include "Texture.h"
 #include "VertexBuffer.h"
 
 #include <memory>
 
-#include "Texture.h"
+struct CSceneData;
 
 struct CRenderPacket
 {
@@ -28,7 +29,7 @@ public:
     virtual void BeginFrame() = 0;
     virtual void EndFrame() = 0;
 
-    virtual void DrawIndexed(const CRenderPacket& RenderPacket) = 0;
+    virtual void DrawIndexed(const CRenderPacket& RenderPacket, const CSceneData* SceneData) = 0;
     
     static std::shared_ptr<IRendererBackend> Create();
 };

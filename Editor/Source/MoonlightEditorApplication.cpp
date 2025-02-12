@@ -8,7 +8,7 @@ class CMoonlightEditorLayer : public CLayer
 {
 public:
     CMoonlightEditorLayer()
-        : CLayer("Moonlight Editor Layer") {}
+        : CLayer("Moonlight Editor Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f) {}
 
     void OnAttach() override
     {
@@ -43,7 +43,11 @@ public:
 
     void OnRender() override
     {
+        CRenderer::BeginScene(m_Camera);
+        
         CRenderer::DrawIndexed({ m_Shader, m_VertexBuffer, m_IndexBuffer, m_GraphicsPipeline, m_PlaceholderTexture });
+
+        CRenderer::EndScene();
     }
 private:
     std::shared_ptr<IVertexBuffer> m_VertexBuffer;
@@ -51,6 +55,8 @@ private:
     std::shared_ptr<IGraphicsPipeline> m_GraphicsPipeline;
     std::shared_ptr<IShader> m_Shader;
     std::shared_ptr<ITexture> m_PlaceholderTexture;
+
+    COrthographicCamera m_Camera;
 };
 
 class CMoonlightEditorApplication : public CApplication

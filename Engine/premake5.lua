@@ -29,6 +29,7 @@ project "Moonlight Engine"
         "%{IncludeDir.Glad}",
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.ImGui}",
+        "%{IncludeDir.glm}",
         
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",

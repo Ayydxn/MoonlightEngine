@@ -5,8 +5,10 @@ layout (location = 1) in vec2 i_TextureCoords;
 
 layout (location = 0) out vec2 o_TextureCoords;
 
+layout(location = 0) uniform mat4 u_ViewProjectionMatrix;
+
 void main() {
     o_TextureCoords = i_TextureCoords;
     
-    gl_Position = vec4(i_Positions, 1.0);
+    gl_Position = u_ViewProjectionMatrix * vec4(i_Positions, 1.0);
 }

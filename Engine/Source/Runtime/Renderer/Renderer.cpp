@@ -16,12 +16,14 @@ void CRenderer::PreInitialize()
 void CRenderer::Initialize()
 {
     IShaderCompiler::Init();
-
+    
     m_RendererBackend = IRendererBackend::Create();
     m_RendererBackend->Initialize();
 
     m_ShaderLibrary = std::make_shared<CShaderLibrary>();
     m_ShaderLibrary->Load("Resources/Shaders/DefaultShader");
+
+    m_SceneData = new CSceneData();
 }
 
 void CRenderer::Shutdown()
@@ -29,6 +31,8 @@ void CRenderer::Shutdown()
     IShaderCompiler::GetInstance().Shutdown();
 
     m_RendererBackend->Shutdown();
+
+    delete m_SceneData;
 }
 
 void CRenderer::BeginFrame()
@@ -41,9 +45,18 @@ void CRenderer::EndFrame()
     m_RendererBackend->EndFrame();
 }
 
+void CRenderer::BeginScene(const COrthographicCamera& Camera)
+{
+    m_SceneData->m_ViewProjectionMatrix = Camera.GetViewProjectionMatrix();
+}
+
+void CRenderer::EndScene()
+{
+}
+
 void CRenderer::DrawIndexed(const CRenderPacket& RenderPacket)
 {
-    m_RendererBackend->DrawIndexed(RenderPacket);
+    m_RendererBackend->DrawIndexed(RenderPacket, m_SceneData);
 }
 
 std::string CRenderer::GetGraphicsAPIString()

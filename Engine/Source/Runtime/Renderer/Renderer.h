@@ -3,6 +3,7 @@
 #include "CoreDefines.h"
 #include "RendererConfig.h"
 #include "Application/Application.h"
+#include "Camera/OrthographicCamera.h"
 #include "RHICore/RendererBackend.h"
 #include "RHICore/RendererContext.h"
 #include "Shaders/ShaderLibrary.h"
@@ -16,6 +17,11 @@ enum class EGraphicsAPI
     Metal
 };
 
+struct CSceneData
+{
+    glm::mat4 m_ViewProjectionMatrix;
+};
+
 class MOONLIGHT_API CRenderer
 {
 public:
@@ -26,6 +32,9 @@ public:
     static void BeginFrame();
     static void EndFrame();
 
+    static void BeginScene(const COrthographicCamera& Camera);
+    static void EndScene();
+
     static void DrawIndexed(const CRenderPacket& RenderPacket);
     
     static std::shared_ptr<IRendererContext> GetContext() { return CApplication::GetInstance().GetWindow().GetRendererContext(); }
@@ -35,6 +44,8 @@ public:
     static EGraphicsAPI GetGraphicsAPI() { return m_GraphicsAPI; }
     static std::string GetGraphicsAPIString();
     static void SetGraphicsAPI(EGraphicsAPI NewGraphicsAPI) { m_GraphicsAPI = NewGraphicsAPI; }
+protected:
+    inline static CSceneData* m_SceneData;
 private:
     inline static std::shared_ptr<IRendererBackend> m_RendererBackend;
     inline static std::shared_ptr<CShaderLibrary> m_ShaderLibrary;

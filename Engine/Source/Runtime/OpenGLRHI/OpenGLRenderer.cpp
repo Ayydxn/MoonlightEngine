@@ -3,11 +3,12 @@
 #include "OpenGLGraphicsPipeline.h"
 #include "OpenGLIndexBuffer.h"
 #include "OpenGLShader.h"
+#include "OpenGLTexture.h"
 #include "OpenGLVertexBuffer.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/Camera/OrthographicCamera.h"
 
 #include <glad/glad.h>
-
-#include "OpenGLTexture.h"
 
 void COpenGLRenderer::Initialize()
 {
@@ -29,7 +30,7 @@ void COpenGLRenderer::EndFrame()
 {
 }
 
-void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket)
+void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const CSceneData* SceneData)
 {
     verifyEnginef(RenderPacket.Shader, "{} requires a non-null shader!", __FUNCTION__)
     verifyEnginef(RenderPacket.VertexBuffer, "{} requires a non-null vertex buffer!", __FUNCTION__)
@@ -42,6 +43,8 @@ void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket)
     const auto VertexArray = Cast<COpenGLGraphicsPipeline>(RenderPacket.GraphicsPipeline);
     
     Shader->Bind();
+    Shader->SetMatrix4x4f("u_ViewProjectionMatrix", SceneData->m_ViewProjectionMatrix);
+    
     VertexArray->Bind();
 
     glVertexArrayVertexBuffer(VertexArray->GetHandle(), 0, VertexBuffer->GetHandle(), 0, static_cast<int32>(VertexArray->GetStride()));

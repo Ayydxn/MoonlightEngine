@@ -20,6 +20,7 @@ project "Moonlight Editor"
     includedirs
     {
         "%{IncludeDir.spdlog}",
+        "%{IncludeDir.glm}",
         
         "%{prj.location}/Source",
 
