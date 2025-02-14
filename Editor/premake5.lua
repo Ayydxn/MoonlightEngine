@@ -21,6 +21,7 @@ project "Moonlight Editor"
     {
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.ImGui}",
         
         "%{prj.location}/Source",
 

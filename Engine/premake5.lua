@@ -15,9 +15,17 @@ project "Moonlight Engine"
     {
         "%{prj.location}/Source/**.cpp",
         "%{prj.location}/Source/**.h",
-        
+
         "%{prj.location}/ThirdParty/stb_image/**.cpp",
-        "%{prj.location}/ThirdParty/stb_image/**.h"
+        "%{prj.location}/ThirdParty/stb_image/**.h",
+
+        "%{prj.location}/ThirdParty/ImGui/*.cpp",
+        "%{prj.location}/ThirdParty/ImGui/*.h",
+        "%{IncludeDir.ImGui}/backends/imgui_impl_glfw.cpp",
+        "%{IncludeDir.ImGui}/backends/imgui_impl_glfw.h",
+        "%{IncludeDir.ImGui}/backends/imgui_impl_opengl3.cpp",
+        "%{IncludeDir.ImGui}/backends/imgui_impl_opengl3.h",
+        "%{IncludeDir.ImGui}/backends/imgui_impl_opengl3_loader.h"
     }
 
     includedirs
@@ -30,7 +38,7 @@ project "Moonlight Engine"
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
-        
+
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",
         "%{prj.location}/Source/Runtime/Core"
@@ -39,20 +47,22 @@ project "Moonlight Engine"
     links
     {
         "GLFW",
-        "Glad",
-        "ImGui"
+        "Glad"
     }
 
     defines
     {
         "MOONLIGHT_EXPORT_LIBRARY",
-        
+
         "GLFW_INCLUDE_NONE"
     }
 
+    filter "files:ThirdParty/ImGui/**.cpp"
+        flags { "NoPCH" }
+
     filter "system:windows"
         systemversion "latest"
-        
+
         defines
         {
             "MOONLIGHT_PLATFORM_WIN64",
@@ -90,13 +100,13 @@ project "Moonlight Engine"
         {
             "MOONLIGHT_BUILD_DISTRIBUTION"
         }
-        
+
     filter { "system:windows", "configurations:Debug" }
         links
         {
             "%{Library.Shaderc_Windows_Debug}"
         }
-        
+
     filter { "system:windows", "configurations:Release or configurations:Distribution" }
         links
         {
