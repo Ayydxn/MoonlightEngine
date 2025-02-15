@@ -5,6 +5,8 @@
 #include "Texture.h"
 #include "VertexBuffer.h"
 
+#include <glm/mat4x4.hpp>
+
 #include <memory>
 
 struct CSceneData;
@@ -29,7 +31,7 @@ public:
     virtual void BeginFrame() = 0;
     virtual void EndFrame() = 0;
 
-    virtual void DrawIndexed(const CRenderPacket& RenderPacket, const CSceneData* SceneData) = 0;
+    virtual void DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, const CSceneData* SceneData) = 0;
     
     static std::shared_ptr<IRendererBackend> Create();
 };

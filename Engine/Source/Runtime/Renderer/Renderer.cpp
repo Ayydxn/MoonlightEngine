@@ -47,16 +47,16 @@ void CRenderer::EndFrame()
 
 void CRenderer::BeginScene(const COrthographicCamera& Camera)
 {
-    m_SceneData->m_ViewProjectionMatrix = Camera.GetViewProjectionMatrix();
+    m_SceneData->ViewProjectionMatrix = Camera.GetViewProjectionMatrix();
 }
 
 void CRenderer::EndScene()
 {
 }
 
-void CRenderer::DrawIndexed(const CRenderPacket& RenderPacket)
+void CRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform)
 {
-    m_RendererBackend->DrawIndexed(RenderPacket, m_SceneData);
+    m_RendererBackend->DrawIndexed(RenderPacket, Transform, m_SceneData);
 }
 
 std::string CRenderer::GetGraphicsAPIString()

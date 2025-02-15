@@ -30,7 +30,7 @@ void COpenGLRenderer::EndFrame()
 {
 }
 
-void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const CSceneData* SceneData)
+void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, const CSceneData* SceneData)
 {
     verifyEnginef(RenderPacket.Shader, "{} requires a non-null shader!", __FUNCTION__)
     verifyEnginef(RenderPacket.VertexBuffer, "{} requires a non-null vertex buffer!", __FUNCTION__)
@@ -43,7 +43,8 @@ void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const CScen
     const auto VertexArray = Cast<COpenGLGraphicsPipeline>(RenderPacket.GraphicsPipeline);
     
     Shader->Bind();
-    Shader->SetMatrix4x4f("u_ViewProjectionMatrix", SceneData->m_ViewProjectionMatrix);
+    Shader->SetMatrix4x4f("u_ViewProjectionMatrix", SceneData->ViewProjectionMatrix);
+    Shader->SetMatrix4x4f("u_Transform", Transform);
     
     VertexArray->Bind();
 

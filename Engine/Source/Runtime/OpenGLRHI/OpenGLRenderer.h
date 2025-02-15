@@ -14,5 +14,5 @@ public:
     void BeginFrame() override;
     void EndFrame() override;
 
-    void DrawIndexed(const CRenderPacket& RenderPacket, const CSceneData* SceneData) override;
+    void DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, const CSceneData* SceneData) override;
 };
