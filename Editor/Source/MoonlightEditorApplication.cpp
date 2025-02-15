@@ -43,6 +43,7 @@ public:
         m_GraphicsPipeline = IGraphicsPipeline::Create(GraphicsPipelineSpecification);
 
         m_PlaceholderTexture = ITexture::Create("Resources/Textures/Placeholder.png");
+        m_MushroomTexture = ITexture::Create("Resources/Textures/Mushroom.png");
     }
 
     // Transforms Test
@@ -102,6 +103,7 @@ public:
                 glm::scale(glm::mat4(1.0f), m_SquareScale);
         
         CRenderer::DrawIndexed({ m_Shader, m_VertexBuffer, m_IndexBuffer, m_GraphicsPipeline, m_PlaceholderTexture }, Transform);
+        CRenderer::DrawIndexed({ m_Shader, m_VertexBuffer, m_IndexBuffer, m_GraphicsPipeline, m_MushroomTexture });
 
         CRenderer::EndScene();
     }
@@ -128,6 +130,7 @@ private:
     std::shared_ptr<IGraphicsPipeline> m_GraphicsPipeline;
     std::shared_ptr<IShader> m_Shader;
     std::shared_ptr<ITexture> m_PlaceholderTexture;
+    std::shared_ptr<ITexture> m_MushroomTexture;
 
     glm::vec3 m_SquarePosition = glm::vec3(0.0f);
     float m_SquareRotation = 0.0f;
