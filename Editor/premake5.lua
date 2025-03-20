@@ -14,7 +14,7 @@ project "Moonlight Editor"
         "%{prj.location}/Source/**.cpp",
         "%{prj.location}/Source/**.h",
         
-        "%{prj.location}/Resources/Shaders/**.glsl"
+        "%{prj.location}/Resources/**/**.**"
     }
 
     includedirs

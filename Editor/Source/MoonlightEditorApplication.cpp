@@ -8,12 +8,20 @@ class CMoonlightEditorLayer : public CLayer
 public:
     CMoonlightEditorLayer()
         : CLayer("Moonlight Editor Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f) {}
+
+    void OnAttach() override
+    {
+        m_PlaceholderTexture = ITexture::Create("Resources/Textures/Placeholder.png");
+        m_MushroomTexture = ITexture::Create("Resources/Textures/Mushroom.png");
+    }
     
     void OnRender() override
     {
         CRenderer::BeginScene(m_Camera);
 
-        CRenderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.8f, 0.2f, 0.3f, 1.0f });
+        CRenderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.5f, 0.5f }, { 0.3f, 0.2f, 0.9f, 1.0f });
+        CRenderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_MushroomTexture);
+        CRenderer2D::DrawQuad({ 1.0f, 0.0f }, { 1.0f, 1.0f }, m_PlaceholderTexture);
        
         CRenderer::EndScene();
     }

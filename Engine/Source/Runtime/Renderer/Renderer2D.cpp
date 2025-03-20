@@ -1,6 +1,5 @@
 #include "MoonlightPCH.h"
 #include "Renderer2D.h"
-#include "OpenGLRHI/OpenGLShader.h"
 #include "Renderer/Renderer.h"
 #include "RHICore/Shader.h"
 #include "RHICore/Texture.h"
@@ -21,12 +20,12 @@ static CRenderer2DData* s_Renderer2DData;
 
 void CRenderer2D::Initialize()
 {
-    constexpr float QuadVertices[12] =
+    constexpr float QuadVertices[20] =
     {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.5f,  0.5f, 0.0f,
-        -0.5f,  0.5f, 0.0f,
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+         0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+         0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
     };
 
     constexpr uint32 QuadIndices[] = { 0, 1, 2, 2, 3, 0 };
@@ -34,6 +33,7 @@ void CRenderer2D::Initialize()
     const CVertexBufferLayout VertexBufferLayout =
     {
         { "Positions", EShaderDataType::Float3 },
+        { "TextureCoords", EShaderDataType::Float2 }
     };
 
     s_Renderer2DData = new CRenderer2DData();
@@ -71,6 +71,26 @@ void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, con
         glm::scale(glm::mat4(1.0f), { Size.x, Size.y, 1.0f });
 
     RenderPacket.Shader->SetVector4f("u_Color", Color);
+    
+    CRenderer::DrawIndexed(RenderPacket, Transform);
+}
+
+void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const std::shared_ptr<ITexture>& Texture)
+{
+    DrawQuad({ Position.x, Position.y, 0.0f }, Size, Texture);
+}
+
+void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, const std::shared_ptr<ITexture>& Texture)
+{
+    CRenderPacket RenderPacket;
+    RenderPacket.Shader = s_Renderer2DData->TextureShader;
+    RenderPacket.VertexBuffer = s_Renderer2DData->QuadVertexBuffer;
+    RenderPacket.IndexBuffer = s_Renderer2DData->QuadIndexBuffer;
+    RenderPacket.GraphicsPipeline = s_Renderer2DData->QuadGraphicsPipeline;
+    RenderPacket.Texture = Texture;
+
+    const auto Transform = glm::translate(glm::mat4(1.0f), Position) *
+        glm::scale(glm::mat4(1.0f), { Size.x, Size.y, 1.0f });
     
     CRenderer::DrawIndexed(RenderPacket, Transform);
 }
