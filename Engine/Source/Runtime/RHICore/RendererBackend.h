@@ -5,8 +5,6 @@
 #include "Texture.h"
 #include "VertexBuffer.h"
 
-#include <glm/mat4x4.hpp>
-
 #include <memory>
 
 struct CSceneData;
@@ -18,6 +16,8 @@ struct CRenderPacket
     std::shared_ptr<IIndexBuffer> IndexBuffer;
     std::shared_ptr<IGraphicsPipeline> GraphicsPipeline;
     std::shared_ptr<ITexture> Texture;
+
+    void* UserData;
 };
 
 class IRendererBackend

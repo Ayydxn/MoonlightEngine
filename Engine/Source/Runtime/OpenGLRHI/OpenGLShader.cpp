@@ -50,8 +50,8 @@ COpenGLShader::COpenGLShader(const std::filesystem::path& Filepath)
     for (const auto& FileEntry : std::filesystem::directory_iterator(CFileUtils::GetFileParentDirectory(Filepath)))
     {
         const auto FileEntryPath = std::filesystem::path(FileEntry);
-        const auto FileEntryName = Filepath.stem().string().substr(0, Filepath.stem().string().find_last_of('.'));
-
+        const auto FileEntryName = FileEntryPath.stem().string().substr(0, FileEntryPath.stem().string().find_last_of('.'));
+        
         if (FileEntryName == Filepath.stem().string())
             ShadersToCompile.push_back(FileEntryPath);
     }
@@ -82,6 +82,11 @@ void COpenGLShader::Bind() const
 void COpenGLShader::SetInt(const std::string& Name, const int32 Value) const
 {
     glProgramUniform1i(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), Value);
+}
+
+void COpenGLShader::SetVector4f(const std::string& Name, const glm::vec4& Value) const
+{
+    glProgramUniform4f(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), Value.x, Value.y, Value.z, Value.w);
 }
 
 void COpenGLShader::SetMatrix4x4f(const std::string& Name, const glm::mat4& Value) const

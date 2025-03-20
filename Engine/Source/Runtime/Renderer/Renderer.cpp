@@ -1,5 +1,6 @@
 ﻿#include "MoonlightPCH.h"
 #include "Renderer.h"
+#include "Renderer2D.h"
 #include "RHICore/ShaderCompiler.h"
 
 void CRenderer::PreInitialize()
@@ -22,6 +23,9 @@ void CRenderer::Initialize()
 
     m_ShaderLibrary = std::make_shared<CShaderLibrary>();
     m_ShaderLibrary->Load("Resources/Shaders/DefaultShader");
+    m_ShaderLibrary->Load("Resources/Shaders/TextureShader");
+
+    CRenderer2D::Initialize();
 
     m_SceneData = new CSceneData();
 }
@@ -29,6 +33,7 @@ void CRenderer::Initialize()
 void CRenderer::Shutdown()
 {
     IShaderCompiler::GetInstance().Shutdown();
+    CRenderer2D::Shutdown();
 
     m_RendererBackend->Shutdown();
 

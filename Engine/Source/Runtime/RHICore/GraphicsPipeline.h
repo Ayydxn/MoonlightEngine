@@ -42,7 +42,7 @@ struct CGraphicsPipelineSpecification
     bool bEnableDepthTesting = true;
     bool bEnableDepthWriting = true;
 
-    std::string DebugName;
+    std::string DebugName = "Graphics Pipeline";
 };
 
 class MOONLIGHT_API IGraphicsPipeline
