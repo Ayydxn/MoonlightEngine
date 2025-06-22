@@ -9,8 +9,7 @@
 
 struct CRenderer2DData
 {
-    std::shared_ptr<IShader> ColorShader;
-    std::shared_ptr<IShader> TextureShader;
+    std::shared_ptr<IShader> QuadShader;
     std::shared_ptr<IVertexBuffer> QuadVertexBuffer;
     std::shared_ptr<IIndexBuffer> QuadIndexBuffer;
     std::shared_ptr<IGraphicsPipeline> QuadGraphicsPipeline;
@@ -37,13 +36,11 @@ void CRenderer2D::Initialize()
     };
 
     s_Renderer2DData = new CRenderer2DData();
-    s_Renderer2DData->ColorShader = CRenderer::GetShaderLibrary()->GetShader("DefaultShader");
-    s_Renderer2DData->TextureShader = CRenderer::GetShaderLibrary()->GetShader("TextureShader");
-    
+    s_Renderer2DData->QuadShader = CRenderer::GetShaderLibrary()->GetShader("Renderer2DQuad");
     s_Renderer2DData->QuadVertexBuffer = IVertexBuffer::Create(QuadVertices, sizeof(QuadVertices));
     s_Renderer2DData->QuadIndexBuffer = IIndexBuffer::Create(QuadIndices, sizeof(QuadIndices));
     s_Renderer2DData->QuadGraphicsPipeline = IGraphicsPipeline::Create({
-        .Shader = s_Renderer2DData->ColorShader,
+        .Shader = s_Renderer2DData->QuadShader,
         .VertexBufferLayout = VertexBufferLayout,
         .DebugName = "Renderer2D - Quads"
     });
@@ -53,7 +50,7 @@ void CRenderer2D::Shutdown()
 {
     delete s_Renderer2DData;
 }
-
+ 
 void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const glm::vec4& Color)
 {
     DrawQuad({ Position.x, Position.y, 0.0f }, Size, Color);
@@ -62,7 +59,7 @@ void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, con
 void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, const glm::vec4& Color)
 {
     CRenderPacket RenderPacket;
-    RenderPacket.Shader = s_Renderer2DData->ColorShader;
+    RenderPacket.Shader = s_Renderer2DData->QuadShader;
     RenderPacket.VertexBuffer = s_Renderer2DData->QuadVertexBuffer;
     RenderPacket.IndexBuffer = s_Renderer2DData->QuadIndexBuffer;
     RenderPacket.GraphicsPipeline = s_Renderer2DData->QuadGraphicsPipeline;
@@ -83,7 +80,7 @@ void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, con
 void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, const std::shared_ptr<ITexture>& Texture)
 {
     CRenderPacket RenderPacket;
-    RenderPacket.Shader = s_Renderer2DData->TextureShader;
+    RenderPacket.Shader = s_Renderer2DData->QuadShader;
     RenderPacket.VertexBuffer = s_Renderer2DData->QuadVertexBuffer;
     RenderPacket.IndexBuffer = s_Renderer2DData->QuadIndexBuffer;
     RenderPacket.GraphicsPipeline = s_Renderer2DData->QuadGraphicsPipeline;
@@ -91,6 +88,8 @@ void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, con
 
     const auto Transform = glm::translate(glm::mat4(1.0f), Position) *
         glm::scale(glm::mat4(1.0f), { Size.x, Size.y, 1.0f });
+
+    RenderPacket.Shader->SetVector4f("u_Color", glm::vec4(1.0f));
     
     CRenderer::DrawIndexed(RenderPacket, Transform);
 }

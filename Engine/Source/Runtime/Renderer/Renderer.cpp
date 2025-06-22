@@ -22,9 +22,8 @@ void CRenderer::Initialize()
     m_RendererBackend->Initialize();
 
     m_ShaderLibrary = std::make_shared<CShaderLibrary>();
-    m_ShaderLibrary->Load("Resources/Shaders/DefaultShader");
-    m_ShaderLibrary->Load("Resources/Shaders/TextureShader");
-
+    m_ShaderLibrary->Load("Resources/Shaders/Renderer2DQuad");
+;
     CRenderer2D::Initialize();
 
     m_SceneData = new CSceneData();
