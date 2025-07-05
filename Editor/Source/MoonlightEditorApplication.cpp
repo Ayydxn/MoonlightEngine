@@ -19,6 +19,9 @@ public:
     {
         CRenderer::BeginScene(m_Camera);
 
+        //CRenderer2D::DrawRotatedQuad({ 0.0f, 0.0f }, { 1.5f, 1.5f }, 45.0f, { 0.9f, 0.2f, 0.3f, 1.0f });
+        CRenderer2D::DrawRotatedQuad({ 0.0f, 0.0f }, { 2.0f, 2.0f }, 45.0f, m_PlaceholderTexture, 10.0f);
+        
         CRenderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.5f, 0.5f }, { 0.3f, 0.2f, 0.9f, 1.0f });
         CRenderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_MushroomTexture);
         CRenderer2D::DrawQuad({ 1.0f, 0.0f }, { 1.0f, 1.0f }, m_PlaceholderTexture);
