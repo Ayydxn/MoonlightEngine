@@ -1,7 +1,9 @@
 ﻿#include "MoonlightPCH.h"
 #include "OpenGLContext.h"
+#include "Debug/Profiler.h"
 
 #include <glad/glad.h>
+#include <tracy/TracyOpenGL.hpp>
 
 namespace
 {
@@ -51,7 +53,8 @@ void COpenGLContext::Initialize()
 {
     glfwMakeContextCurrent(m_WindowHandle);
     verifyEnginef(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)), "Failed to initialize Glad!")
-
+    TracyGpuContext
+    
     verifyEnginef(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5), "OpenGL 4.5 is unsupported and is minimum version required by Moonlight!")
     
     ENGINE_LOG_INFO_TAG("Renderer", "Graphics Card Information:");
@@ -71,6 +74,8 @@ void COpenGLContext::Initialize()
 void COpenGLContext::SwapBuffers()
 {
     glfwSwapBuffers(m_WindowHandle);
+
+    TracyGpuCollect
 }
 
 void COpenGLContext::OnWindowResize(uint32 NewWidth, uint32 NewHeight)

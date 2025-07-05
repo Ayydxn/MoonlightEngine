@@ -25,7 +25,9 @@ project "Moonlight Engine"
         "%{IncludeDir.ImGui}/backends/imgui_impl_glfw.h",
         "%{IncludeDir.ImGui}/backends/imgui_impl_opengl3.cpp",
         "%{IncludeDir.ImGui}/backends/imgui_impl_opengl3.h",
-        "%{IncludeDir.ImGui}/backends/imgui_impl_opengl3_loader.h"
+        "%{IncludeDir.ImGui}/backends/imgui_impl_opengl3_loader.h",
+        
+        "%{IncludeDir.tracy}/TracyClient.cpp"
     }
 
     includedirs
@@ -38,6 +40,7 @@ project "Moonlight Engine"
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.tracy}",
 
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",
@@ -47,7 +50,8 @@ project "Moonlight Engine"
     links
     {
         "GLFW",
-        "Glad"
+        "Glad",
+        "tracy"
     }
 
     defines
@@ -57,7 +61,7 @@ project "Moonlight Engine"
         "GLFW_INCLUDE_NONE"
     }
 
-    filter "files:ThirdParty/ImGui/**.cpp"
+    filter "files:ThirdParty/ImGui/**.cpp or files:ThirdParty/tracy/public/TracyClient.cpp"
         flags { "NoPCH" }
 
     filter "system:windows"

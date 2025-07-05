@@ -22,6 +22,12 @@ workspace "Moonlight Engine"
         "MultiProcessorCompile"
     }
 
+    defines
+    {
+        "TRACY_ENABLE",
+        "TRACY_ON_DEMAND"
+    }
+
     filter "system:windows"
 	    buildoptions
         {
@@ -50,6 +56,7 @@ workspace "Moonlight Engine"
 group "Dependencies"
     include "Engine/ThirdParty/GLFW"
     include "Engine/ThirdParty/Glad"
+    include "Engine/ThirdParty/tracy"
 group ""
 
 group "Core"

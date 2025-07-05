@@ -5,10 +5,12 @@
 #include "OpenGLShader.h"
 #include "OpenGLTexture.h"
 #include "OpenGLVertexBuffer.h"
+#include "Debug/Profiler.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Camera/OrthographicCamera.h"
 
 #include <glad/glad.h>
+#include <tracy/TracyOpenGL.hpp>
 
 void COpenGLRenderer::Initialize()
 {
@@ -34,6 +36,8 @@ void COpenGLRenderer::EndFrame()
 
 void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, const CSceneData* SceneData)
 {
+    MOONLIGHT_PROFILE_GPU("DrawIndexed")
+    
     verifyEnginef(RenderPacket.Shader, "{} requires a non-null shader!", __FUNCTION__)
     verifyEnginef(RenderPacket.VertexBuffer, "{} requires a non-null vertex buffer!", __FUNCTION__)
     verifyEnginef(RenderPacket.IndexBuffer, "{} requires a non-null index buffer!", __FUNCTION__)

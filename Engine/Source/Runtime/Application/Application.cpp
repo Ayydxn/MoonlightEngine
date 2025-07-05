@@ -1,5 +1,6 @@
 ﻿#include "MoonlightPCH.h"
 #include "Application.h"
+#include "Debug/Profiler.h"
 #include "Events/ApplicationEvents.h"
 #include "Input/Input.h"
 #include "Misc/CommandLineParser.h"
@@ -117,25 +118,28 @@ void CApplication::Start()
         /*-----------------*/
         /* --  Updating -- */
         /*-----------------*/
-        
-        while (m_DeltaTime >= 1.0f)
         {
-            OnUpdate();
-            OnFixedUpdate(m_DeltaTime);
+            MOONLIGHT_PROFILE_SCOPE("Application Update");
             
-            for (CLayer* Layer : m_LayerStack)
+            while (m_DeltaTime >= 1.0f)
             {
-                Layer->OnUpdate();
-                Layer->OnFixedUpdate(m_DeltaTime);
+                OnUpdate();
+                OnFixedUpdate(m_DeltaTime);
+            
+                for (CLayer* Layer : m_LayerStack)
+                {
+                    Layer->OnUpdate();
+                    Layer->OnFixedUpdate(m_DeltaTime);
+                }
+
+                m_TicksPerSecond++;
+                m_DeltaTime--;
             }
-
-            m_TicksPerSecond++;
-            m_DeltaTime--;
-        }
         
-        ProcessEvents();
+            ProcessEvents();
 
-        DispatchEvent<CApplicationUpdateEvent>();
+            DispatchEvent<CApplicationUpdateEvent>();
+        }
 
         /*-----------------*/
         /* -- Rendering -- */
@@ -143,6 +147,8 @@ void CApplication::Start()
 
         if (!bIsWindowMinimized)
         {
+            MOONLIGHT_PROFILE_SCOPE("Application Render");
+            
             OnPreRender();
 
             for (CLayer* Layer : m_LayerStack)
@@ -184,6 +190,8 @@ void CApplication::Start()
             m_FramesPerSecond = 0;
             m_TicksPerSecond = 0;
         }
+
+        MOONLIGHT_PROFILE_MARK_FRAME;
     }
 
     OnShutdown();
@@ -282,7 +290,7 @@ bool CApplication::OnWindowMinimized(const CWindowMinimizeEvent& WindowMinimizeE
 
 bool CApplication::OnWindowResize(const CWindowResizeEvent& WindowResizeEvent)
 {
-    CRenderer::GetContext()->OnWindowResize(WindowResizeEvent.GetWidth(), WindowResizeEvent.GetHeight());\
+    CRenderer::GetContext()->OnWindowResize(WindowResizeEvent.GetWidth(), WindowResizeEvent.GetHeight());
 
     return true;
 }

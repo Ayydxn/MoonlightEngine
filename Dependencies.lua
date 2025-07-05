@@ -10,6 +10,7 @@ IncludeDir["Glad"] = "%{wks.location}/Engine/ThirdParty/Glad/include"
 IncludeDir["stb_image"] = "%{wks.location}/Engine/ThirdParty/stb_image"
 IncludeDir["ImGui"] = "%{wks.location}/Engine/ThirdParty/ImGui"
 IncludeDir["glm"] = "%{wks.location}/Engine/ThirdParty/glm"
+IncludeDir["tracy"] = "%{wks.location}/Engine/ThirdParty/tracy/public"
 
 LibraryDir = {}
 LibraryDir["Shaderc_Windows"] = "%{wks.location}/Engine/ThirdParty/Shaderc/Lib/Windows"
