@@ -6,7 +6,7 @@
     #include <tracy/Tracy.hpp>
 #endif
 
-#ifdef MOONLIGHT_ENABLE_PROFILING
+#if MOONLIGHT_ENABLE_PROFILING
     #define MOONLIGHT_PROFILE_MARK_FRAME FrameMark
 
     #define MOONLIGHT_PROFILE_FUNCTION(...) ZoneScoped##__VA_OPT__(N(__VA_ARGS__))
