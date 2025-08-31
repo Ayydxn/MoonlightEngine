@@ -34,8 +34,8 @@ public:
     virtual ~CApplication();
 
     virtual void OnInitialize() {}
-    virtual void OnUpdate() {}
-    virtual void OnFixedUpdate(float DeltaTime) {}
+    virtual void OnUpdate(float DeltaTime) {}
+    virtual void OnFixedUpdate(float FixedDeltaTime) {}
     virtual void OnEvent(IEvent& Event);
     virtual void OnPreRender() {}
     virtual void OnRender() {}

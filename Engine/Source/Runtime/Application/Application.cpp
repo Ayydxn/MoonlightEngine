@@ -91,7 +91,7 @@ CApplication::~CApplication()
 
 void CApplication::Start()
 {
-    // TODO: (Ayydxn) Make this configurable but, for now, the engine will run at 128 ticks per second.
+    // TODO: (Ayydxn) Make this configurable but, for now, the engine will always run fixed framerate updates 128 times per second.
     constexpr float TicksPerMilliseconds = 1.0f / 128.0f;
     
     float LastTime = std::chrono::time_point_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now())
@@ -111,8 +111,8 @@ void CApplication::Start()
 
         const float ElapsedTime = m_Clock.GetElapsedTime();
         
-        m_FrameTime = ElapsedTime - m_LastFrameTime;
-        m_DeltaTime += std::min(m_FrameTime, 0.0333f) / TicksPerMilliseconds;
+        m_FrameTime = std::min(ElapsedTime - m_LastFrameTime, 0.0333f);
+        m_DeltaTime += m_FrameTime;
         m_LastFrameTime = ElapsedTime;
         
         /*-----------------*/
@@ -120,20 +120,21 @@ void CApplication::Start()
         /*-----------------*/
         {
             MOONLIGHT_PROFILE_SCOPE("Application Update");
+
+            OnUpdate(m_DeltaTime);
+
+            for (CLayer* Layer : m_LayerStack)
+                Layer->OnUpdate(m_DeltaTime);
             
-            while (m_DeltaTime >= 1.0f)
+            while (m_DeltaTime >= TicksPerMilliseconds)
             {
-                OnUpdate();
-                OnFixedUpdate(m_DeltaTime);
+                OnFixedUpdate(TicksPerMilliseconds);
             
                 for (CLayer* Layer : m_LayerStack)
-                {
-                    Layer->OnUpdate();
-                    Layer->OnFixedUpdate(m_DeltaTime);
-                }
+                    Layer->OnFixedUpdate(TicksPerMilliseconds);
 
                 m_TicksPerSecond++;
-                m_DeltaTime--;
+                m_DeltaTime -= TicksPerMilliseconds;
             }
         
             ProcessEvents();
@@ -183,9 +184,13 @@ void CApplication::Start()
             m_FramesPerSecond++;
         }
 
-        if (std::chrono::time_point_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now()).time_since_epoch().count() - LastTime > 1.0f)
+        const auto TimeNow = std::chrono::time_point_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now())
+            .time_since_epoch()
+            .count();
+
+        if (TimeNow - LastTime >= 1.0f)
         {
-            LastTime++;
+            LastTime = TimeNow;
             
             m_FramesPerSecond = 0;
             m_TicksPerSecond = 0;
