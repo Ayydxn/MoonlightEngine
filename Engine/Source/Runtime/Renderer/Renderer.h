@@ -35,7 +35,7 @@ public:
     static void BeginScene(const COrthographicCamera& Camera);
     static void EndScene();
 
-    static void DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform = glm::mat4(1.0f));
+    static void DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform = glm::mat4(1.0f), uint32 IndexCount = 0);
     
     static std::shared_ptr<IRendererContext> GetContext() { return CApplication::GetInstance().GetWindow().GetRendererContext(); }
     static std::shared_ptr<CShaderLibrary> GetShaderLibrary() { return m_ShaderLibrary; }

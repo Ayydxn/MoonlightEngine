@@ -31,7 +31,7 @@ public:
     virtual void BeginFrame() = 0;
     virtual void EndFrame() = 0;
 
-    virtual void DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, const CSceneData* SceneData) = 0;
+    virtual void DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, uint32 IndexCount, const CSceneData* SceneData) = 0;
     
     static std::shared_ptr<IRendererBackend> Create();
 };

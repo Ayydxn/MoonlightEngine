@@ -35,3 +35,8 @@ COpenGLVertexBuffer::~COpenGLVertexBuffer()
 {
     glDeleteBuffers(1, &m_VertexBufferHandle);
 }
+
+void COpenGLVertexBuffer::SetData(const void* Data, uint64 Size) const
+{
+    glNamedBufferSubData(m_VertexBufferHandle, 0, static_cast<int64>(Size), Data);
+}

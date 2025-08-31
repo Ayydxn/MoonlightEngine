@@ -23,8 +23,6 @@ void CRenderer::Initialize()
 
     m_ShaderLibrary = std::make_shared<CShaderLibrary>();
     m_ShaderLibrary->Load("Resources/Shaders/Renderer2DQuad");
-;
-    CRenderer2D::Initialize();
 
     m_SceneData = new CSceneData();
 }
@@ -32,7 +30,6 @@ void CRenderer::Initialize()
 void CRenderer::Shutdown()
 {
     IShaderCompiler::GetInstance().Shutdown();
-    CRenderer2D::Shutdown();
 
     m_RendererBackend->Shutdown();
 
@@ -58,9 +55,9 @@ void CRenderer::EndScene()
 {
 }
 
-void CRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform)
+void CRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, uint32 IndexCount)
 {
-    m_RendererBackend->DrawIndexed(RenderPacket, Transform, m_SceneData);
+    m_RendererBackend->DrawIndexed(RenderPacket, Transform, IndexCount, m_SceneData);
 }
 
 std::string CRenderer::GetGraphicsAPIString()

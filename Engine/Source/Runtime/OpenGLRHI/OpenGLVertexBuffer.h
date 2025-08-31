@@ -9,6 +9,8 @@ public:
     COpenGLVertexBuffer(uint64 Size, EVertexBufferUsage Usage = EVertexBufferUsage::Dynamic);
     ~COpenGLVertexBuffer() override;
 
+    void SetData(const void* Data, uint64 Size) const override;
+
     uint64 GetSize() const override { return m_Size; }
 
     uint32 GetHandle() const { return m_VertexBufferHandle; } 

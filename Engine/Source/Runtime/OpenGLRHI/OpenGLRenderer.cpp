@@ -34,7 +34,7 @@ void COpenGLRenderer::EndFrame()
 {
 }
 
-void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, const CSceneData* SceneData)
+void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, uint32 IndexCount, const CSceneData* SceneData)
 {
     MOONLIGHT_PROFILE_GPU("DrawIndexed")
     
@@ -64,5 +64,6 @@ void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::
         Cast<COpenGLTexture>(RenderPacket.Texture)->Bind();
     }
     
-    glDrawElements(GL_TRIANGLES, static_cast<int32>(IndexBuffer->GetCount()), GL_UNSIGNED_INT, nullptr);
+    const int32 Count = IndexCount == 0 ? static_cast<int32>(IndexBuffer->GetCount()) : static_cast<int32>(IndexCount); 
+    glDrawElements(GL_TRIANGLES, Count, GL_UNSIGNED_INT, nullptr);
 }
