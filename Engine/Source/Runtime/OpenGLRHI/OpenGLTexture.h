@@ -11,7 +11,12 @@ public:
 
     void SetData(const void* Data, uint32 Size) override;
 
-    void Bind(uint32 Slot = 0) const;
+    void Bind(uint32 Slot = 0) const override;
+    
+    bool operator==(const ITexture& OtherTexture) const override
+    {
+        return m_TextureHandle == dynamic_cast<const COpenGLTexture&>(OtherTexture).m_TextureHandle;
+    }
 private:
     uint32 m_Width = 0;
     uint32 m_Height = 0;

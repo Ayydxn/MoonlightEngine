@@ -57,6 +57,7 @@ void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::
     glVertexArrayVertexBuffer(VertexArray->GetHandle(), 0, VertexBuffer->GetHandle(), 0, static_cast<int32>(VertexArray->GetStride()));
     glVertexArrayElementBuffer(VertexArray->GetHandle(), IndexBuffer->GetHandle());
 
+    // TODO: (Ayydxn) Doesn't affect Renderer2D's ability to batch render textures, but probably should still deal with this eventually. 
     if (RenderPacket.Texture != nullptr)
     {
         Shader->SetInt("u_Texture", 0);

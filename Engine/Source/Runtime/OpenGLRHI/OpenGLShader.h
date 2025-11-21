@@ -14,6 +14,7 @@ public:
     void Bind() const;
 
     void SetInt(const std::string& Name, int32 Value) const override;
+    void SetIntArray(const std::string& Name, int32* Values, int32 ValueCount) const override;
     void SetFloat(const std::string& Name, float Value) const override;
     void SetVector4f(const std::string& Name, const glm::vec4& Value) const override;
     void SetMatrix4x4f(const std::string& Name, const glm::mat4& Value) const override;

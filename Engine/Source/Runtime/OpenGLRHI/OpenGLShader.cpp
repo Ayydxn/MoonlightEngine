@@ -84,6 +84,11 @@ void COpenGLShader::SetInt(const std::string& Name, const int32 Value) const
     glProgramUniform1i(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), Value);
 }
 
+void COpenGLShader::SetIntArray(const std::string& Name, int32* Values, int32 ValueCount) const
+{
+    glProgramUniform1iv(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), ValueCount, Values);
+}
+
 void COpenGLShader::SetFloat(const std::string& Name, float Value) const
 {
     glProgramUniform1f(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), Value);

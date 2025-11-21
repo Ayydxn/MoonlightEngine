@@ -25,12 +25,12 @@ public:
 
         //m_Renderer2D->DrawRotatedQuad({ 0.0f, 0.0f }, { 1.5f, 1.5f }, 45.0f, { 0.9f, 0.2f, 0.3f, 1.0f });
         //m_Renderer2D->DrawRotatedQuad({ 0.0f, 0.0f }, { 2.0f, 2.0f }, 45.0f, m_PlaceholderTexture, 10.0f);
-
-        m_Renderer2D->DrawQuad({ -1.0f, 0.0f }, { 0.5f, 0.5f }, { 0.9f, 0.3f, 0.2f, 1.0f });
-        m_Renderer2D->DrawQuad({ 0.0f, 0.0f }, { 0.7f, 0.5f }, { 0.3f, 0.9f, 0.2f, 1.0f });
-        m_Renderer2D->DrawQuad({ 1.0f, 0.0f }, { 0.7f, 0.5f }, { 0.3f, 0.2f, 0.9f, 1.0f });
-        //m_Renderer2D->DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_MushroomTexture);
-        //m_Renderer2D->DrawQuad({ 1.0f, 0.0f }, { 1.0f, 1.0f }, m_PlaceholderTexture);
+        
+        m_Renderer2D->DrawQuad({ -5.0f, -5.0f }, { 10.0f, 10.0f }, m_PlaceholderTexture);
+        m_Renderer2D->DrawQuad({ -1.5f, 0.0f }, { 0.5f, 0.5f }, { 0.9f, 0.3f, 0.2f, 1.0f });
+        m_Renderer2D->DrawQuad({ -0.5f, 0.0f }, { 0.7f, 0.5f }, { 0.3f, 0.9f, 0.2f, 1.0f });
+        m_Renderer2D->DrawQuad({ 0.5f, 0.0f }, { 0.7f, 0.5f }, { 0.3f, 0.2f, 0.9f, 1.0f });
+        m_Renderer2D->DrawQuad({ -0.5f, -1.0f }, { 1.0f, 1.0f }, m_MushroomTexture, 5.0f);
 
         m_Renderer2D->EndFrame();
         CRenderer::EndScene();

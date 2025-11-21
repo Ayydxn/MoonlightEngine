@@ -43,7 +43,11 @@ private:
         glm::vec3 Position;
         glm::vec4 Color;
         glm::vec2 TextureCoords;
+        float TextureIndex;
+        float TilingFactor;
     };
+    
+    static constexpr uint32 MaxTextureSlots = 32;
     
     CRenderer2DSpecification m_Specification;
 
@@ -57,6 +61,9 @@ private:
     CQuadVertex* m_QuadVertexBufferPointer = nullptr;
     uint32 m_QuadIndexCount = 0;
 
+    /* -- Misc/State -- */
+    std::array<std::shared_ptr<ITexture>, MaxTextureSlots> m_TextureSlots;
     uint32 m_MaxVertices;
     uint32 m_MaxIndices;
+    uint32 m_TextureSlotIndex = 1; // Start at index 1 as index 0 is going to be our white texture.
 };
