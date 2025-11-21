@@ -56,13 +56,14 @@ private:
     std::shared_ptr<IGraphicsPipeline> m_QuadGraphicsPipeline;
     std::shared_ptr<IVertexBuffer> m_QuadVertexBuffer;
     std::shared_ptr<IIndexBuffer> m_QuadIndexBuffer;
-    std::shared_ptr<ITexture> m_WhiteTexture;
     CQuadVertex* m_QuadVertexBufferBase = nullptr;
     CQuadVertex* m_QuadVertexBufferPointer = nullptr;
+    glm::vec4 m_QuadVertexPositions[4];
     uint32 m_QuadIndexCount = 0;
 
     /* -- Misc/State -- */
     std::array<std::shared_ptr<ITexture>, MaxTextureSlots> m_TextureSlots;
+    std::shared_ptr<ITexture> m_WhiteTexture;
     uint32 m_MaxVertices;
     uint32 m_MaxIndices;
     uint32 m_TextureSlotIndex = 1; // Start at index 1 as index 0 is going to be our white texture.
