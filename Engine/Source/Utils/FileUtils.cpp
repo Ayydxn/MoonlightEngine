@@ -37,7 +37,7 @@ std::string CFileUtils::ReadFile(const std::filesystem::path& Filepath)
 
 std::filesystem::path CFileUtils::GetFileParentDirectory(const std::filesystem::path& File)
 {
-    return File.has_parent_path() ? File.parent_path() : std::filesystem::current_path().string();
+    return File.has_parent_path() ? File.parent_path() : std::filesystem::current_path();
 }
 
 int CFileUtils::SkipByteOrderMark(std::istream& FileReader)

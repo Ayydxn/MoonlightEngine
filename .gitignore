@@ -2,6 +2,7 @@
 /Binaries/
 Intermediate/
 __pycache__
+moonlight-engine
 
 # Moonlight Engine
 Editor/Logs/
@@ -11,7 +12,9 @@ Editor/Logs/
 *.vcxproj.*
 *.sln
 *.sln.*
+Makefile
 
 # Misc
 .idea/
 .vs/
+.vscode/

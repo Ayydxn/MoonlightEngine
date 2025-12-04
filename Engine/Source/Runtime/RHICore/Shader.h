@@ -4,6 +4,7 @@
 
 #include <glm/glm.hpp>
 
+#include <filesystem>
 #include <memory>
 #include <string>
 

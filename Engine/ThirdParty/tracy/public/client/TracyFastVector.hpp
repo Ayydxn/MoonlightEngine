@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <stddef.h>
+#include <cstring> // Added by Moonlight
 
 #include "../common/TracyAlloc.hpp"
 #include "../common/TracyForceInline.hpp"

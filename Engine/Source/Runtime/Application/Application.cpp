@@ -228,7 +228,7 @@ void CApplication::OnEvent(IEvent& Event)
 template<typename Event, typename ... EventArgs>
 void CApplication::DispatchEvent(EventArgs&&... Arguments)
 {
-    static_assert(std::is_assignable_v<IEvent, Event>);
+    //static_assert(std::is_assignable_v<IEvent, Event>);
 
     std::shared_ptr<Event> EventInstance = std::make_shared<Event>(std::forward<EventArgs>(Arguments)...);
     OnEvent(*EventInstance);

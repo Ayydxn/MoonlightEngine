@@ -87,6 +87,11 @@ project "Moonlight Engine"
             "MOONLIGHT_PLATFORM_LINUX"
         }
 
+        excludes
+        {
+            "**/Windows/**"
+        }
+
     filter "configurations:Debug"
         defines
         {
@@ -115,4 +120,10 @@ project "Moonlight Engine"
         links
         {
             "%{Library.Shaderc_Windows_Release}"
+        }
+
+    filter { "system:linux" }
+        links
+        {
+            "%{Library.Shaderc_Linux}"
         }

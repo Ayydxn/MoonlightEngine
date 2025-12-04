@@ -90,7 +90,11 @@ std::string CLogging::GetDateAsString()
     const auto TimeNow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
     std::tm Time = {};
-    assertEngine(localtime_s(&Time, &TimeNow) == 0);
+    #ifdef MOONLIGHT_PLATFORM_WIN64
+        assertEngine(localtime_s(&Time, &TimeNow) == 0);
+    #else
+        assertEngine(localtime_r(&TimeNow, &Time) == 0);
+    #endif
 
     std::string DayString = std::to_string(Time.tm_mday);
     std::string MonthString = std::to_string(Time.tm_mon + 1);

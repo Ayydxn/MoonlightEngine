@@ -35,12 +35,6 @@ project "Moonlight Editor"
         "Moonlight Engine"
     }
 
-    postbuildcommands
-    {
-        '{COPYFILE} "%{getProjectBinariesDir("Engine")}/*.dll" "%{cfg.buildtarget.directory}"',
-        '{COPYFILE} "%{getProjectBinariesDir("GLFW")}/*.dll" "%{cfg.buildtarget.directory}"'
-    }
-
     filter "system:windows"
         systemversion "latest"
         entrypoint "WinMainCRTStartup"
@@ -50,6 +44,12 @@ project "Moonlight Editor"
             "MOONLIGHT_PLATFORM_WIN64"
         }
 
+        postbuildcommands
+        {
+            '{COPYFILE} "%{getProjectBinariesDir("Engine")}/*.dll" "%{cfg.buildtarget.directory}"',
+            '{COPYFILE} "%{getProjectBinariesDir("GLFW")}/*.dll" "%{cfg.buildtarget.directory}"'
+        }
+
     filter "system:macosx"
         defines
         {
@@ -57,6 +57,12 @@ project "Moonlight Editor"
         }
 
     filter "system:linux"
+        files { "%{getProjectBinariesDir(\"Engine\")}/*.so" }
+        buildaction "Copy"
+
+        files { "%{getProjectBinariesDir(\"GLFW\")}/*.so" }
+        buildaction "Copy"
+
         defines
         {
             "MOONLIGHT_PLATFORM_LINUX"
