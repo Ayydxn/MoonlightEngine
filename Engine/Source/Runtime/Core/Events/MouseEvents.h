@@ -2,6 +2,7 @@
 
 #include "Event.h"
 #include "Core/CoreTypes.h"
+#include "Input/CoreInputTypes.h"
 
 #include <sstream>
 
