@@ -110,6 +110,18 @@ void CRenderer2D::Flush()
     RenderPacket.Texture = m_WhiteTexture;
 
     CRenderer::DrawIndexed(RenderPacket, glm::mat4(1.0f), m_QuadIndexCount);
+    
+    m_Statistics.DrawCalls++;
+}
+
+void CRenderer2D::StartNewBatch()
+{
+    EndFrame();
+    
+    m_QuadVertexBufferPointer = m_QuadVertexBufferBase;
+    m_QuadIndexCount = 0;
+    
+    m_TextureSlotIndex = 1;
 }
 
 void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const glm::vec4& Color)
@@ -121,6 +133,9 @@ void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, con
 {
     MOONLIGHT_PROFILE_FUNCTION();
     
+    if (m_QuadIndexCount >= m_MaxIndices)
+        StartNewBatch();
+    
     const glm::mat4 Transform = glm::translate(glm::mat4(1.0f), Position) *
         glm::scale(glm::mat4(1.0f), { Size.x, Size.y, 1.0f });
     
@@ -155,6 +170,8 @@ void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, con
     m_QuadVertexBufferPointer++;
     
     m_QuadIndexCount += 6;
+    
+    m_Statistics.QuadCount++;
 }
 
 void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const std::shared_ptr<ITexture>& Texture, float TilingFactor)
@@ -166,6 +183,9 @@ void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, con
 {
     MOONLIGHT_PROFILE_FUNCTION();
     
+    if (m_QuadIndexCount >= m_MaxIndices)
+        StartNewBatch();
+    
     constexpr glm::vec4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
     const glm::mat4 Transform = glm::translate(glm::mat4(1.0f), Position) *
         glm::scale(glm::mat4(1.0f), { Size.x, Size.y, 1.0f });
@@ -217,6 +237,8 @@ void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, con
     m_QuadVertexBufferPointer++;
     
     m_QuadIndexCount += 6;
+    
+    m_Statistics.QuadCount++;
 }
 
 void CRenderer2D::DrawRotatedQuad(const glm::vec2& Position, const glm::vec2& Size, float Rotation, const glm::vec4& Color)
@@ -227,6 +249,9 @@ void CRenderer2D::DrawRotatedQuad(const glm::vec2& Position, const glm::vec2& Si
 void CRenderer2D::DrawRotatedQuad(const glm::vec3& Position, const glm::vec2& Size, float Rotation, const glm::vec4& Color)
 {
     MOONLIGHT_PROFILE_FUNCTION();
+    
+    if (m_QuadIndexCount >= m_MaxIndices)
+        StartNewBatch();
     
     const glm::mat4 Transform = glm::translate(glm::mat4(1.0f), Position) *
         glm::rotate(glm::mat4(1.0f), glm::radians(Rotation), { 0, 0, 1 }) *
@@ -263,6 +288,8 @@ void CRenderer2D::DrawRotatedQuad(const glm::vec3& Position, const glm::vec2& Si
     m_QuadVertexBufferPointer++;
     
     m_QuadIndexCount += 6;
+    
+    m_Statistics.QuadCount++;
 }
 
 void CRenderer2D::DrawRotatedQuad(const glm::vec2& Position, const glm::vec2& Size, float Rotation, const std::shared_ptr<ITexture>& Texture, float TilingFactor)
@@ -273,6 +300,9 @@ void CRenderer2D::DrawRotatedQuad(const glm::vec2& Position, const glm::vec2& Si
 void CRenderer2D::DrawRotatedQuad(const glm::vec3& Position, const glm::vec2& Size, float Rotation, const std::shared_ptr<ITexture>& Texture, float TilingFactor)
 {
     MOONLIGHT_PROFILE_FUNCTION();
+    
+    if (m_QuadIndexCount >= m_MaxIndices)
+        StartNewBatch();
     
     constexpr glm::vec4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
     float TextureIndex = 0.0f;
@@ -327,4 +357,11 @@ void CRenderer2D::DrawRotatedQuad(const glm::vec3& Position, const glm::vec2& Si
     m_QuadVertexBufferPointer++;
     
     m_QuadIndexCount += 6;
+    
+    m_Statistics.QuadCount++;
+}
+
+void CRenderer2D::ResetStats()
+{
+    std::memset(&m_Statistics, 0, sizeof(CRenderer2DStatistics));
 }

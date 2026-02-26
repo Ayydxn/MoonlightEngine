@@ -6,9 +6,8 @@
 
 COrthographicCameraController::COrthographicCameraController(float AspectRatio, bool bRotatable)
     : m_Camera(-AspectRatio * m_ZoomLevel, AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel),
-      m_AspectRatio(AspectRatio), bIsRotatable(bRotatable)
+      bIsRotatable(bRotatable), m_AspectRatio(AspectRatio)
 {
-    
 }
 
 void COrthographicCameraController::OnUpdate(float RenderDeltaTime)

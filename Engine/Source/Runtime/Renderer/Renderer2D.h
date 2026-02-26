@@ -14,6 +14,16 @@ struct CRenderer2DSpecification
     uint32 MaxQuadsPerDrawCall = 10000;
 };
 
+struct CRenderer2DStatistics
+{
+    uint32 DrawCalls = 0;
+    uint32 QuadCount = 0;
+    
+    uint32 GetTotalVertexCount() const { return QuadCount * 4; }
+    uint32 GetTotalIndexCount() const { return QuadCount * 6; }
+};
+
+
 class MOONLIGHT_API CRenderer2D
 {
 public:
@@ -35,8 +45,13 @@ public:
     void DrawRotatedQuad(const glm::vec3& Position, const glm::vec2& Size, float Rotation, const glm::vec4& Color);
     void DrawRotatedQuad(const glm::vec2& Position, const glm::vec2& Size, float Rotation, const std::shared_ptr<ITexture>& Texture, float TilingFactor = 1.0f);
     void DrawRotatedQuad(const glm::vec3& Position, const glm::vec2& Size, float Rotation, const std::shared_ptr<ITexture>& Texture, float TilingFactor = 1.0f);
+    
+    void ResetStats();
+    
+    const CRenderer2DStatistics& GetStats() const { return m_Statistics; }
 private:
     void Flush();
+    void StartNewBatch();
 private:
     struct CQuadVertex
     {
@@ -64,6 +79,7 @@ private:
     /* -- Misc/State -- */
     std::array<std::shared_ptr<ITexture>, MaxTextureSlots> m_TextureSlots;
     std::shared_ptr<ITexture> m_WhiteTexture;
+    CRenderer2DStatistics m_Statistics;
     uint32 m_MaxVertices;
     uint32 m_MaxIndices;
     uint32 m_TextureSlotIndex = 1; // Start at index 1 as index 0 is going to be our white texture.
