@@ -17,12 +17,10 @@ project "Moonlight Editor"
         "%{prj.location}/Resources/**/**.**"
     }
 
+    IncludeDependencies({ "spdlog", "glm", "ImGui" })
+
     includedirs
     {
-        "%{IncludeDir.spdlog}",
-        "%{IncludeDir.glm}",
-        "%{IncludeDir.ImGui}",
-        
         "%{prj.location}/Source",
 
         "%{wks.location}/Engine/Source",

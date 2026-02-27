@@ -21,37 +21,22 @@ project "Moonlight Engine"
 
         "%{prj.location}/ThirdParty/ImGui/*.cpp",
         "%{prj.location}/ThirdParty/ImGui/*.h",
-        "%{IncludeDir.ImGui}/backends/imgui_impl_glfw.cpp",
-        "%{IncludeDir.ImGui}/backends/imgui_impl_glfw.h",
-        "%{IncludeDir.ImGui}/backends/imgui_impl_opengl3.cpp",
-        "%{IncludeDir.ImGui}/backends/imgui_impl_opengl3.h",
-        "%{IncludeDir.ImGui}/backends/imgui_impl_opengl3_loader.h",
+        "%{prj.location}/ThirdParty/ImGui/backends/imgui_impl_glfw.cpp",
+        "%{prj.location}/ThirdParty/ImGui/backends/imgui_impl_glfw.h",
+        "%{prj.location}/ThirdParty/ImGui/backends/imgui_impl_opengl3.cpp",
+        "%{prj.location}/ThirdParty/ImGui/backends/imgui_impl_opengl3.h",
+        "%{prj.location}/ThirdParty/ImGui/backends/imgui_impl_opengl3_loader.h",
         
-        "%{IncludeDir.tracy}/TracyClient.cpp"
+        "%{prj.location}/ThirdParty/tracy/public/TracyClient.cpp"
     }
+
+    IncludeDependencies({ "spdlog", "GLFW", "Vulkan", "Shaderc", "Glad", "stb_image", "ImGui", "glm", "tracy" })
 
     includedirs
     {
-        "%{IncludeDir.spdlog}",
-        "%{IncludeDir.GLFW}",
-        "%{IncludeDir.Vulkan}",
-        "%{IncludeDir.Shaderc}",
-        "%{IncludeDir.Glad}",
-        "%{IncludeDir.stb_image}",
-        "%{IncludeDir.ImGui}",
-        "%{IncludeDir.glm}",
-        "%{IncludeDir.tracy}",
-
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",
         "%{prj.location}/Source/Runtime/Core"
-    }
-
-    links
-    {
-        "GLFW",
-        "Glad",
-        "tracy"
     }
 
     defines
@@ -108,22 +93,4 @@ project "Moonlight Engine"
         defines
         {
             "MOONLIGHT_BUILD_DISTRIBUTION"
-        }
-
-    filter { "system:windows", "configurations:Debug" }
-        links
-        {
-            "%{Library.Shaderc_Windows_Debug}"
-        }
-
-    filter { "system:windows", "configurations:Release or configurations:Distribution" }
-        links
-        {
-            "%{Library.Shaderc_Windows_Release}"
-        }
-
-    filter { "system:linux" }
-        links
-        {
-            "%{Library.Shaderc_Linux}"
         }
