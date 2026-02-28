@@ -2,8 +2,8 @@
 
 #include "RHICore/Shader.h"
 
-#include <slang.h>
 #include <slang-com-ptr.h>
+#include <slang.h>
 
 struct CCompiledShaderStage
 {

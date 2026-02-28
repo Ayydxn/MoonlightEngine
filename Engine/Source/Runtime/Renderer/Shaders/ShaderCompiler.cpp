@@ -1,9 +1,9 @@
 ﻿#include "MoonlightPCH.h"
 #include "ShaderCompiler.h"
+#include "ShaderCache.h"
 #include "Application/Application.h"
 #include "Core/Misc/EnginePaths.h"
 #include "Renderer/Renderer.h"
-#include "ShaderUtils.h"
 #include "Utils/FileUtils.h"
 
 void CShaderCompiler::Initialize()
@@ -135,57 +135,24 @@ void CShaderCompiler::CompileShader(const std::string& ShaderName, const std::st
 
 void CShaderCompiler::CompileShaderFromFile(const std::filesystem::path& ShaderFilepath, std::unordered_map<SlangStage, CCompiledShaderStage>& CompilationOutput)
 {
+    if (!CRenderer::GetConfig().bEnableShaderCaching)
+    {
+        CompileShader(ShaderFilepath.string(), CFileUtils::ReadFile(ShaderFilepath), CompilationOutput);
+        return;
+    }
+
     std::string ApplicationName = CApplication::GetInstance().GetSpecification().Name;
     ApplicationName.erase(std::ranges::remove_if(ApplicationName, isspace).begin(), ApplicationName.end());
 
-    const std::string ShaderName = ShaderFilepath.stem().string();
+    const std::string ShaderSource = CFileUtils::ReadFile(ShaderFilepath);
+    const uint64 SourceHash = CShaderCache::ComputeSourceHash(ShaderSource);
+    const std::filesystem::path CacheFilepath = CShaderCache::GetCacheFilepath(ApplicationName, ShaderFilepath.stem().string());
 
-    if (CRenderer::GetConfig().bEnableShaderCaching)
-    {
-        const std::filesystem::path ShaderCachePath = CEnginePaths::GetShaderCacheDirectory();
+    if (CShaderCache::TryLoad(CacheFilepath, SourceHash, CompilationOutput))
+        return;
 
-        // Check if ALL cache files for this shader exist before skipping compilation entirely.
-        // We don't know how many stages exist without compiling first.
-        // So, we compile and then check per-stage whether to load from cache or write a new cache file.
-        CompileShader(ShaderFilepath.string(), CFileUtils::ReadFile(ShaderFilepath), CompilationOutput);
-
-        for (auto& [Stage, CompiledStage] : CompilationOutput)
-        {
-            const std::filesystem::path ShaderCacheFilepath = ShaderCachePath / 
-                (ApplicationName + "_" + ShaderName + "_" + CShaderUtils::GetShaderStageCacheFileExtension(Stage).string());
-
-            std::ifstream FileReader(ShaderCacheFilepath, std::ios::in | std::ios::binary);
-
-            if (FileReader.is_open())
-            {
-                ENGINE_LOG_INFO_TAG("Renderer", "Loading shader '{}' (stage {}) from the shader cache...", ShaderFilepath.string(), static_cast<int32>(Stage));
-
-                FileReader.seekg(0, std::ios::end);
-                const size_t FileSize = FileReader.tellg();
-                FileReader.seekg(0, std::ios::beg);
-
-                CompiledStage.Bytecode.resize(FileSize / sizeof(uint32));
-                FileReader.read(reinterpret_cast<char*>(CompiledStage.Bytecode.data()), static_cast<int64>(FileSize));
-            }
-            else
-            {
-                std::ofstream FileWriter(ShaderCacheFilepath, std::ios::out | std::ios::binary);
-
-                if (FileWriter.is_open())
-                {
-                    ENGINE_LOG_INFO_TAG("Renderer", "Writing shader '{}' (stage {}) to the shader cache...", ShaderFilepath.string(), static_cast<int32>(Stage));
-
-                    FileWriter.write(reinterpret_cast<const char*>(CompiledStage.Bytecode.data()), static_cast<int32>(CompiledStage.Bytecode.size()) * sizeof(uint32));
-                    FileWriter.flush();
-                    FileWriter.close();
-                }
-            }
-        }
-    }
-    else
-    {
-        CompileShader(ShaderFilepath.string(), CFileUtils::ReadFile(ShaderFilepath), CompilationOutput);
-    }
+    CompileShader(ShaderFilepath.string(), ShaderSource, CompilationOutput);
+    CShaderCache::Write(CacheFilepath, SourceHash, CompilationOutput);
 }
 
 void CShaderCompiler::DiagnoseIfNeeded(slang::IBlob* DiagnosticsBlob)
