@@ -6,6 +6,7 @@
 #include "Camera/OrthographicCamera.h"
 #include "RHICore/RendererBackend.h"
 #include "RHICore/RendererContext.h"
+#include "Shaders/ShaderCompiler.h"
 #include "Shaders/ShaderLibrary.h"
 
 enum class EGraphicsAPI
@@ -38,6 +39,7 @@ public:
     static void DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform = glm::mat4(1.0f), uint32 IndexCount = 0);
     
     static std::shared_ptr<IRendererContext> GetContext() { return CApplication::GetInstance().GetWindow().GetRendererContext(); }
+    static std::shared_ptr<CShaderCompiler> GetShaderCompiler() { return m_ShaderCompiler; }
     static std::shared_ptr<CShaderLibrary> GetShaderLibrary() { return m_ShaderLibrary; }
     static CRendererConfig GetConfig() { return m_RendererConfig; }
     
@@ -47,6 +49,7 @@ public:
 protected:
     inline static CSceneData* m_SceneData;
 private:
+    inline static std::shared_ptr<CShaderCompiler> m_ShaderCompiler;
     inline static std::shared_ptr<IRendererBackend> m_RendererBackend;
     inline static std::shared_ptr<CShaderLibrary> m_ShaderLibrary;
 

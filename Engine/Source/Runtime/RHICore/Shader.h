@@ -8,14 +8,6 @@
 #include <memory>
 #include <string>
 
-enum class EShaderStage
-{
-    Unknown,
-
-    Vertex,
-    Fragment
-};
-
 class MOONLIGHT_API IShader
 {
 public:
@@ -29,7 +21,7 @@ public:
     virtual void SetVector4f(const std::string& Name, const glm::vec4& Value) const = 0;
     virtual void SetMatrix4x4f(const std::string& Name, const glm::mat4& Value) const = 0;
 
-    static std::shared_ptr<IShader> Create(const std::string& Name, const std::string& Source, EShaderStage ShaderStage);
+    static std::shared_ptr<IShader> Create(const std::string& Name, const std::string& Source);
     static std::shared_ptr<IShader> Create(const std::filesystem::path& Filepath);
 protected:
     inline static std::string m_Name;

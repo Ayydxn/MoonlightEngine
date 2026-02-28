@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Renderer/Shaders/ShaderCompiler.h"
 #include "RHICore/Shader.h"
 
 #include <unordered_map>
@@ -7,7 +8,7 @@
 class COpenGLShader : public IShader
 {
 public:
-    COpenGLShader(const std::string& Name, const std::string& Source, EShaderStage ShaderStage);
+    COpenGLShader(const std::string& Name, const std::string& Source);
     COpenGLShader(const std::filesystem::path& Filepath);
     ~COpenGLShader() override;
 
@@ -21,7 +22,7 @@ public:
 private:
     void CreateShaderProgram();
 private:
-    std::unordered_map<EShaderStage, std::vector<uint32>> m_ShaderStageToBytecode;
+    std::unordered_map<SlangStage, CCompiledShaderStage> m_CompiledShaderStages;
     
     uint32 m_ShaderProgramHandle = 0;
 };

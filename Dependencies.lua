@@ -240,26 +240,12 @@ Register("Vulkan", {
     IncludePaths = { ThirdPartyFolder .. "Vulkan/Include" }
 })
 
-Register("Shaderc", {
-    IncludePaths = { ThirdPartyFolder .. "Shaderc/Include" },
+Register("Slang", {
+    IncludePaths = { ThirdPartyFolder .. "Slang/Include" },
     Platforms = {
         Windows = {
-            LibraryPaths = { ThirdPartyFolder .. "Shaderc/Lib/Windows" },
-            Configurations = {
-                Debug = {
-                    Links = { ThirdPartyFolder .. "Shaderc/Lib/Windows/shaderc_sharedd.lib" }
-                },
-                Release = {
-                    Links = { ThirdPartyFolder .. "Shaderc/Lib/Windows/shaderc_shared.lib" }
-                },
-                Distribution = {
-                    Links = { ThirdPartyFolder .. "Shaderc/Lib/Windows/shaderc_shared.lib" }
-                }
-            }
-        },
-        Linux = {
-            LibraryPaths = { ThirdPartyFolder .. "Shaderc/Lib/Linux" },
-            Links = { ThirdPartyFolder .. "Shaderc/Lib/Linux/libshaderc_combined" }
+            LibraryPaths = { ThirdPartyFolder .. "Slang/Lib/Windows" },
+            Links = { ThirdPartyFolder .. "Slang/Lib/Windows/slang.lib" },
         }
     }
 })

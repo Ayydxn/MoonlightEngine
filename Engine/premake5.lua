@@ -30,7 +30,7 @@ project "Moonlight Engine"
         "%{prj.location}/ThirdParty/tracy/public/TracyClient.cpp"
     }
 
-    IncludeDependencies({ "spdlog", "GLFW", "Vulkan", "Shaderc", "Glad", "stb_image", "ImGui", "glm", "tracy" })
+    IncludeDependencies({ "spdlog", "GLFW", "Vulkan", "Slang", "Glad", "stb_image", "ImGui", "glm", "tracy" })
 
     includedirs
     {

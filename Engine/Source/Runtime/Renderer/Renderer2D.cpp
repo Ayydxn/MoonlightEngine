@@ -66,6 +66,8 @@ void CRenderer2D::Initialize()
     m_QuadVertexPositions[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
     m_QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
     
+    m_GlobalUniformBuffer = IUniformBuffer::Create(sizeof(CGlobalUniforms), 0);
+    
     m_WhiteTexture = ITexture::Create(1, 1);
     m_WhiteTexture->SetData(&WhiteTextureData, sizeof(uint32));
     m_QuadVertexBufferBase = new CQuadVertex[m_MaxVertices];
@@ -80,10 +82,12 @@ void CRenderer2D::Shutdown()
     delete m_QuadVertexBufferBase;
 }
 
-void CRenderer2D::BeginFrame()
+void CRenderer2D::BeginFrame(const glm::mat4& ViewProjectionMatrix)
 {
     m_QuadVertexBufferPointer = m_QuadVertexBufferBase;
     m_QuadIndexCount = 0;
+    
+    m_CurrentViewProjectionMatrix = ViewProjectionMatrix;
     
     m_TextureSlotIndex = 1;
 }
@@ -100,6 +104,12 @@ void CRenderer2D::Flush()
 {
     for (uint32 i = 0; i < m_TextureSlotIndex; i++)
         m_TextureSlots[i]->Bind(i);
+    
+    CGlobalUniforms GlobalUniforms;
+    GlobalUniforms.Transform = glm::mat4(1.0f);
+    GlobalUniforms.ViewProjectionMatrix = m_CurrentViewProjectionMatrix;
+    
+    m_GlobalUniformBuffer->SetData(&GlobalUniforms, sizeof(CGlobalUniforms));
     
     CRenderPacket RenderPacket;
     RenderPacket.Shader = m_QuadShader;

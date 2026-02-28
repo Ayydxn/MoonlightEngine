@@ -1,71 +1,43 @@
 ﻿#include "MoonlightPCH.h"
 #include "OpenGLShader.h"
+#include "Renderer/Renderer.h"
 #include "Renderer/Shaders/ShaderUtils.h"
-#include "RHICore/ShaderCompiler.h"
-#include "Utils/FileUtils.h"
-
-#include <glm/gtc/type_ptr.hpp>
 
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
+
+#include <ranges>
 
 namespace
 {
-    uint32 ConvertMoonlightShaderStageToOpenGL(const EShaderStage ShaderStage)
+    uint32 ConvertSlangStageToOpenGL(const SlangStage SlangStage)
     {
-        switch (ShaderStage)
+        switch (SlangStage)
         {
-            case EShaderStage::Unknown: return -1;
-            case EShaderStage::Vertex: return GL_VERTEX_SHADER;
-            case EShaderStage::Fragment: return GL_FRAGMENT_SHADER;
+            case SLANG_STAGE_VERTEX: return GL_VERTEX_SHADER;
+            case SLANG_STAGE_FRAGMENT: return GL_FRAGMENT_SHADER;
+            default:
+            {
+                verifyEnginef(false, "Failed to convert Slang shader stage to OpenGL!")
+                return -1;
+            }
         }
-
-        verifyEnginef(false, "Failed to convert Moonlight shader stage to Shaderc!")
-        return -1;
     }
 }
 
-COpenGLShader::COpenGLShader(const std::string& Name, const std::string& Source, EShaderStage ShaderStage)
+COpenGLShader::COpenGLShader(const std::string& Name, const std::string& Source)
 {
-    IShaderCompiler& ShaderCompiler = IShaderCompiler::GetInstance();
-    std::vector<uint32> ShaderBytecode;
+    const std::shared_ptr<CShaderCompiler> ShaderCompiler = CRenderer::GetShaderCompiler();
+    ShaderCompiler->CompileShader(Name, Source, m_CompiledShaderStages);
     
-    ShaderCompiler.CompileShader(Name, Source, ShaderStage, ShaderBytecode);
-
-    m_ShaderStageToBytecode[ShaderStage] = ShaderBytecode;
-
     CreateShaderProgram();
 }
 
 COpenGLShader::COpenGLShader(const std::filesystem::path& Filepath)
 {
-    std::vector<std::filesystem::path> ShadersToCompile = {};
-    IShaderCompiler& ShaderCompiler = IShaderCompiler::GetInstance();
-
-    // In the directory that the shader is presumably located in, we find all of its associated shaders (vertex shaders, fragment shaders, etc.)
-    // and add them to a list of shaders that are to be compiled.
-    //
-    // What is considered to be an "associated shader" is simply the file having the same name as the shader. For example:
-    // Passing "Resources/Shaders/MyShader" means that "MyShader.vert.glsl" is associated with it.
-    // Passing "Resources/Shaders/MyShader" means that "MyOtherShader.vert.glsl" is not associated with it.
-    for (const auto& FileEntry : std::filesystem::directory_iterator(CFileUtils::GetFileParentDirectory(Filepath)))
-    {
-        const auto FileEntryPath = std::filesystem::path(FileEntry);
-        const auto FileEntryName = FileEntryPath.stem().string().substr(0, FileEntryPath.stem().string().find_last_of('.'));
-        
-        if (FileEntryName == Filepath.stem().string())
-            ShadersToCompile.push_back(FileEntryPath);
-    }
-
-    for (const auto& ShaderToCompile : ShadersToCompile)
-    {
-        EShaderStage ShaderStage = CShaderUtils::GetShaderStageFromFileExtension(ShaderToCompile);
-        
-        std::vector<uint32> ShaderBytecode;
-        ShaderCompiler.CompileShaderFromFile(ShaderToCompile, ShaderStage, ShaderBytecode);
-        
-        m_ShaderStageToBytecode[ShaderStage] = ShaderBytecode;
-    }
-
+    const std::shared_ptr<CShaderCompiler> ShaderCompiler = CRenderer::GetShaderCompiler();
+    ShaderCompiler->CompileShaderFromFile(Filepath, m_CompiledShaderStages);
+    
     CreateShaderProgram();
 }
 
@@ -109,16 +81,33 @@ void COpenGLShader::CreateShaderProgram()
     std::vector<uint32> ShaderIDs;
     
     m_ShaderProgramHandle = glCreateProgram();
-
-    for (auto&& [ShaderStage, ShaderBytecode] : m_ShaderStageToBytecode)
+    
+    for (auto& CompiledShaderStage : m_CompiledShaderStages | std::views::values)
     {
-        uint32 ShaderID = ShaderIDs.emplace_back(glCreateShader(ConvertMoonlightShaderStageToOpenGL(ShaderStage)));
-
-        glShaderBinary(1, &ShaderID, GL_SHADER_BINARY_FORMAT_SPIR_V, ShaderBytecode.data(), static_cast<int32>(ShaderBytecode.size()) * sizeof(uint32));
+        uint32 ShaderID = ShaderIDs.emplace_back(glCreateShader(ConvertSlangStageToOpenGL(CompiledShaderStage.ShaderStage)));
+        
+        glShaderBinary(1, &ShaderID, GL_SHADER_BINARY_FORMAT_SPIR_V, CompiledShaderStage.Bytecode.data(),
+            static_cast<int32>(CompiledShaderStage.Bytecode.size() * sizeof(uint32)));
         glSpecializeShader(ShaderID, "main", 0, nullptr, nullptr);
+        
+        int32 IsSpecialized = 0;
+        glGetShaderiv(ShaderID, GL_COMPILE_STATUS, &IsSpecialized);
+
+        if (IsSpecialized == GL_FALSE)
+        {
+            int32 MaxLength = 0;
+            glGetShaderiv(ShaderID, GL_INFO_LOG_LENGTH, &MaxLength);
+
+            std::vector<GLchar> ErrorMessage(MaxLength);
+            glGetShaderInfoLog(ShaderID, MaxLength, &MaxLength, ErrorMessage.data());
+
+            ENGINE_LOG_ERROR_TAG("Renderer", "Failed to specialize shader '{}':", m_Name);
+            ENGINE_LOG_ERROR_TAG("Renderer", "  {}", ErrorMessage.data());
+        }
+        
         glAttachShader(m_ShaderProgramHandle, ShaderID);
     }
-
+    
     glLinkProgram(m_ShaderProgramHandle);
 
     int32 IsShaderProgramLinked = 0;

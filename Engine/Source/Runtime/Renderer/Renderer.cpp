@@ -1,7 +1,6 @@
 ﻿#include "MoonlightPCH.h"
 #include "Renderer.h"
 #include "Renderer2D.h"
-#include "RHICore/ShaderCompiler.h"
 
 void CRenderer::PreInitialize()
 {
@@ -16,20 +15,21 @@ void CRenderer::PreInitialize()
 
 void CRenderer::Initialize()
 {
-    IShaderCompiler::Init();
+    m_ShaderCompiler = std::make_shared<CShaderCompiler>();
+    m_ShaderCompiler->Initialize();
     
     m_RendererBackend = IRendererBackend::Create();
     m_RendererBackend->Initialize();
 
     m_ShaderLibrary = std::make_shared<CShaderLibrary>();
     m_ShaderLibrary->Load("Resources/Shaders/Renderer2DQuad");
-
+    
     m_SceneData = new CSceneData();
 }
 
 void CRenderer::Shutdown()
 {
-    IShaderCompiler::GetInstance().Shutdown();
+    m_ShaderCompiler->Shutdown();
 
     m_RendererBackend->Shutdown();
 

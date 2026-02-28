@@ -5,6 +5,7 @@
 #include "RHICore/IndexBuffer.h"
 #include "RHICore/Shader.h"
 #include "RHICore/Texture.h"
+#include "RHICore/UniformBuffer.h"
 #include "RHICore/VertexBuffer.h"
 
 #include <glm/glm.hpp>
@@ -33,7 +34,7 @@ public:
     void Initialize();
     void Shutdown();
 
-    void BeginFrame();
+    void BeginFrame(const glm::mat4& ViewProjectionMatrix);
     void EndFrame();
     
     void DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const glm::vec4& Color);
@@ -62,6 +63,12 @@ private:
         float TilingFactor;
     };
     
+    struct CGlobalUniforms
+    {
+        glm::mat4 Transform;
+        glm::mat4 ViewProjectionMatrix;
+    };
+    
     static constexpr uint32 MaxTextureSlots = 32;
     
     CRenderer2DSpecification m_Specification;
@@ -75,8 +82,12 @@ private:
     CQuadVertex* m_QuadVertexBufferPointer = nullptr;
     glm::vec4 m_QuadVertexPositions[4];
     uint32 m_QuadIndexCount = 0;
+    
+    /* -- Uniforms -- */
+    std::shared_ptr<IUniformBuffer> m_GlobalUniformBuffer;
 
     /* -- Misc/State -- */
+    glm::mat4 m_CurrentViewProjectionMatrix;
     std::array<std::shared_ptr<ITexture>, MaxTextureSlots> m_TextureSlots;
     std::shared_ptr<ITexture> m_WhiteTexture;
     CRenderer2DStatistics m_Statistics;

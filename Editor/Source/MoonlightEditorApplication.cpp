@@ -33,7 +33,7 @@ public:
         m_Renderer2D->ResetStats();
         
         CRenderer::BeginScene(m_CameraController.GetCamera());
-        m_Renderer2D->BeginFrame();
+        m_Renderer2D->BeginFrame(m_CameraController.GetCamera().GetViewProjectionMatrix());
         
         m_Renderer2D->DrawQuad({ 0.0f, 0.0f }, { 15.0f, 15.0f }, m_PlaceholderTexture);
         

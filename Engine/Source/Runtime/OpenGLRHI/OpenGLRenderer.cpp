@@ -49,9 +49,6 @@ void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::
     const auto VertexArray = Cast<COpenGLGraphicsPipeline>(RenderPacket.GraphicsPipeline);
     
     Shader->Bind();
-    Shader->SetMatrix4x4f("u_ViewProjectionMatrix", SceneData->ViewProjectionMatrix);
-    Shader->SetMatrix4x4f("u_Transform", Transform);
-    
     VertexArray->Bind();
 
     glVertexArrayVertexBuffer(VertexArray->GetHandle(), 0, VertexBuffer->GetHandle(), 0, static_cast<int32>(VertexArray->GetStride()));

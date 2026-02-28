@@ -1,8 +1,6 @@
 ﻿#include "MoonlightPCH.h"
 #include "ShaderLibrary.h"
 
-#include "RHICore/ShaderCompiler.h"
-
 void CShaderLibrary::Add(const std::shared_ptr<IShader>& Shader)
 {
     const std::string& Name = Shader->GetName();
@@ -17,14 +15,14 @@ void CShaderLibrary::Add(const std::shared_ptr<IShader>& Shader)
 
 void CShaderLibrary::Load(const std::filesystem::path& Filepath)
 {
-    const auto& Shader = IShader::Create(Filepath);
+    const auto& Shader = IShader::Create(Filepath.string() + ".slang");
 
     m_Shaders[Shader->GetName()] = Shader;
 }
 
 void CShaderLibrary::Load(const std::string& Name, const std::filesystem::path& Filepath)
 {
-    const auto& Shader = IShader::Create(Filepath);
+    const auto& Shader = IShader::Create(Filepath.string() + ".slang");
 
     m_Shaders[Name] = Shader;
 }

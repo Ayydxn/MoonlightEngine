@@ -17,7 +17,7 @@ project "Moonlight Editor"
         "%{prj.location}/Resources/**/**.**"
     }
 
-    IncludeDependencies({ "spdlog", "glm", "ImGui" })
+    IncludeDependencies({ "spdlog", "glm", "ImGui", "Slang" })
 
     includedirs
     {
@@ -84,16 +84,4 @@ project "Moonlight Editor"
         defines
         {
             "MOONLIGHT_BUILD_DISTRIBUTION"
-        }
-        
-    filter { "system:windows", "configurations:Debug" }
-        postbuildcommands
-        {
-            '{COPYFILE} "%{wks.location}/Engine/ThirdParty/Shaderc/Binaries/Windows/shaderc_sharedd.dll" "%{cfg.buildtarget.directory}"'
-        }
-        
-    filter { "system:windows", "configurations:Release or configurations:Distribution" }
-        postbuildcommands
-        {
-            '{COPYFILE} "%{wks.location}/Engine/ThirdParty/Shaderc/Binaries/Windows/shaderc_shared.dll" "%{cfg.buildtarget.directory}"'
         }
