@@ -6,6 +6,7 @@ class CFileUtils
 {
 public:
     static std::string ReadFile(const std::filesystem::path& Filepath);
+    static std::string RedactUserFolderFromFilepath(const std::filesystem::path& Filepath);
 
     static std::filesystem::path GetFileParentDirectory(const std::filesystem::path& File);
 private:

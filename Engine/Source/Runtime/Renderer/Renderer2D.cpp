@@ -118,6 +118,7 @@ void CRenderer2D::Flush()
     RenderPacket.IndexBuffer = m_QuadIndexBuffer;
     RenderPacket.GraphicsPipeline = m_QuadGraphicsPipeline;
     RenderPacket.Texture = m_WhiteTexture;
+    RenderPacket.UniformBuffer = m_GlobalUniformBuffer;
 
     CRenderer::DrawIndexed(RenderPacket, glm::mat4(1.0f), m_QuadIndexCount);
     

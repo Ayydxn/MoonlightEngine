@@ -4,12 +4,13 @@
 
 #include <slang.h>
 
+#define CURRENT_MAGIC_NUMBER_IDENTIFIER 0x6D6C7363
 #define CURRENT_SHADER_CACHE_VERSION 1
 
 struct CShaderCacheHeader
 {
     // Fixed identifier that says "This is a Moonlight Engine shader cache file". Should never be changed.
-    uint32 MagicNumber = 0x6D6C7363;
+    uint32 MagicNumber = CURRENT_MAGIC_NUMBER_IDENTIFIER;
     
     // Only bump this when a breaking change is made to either this struct or CShaderCacheStageHeader.
     // Breaking changes can be considered as things such as:

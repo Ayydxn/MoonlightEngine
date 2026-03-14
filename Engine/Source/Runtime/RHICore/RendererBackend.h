@@ -3,6 +3,7 @@
 #include "GraphicsPipeline.h"
 #include "IndexBuffer.h"
 #include "Texture.h"
+#include "UniformBuffer.h"
 #include "VertexBuffer.h"
 
 #include <memory>
@@ -16,6 +17,7 @@ struct CRenderPacket
     std::shared_ptr<IIndexBuffer> IndexBuffer;
     std::shared_ptr<IGraphicsPipeline> GraphicsPipeline;
     std::shared_ptr<ITexture> Texture;
+    std::shared_ptr<IUniformBuffer> UniformBuffer;
 
     void* UserData;
 };

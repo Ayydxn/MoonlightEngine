@@ -1,6 +1,7 @@
 ﻿#include "MoonlightPCH.h"
 #include "ShaderCache.h"
 #include "Core/Misc/EnginePaths.h"
+#include "Utils/FileUtils.h"
 
 bool CShaderCache::TryLoad(const std::filesystem::path& CacheFilepath, uint64 SourceHash, std::unordered_map<SlangStage, CCompiledShaderStage>& Output)
 {
@@ -11,20 +12,22 @@ bool CShaderCache::TryLoad(const std::filesystem::path& CacheFilepath, uint64 So
 
     CShaderCacheHeader Header;
     FileReader.read(reinterpret_cast<char*>(&Header), sizeof(CShaderCacheHeader));
+    
+    const auto RedactedCacheFilepath = CFileUtils::RedactUserFolderFromFilepath(CacheFilepath);
 
-    if (Header.MagicNumber != 0x6D6C7363 || Header.Version != CURRENT_SHADER_CACHE_VERSION)
+    if (Header.MagicNumber != CURRENT_MAGIC_NUMBER_IDENTIFIER || Header.Version != CURRENT_SHADER_CACHE_VERSION)
     {
-        ENGINE_LOG_WARN_TAG("Renderer", "Shader cache file '{}' is invalid or outdated! Recompiling...", CacheFilepath.string());
+        ENGINE_LOG_WARN_TAG("Renderer", "Shader cache file '{}' is invalid or outdated! Recompiling...", RedactedCacheFilepath);
         return false;
     }
 
     if (Header.SourceHash != SourceHash)
     {
-        ENGINE_LOG_INFO_TAG("Renderer", "Shader source has changed for '{}'! Recompiling...", CacheFilepath.string());
+        ENGINE_LOG_INFO_TAG("Renderer", "Shader source has changed for '{}'! Recompiling...", RedactedCacheFilepath);
         return false;
     }
 
-    ENGINE_LOG_INFO_TAG("Renderer", "Loading shader from cache '{}'...", CacheFilepath.string());
+    ENGINE_LOG_INFO_TAG("Renderer", "Loading shader from cache '{}'...", RedactedCacheFilepath);
 
     for (uint32 i = 0; i < Header.ShaderStageCount; i++)
     {
@@ -49,15 +52,17 @@ bool CShaderCache::TryLoad(const std::filesystem::path& CacheFilepath, uint64 So
 
 void CShaderCache::Write(const std::filesystem::path& CacheFilepath, const uint64 SourceHash, const std::unordered_map<SlangStage, CCompiledShaderStage>& CompiledStages)
 {
+    const auto RedactedCacheFilepath = CFileUtils::RedactUserFolderFromFilepath(CacheFilepath);
+    
     std::ofstream FileWriter(CacheFilepath, std::ios::out | std::ios::binary);
 
     if (!FileWriter.is_open())
     {
-        ENGINE_LOG_ERROR_TAG("Renderer", "Failed to write shader cache file '{}'!", CacheFilepath.string());
+        ENGINE_LOG_ERROR_TAG("Renderer", "Failed to write shader cache file '{}'!", RedactedCacheFilepath);
         return;
     }
 
-    ENGINE_LOG_INFO_TAG("Renderer", "Writing shader to cache '{}'...", CacheFilepath.string());
+    ENGINE_LOG_INFO_TAG("Renderer", "Writing shader to cache '{}'...", RedactedCacheFilepath);
 
     CShaderCacheHeader Header;
     Header.ShaderStageCount = static_cast<uint32>(CompiledStages.size());
@@ -83,6 +88,7 @@ void CShaderCache::Write(const std::filesystem::path& CacheFilepath, const uint6
 
 void CShaderCache::DumpBytecode(const std::filesystem::path& CacheFilepath, const std::filesystem::path& OutputDirectory)
 {
+    const auto RedactedCacheFilepath = CFileUtils::RedactUserFolderFromFilepath(CacheFilepath);
     std::unordered_map<SlangStage, CCompiledShaderStage> Stages;
 
     // Pass 0 as hash to bypass hash check - we just want the bytecode
@@ -90,16 +96,16 @@ void CShaderCache::DumpBytecode(const std::filesystem::path& CacheFilepath, cons
 
     if (!FileReader.is_open())
     {
-        ENGINE_LOG_ERROR_TAG("Renderer", "Failed to open cache file '{}' for bytecode export!", CacheFilepath.string());
+        ENGINE_LOG_ERROR_TAG("Renderer", "Failed to open cache file '{}' for bytecode export!", RedactedCacheFilepath);
         return;
     }
 
     CShaderCacheHeader Header;
     FileReader.read(reinterpret_cast<char*>(&Header), sizeof(CShaderCacheHeader));
 
-    if (Header.MagicNumber != 0x6D6C7363)
+    if (Header.MagicNumber != CURRENT_MAGIC_NUMBER_IDENTIFIER)
     {
-        ENGINE_LOG_ERROR_TAG("Renderer", "Cache file '{}' is not a valid Moonlight shader cache file!", CacheFilepath.string());
+        ENGINE_LOG_ERROR_TAG("Renderer", "Cache file '{}' is not a valid Moonlight shader cache file!", RedactedCacheFilepath);
         return;
     }
 

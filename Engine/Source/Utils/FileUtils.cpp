@@ -35,6 +35,18 @@ std::string CFileUtils::ReadFile(const std::filesystem::path& Filepath)
     return Result;
 }
 
+std::string CFileUtils::RedactUserFolderFromFilepath(const std::filesystem::path& Filepath)
+{
+    const auto HomePath = std::filesystem::path(std::getenv("USERPROFILE") ? std::getenv("USERPROFILE") : std::getenv("HOME"));
+    const std::string RedactedFilepath = Filepath.string();
+    const std::string HomePathString = HomePath.string();
+
+    if (RedactedFilepath.starts_with(HomePathString))
+        return "~" + RedactedFilepath.substr(HomePathString.size());
+
+    return RedactedFilepath;
+}
+
 std::filesystem::path CFileUtils::GetFileParentDirectory(const std::filesystem::path& File)
 {
     return File.has_parent_path() ? File.parent_path() : std::filesystem::current_path();
