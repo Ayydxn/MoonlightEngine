@@ -19,17 +19,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v2
         with:
           msbuild-architecture: x64
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12.4"
+          python-version: "3.14.3"
       - name: Setup Premake
         uses: abel0b/setup-premake@v2.4
         with:
-          version: "5.0.0-beta2"
+          version: "5.0.0-beta8"
           path: "Engine/ThirdParty/Premake"
       - name: Setup Moonlight for Building
         run: cmd /c .\Setup.bat

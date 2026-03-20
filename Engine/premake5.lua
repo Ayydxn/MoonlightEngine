@@ -47,7 +47,7 @@ project "Moonlight Engine"
     }
 
     filter "files:ThirdParty/ImGui/**.cpp or files:ThirdParty/tracy/public/TracyClient.cpp"
-        flags { "NoPCH" }
+        enablepch "Off"
 
     filter "system:windows"
         systemversion "latest"

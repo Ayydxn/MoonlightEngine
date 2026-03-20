@@ -45,7 +45,10 @@ project "Moonlight Editor"
         postbuildcommands
         {
             '{COPYFILE} "%{getProjectBinariesDir("Engine")}/*.dll" "%{cfg.buildtarget.directory}"',
-            '{COPYFILE} "%{getProjectBinariesDir("GLFW")}/*.dll" "%{cfg.buildtarget.directory}"'
+            '{COPYFILE} "%{getProjectBinariesDir("GLFW")}/*.dll" "%{cfg.buildtarget.directory}"',
+
+            -- TODO: (Ayydxn) I hate this. Please get rid of it.
+            '{COPYFILE} "%{wks.location}/Engine/ThirdParty/Slang/Binaries/Windows/*.dll" "%{cfg.buildtarget.directory}"'
         }
 
     filter "system:macosx"

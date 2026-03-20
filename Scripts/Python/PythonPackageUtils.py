@@ -1,5 +1,5 @@
 import subprocess
-import importlib.util
+import importlib
 import sys
 
 required_packages = ["colorama"]
@@ -7,22 +7,38 @@ required_packages = ["colorama"]
 def AreRequiredPackagesInstalled():
     print("Checking for required Python packages...")
 
-    # Need to setup a virtual environment in the instance the Python installation is being managed by the OS's package manager.
-    #if (sys.platform != "win32"):
-    #    subprocess.check_call([sys.executable, "-m", "venv", "moonlight-engine"])
-    #    subprocess.check_call(["source", "moonlight-engine/bin/activate"])
+    all_installed = True
 
     for package in required_packages:
-        IsPackageInstalled(package)
+        if not IsPackageInstalled(package):
+            print(f"Package '{package}' wasn't found. Installing it...")
 
-# Checks if the provided package is installed. If it isn't, we go and install it.
+            if InstallPackage(package):
+                print(f"Successfully installed '{package}'.")
+            else:
+                print(f"Failed to install '{package}'. Please install it manually with:")
+                print(f"  python -m pip install {package}")
+                all_installed = False
+
+    return all_installed
+
 def IsPackageInstalled(package_name):
-    package_spec = importlib.util.find_spec(package_name)
-    if package_spec is None:
-        print(f"Package {package_name} wasn't found. Installing it...")
-        InstallPackage(package_name)
+    try:
+        __import__(package_name)
+        return True
+    except ImportError:
+        return False
 
 def InstallPackage(package_name):
-    pip_command = [sys.executable, "-m", "pip", "install", package_name]
+    try:
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", package_name],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT
+        )
 
-    subprocess.check_call(pip_command)
+        importlib.invalidate_caches()
+        
+        return True
+    except subprocess.CalledProcessError:
+        return False

@@ -9,17 +9,13 @@ workspace "Moonlight Engine"
     architecture "x86_64"
     startproject "Moonlight Editor"
     conformancemode "On"
+    multiprocessorcompile "On"
 
     configurations
     {
         "Debug",
         "Release",
         "Distribution"
-    }
-
-    flags
-    {
-        "MultiProcessorCompile"
     }
 
     defines

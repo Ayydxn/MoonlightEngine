@@ -5,5 +5,5 @@ from colorama import Fore, Style
 
 print(f"{Fore.GREEN}Generating Visual Studio project files...{Style.RESET_ALL}")
 
-subprocess.call(["Engine/ThirdParty/Premake/premake5.exe", "vs2022"])
+subprocess.call(["Engine/ThirdParty/Premake/premake5.exe", "vs2026"])
     

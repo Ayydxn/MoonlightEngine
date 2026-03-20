@@ -15,7 +15,7 @@
 -------------------
 
 -- TOP-LEVEL fields (applied on all platforms):
---   IncludePaths (table)         -  Include paths shared across all platforms
+--   IncludePaths (table)         - Include paths shared across all platforms
 --   LibraryPaths (table)         - Library search paths shared across all platforms
 --   Links        (table)         - Libraries to link shared across all platforms
 --   Defines      (table)         - Preprocessor defines shared across all platforms
