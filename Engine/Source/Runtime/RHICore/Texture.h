@@ -5,6 +5,29 @@
 #include <filesystem>
 #include <memory>
 
+enum class ETextureFormat : uint8
+{
+    None = 0,
+    
+    /* -- Color -- */
+    RGBA8,
+    RGBA16F,
+    RGBA32F,
+    R32I,
+    
+    /* -- Depth -- */
+    Depth24Stencil8
+};
+
+struct CTextureSpecification
+{
+    uint32 Width = 1;
+    uint32 Height = 1;
+    ETextureFormat Format = ETextureFormat::RGBA8;
+    bool bGenerateMips = false;
+    bool bIsRenderTarget = false;
+};
+
 class MOONLIGHT_API ITexture
 {
 public:
@@ -14,7 +37,11 @@ public:
 
     virtual void SetData(const void* Data, uint32 Size) = 0;
     
-    static std::shared_ptr<ITexture> Create(uint32 Width, uint32 Height);
+    virtual uint32 GetWidth() const = 0;
+    virtual uint32 GetHeight() const = 0;
+    virtual uint64 GetNativeHandle() const = 0;
+    
+    static std::shared_ptr<ITexture> Create(const CTextureSpecification& Specification);
     static std::shared_ptr<ITexture> Create(const std::filesystem::path& Filepath);
     
     virtual bool operator==(const ITexture& OtherTexture) const = 0;

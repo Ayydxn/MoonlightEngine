@@ -68,7 +68,10 @@ void CRenderer2D::Initialize()
     
     m_GlobalUniformBuffer = IUniformBuffer::Create(sizeof(CGlobalUniforms), 0);
     
-    m_WhiteTexture = ITexture::Create(1, 1);
+    m_WhiteTexture = ITexture::Create(CTextureSpecification {
+        .Width = 1,
+        .Height = 1
+    });
     m_WhiteTexture->SetData(&WhiteTextureData, sizeof(uint32));
     m_QuadVertexBufferBase = new CQuadVertex[m_MaxVertices];
 

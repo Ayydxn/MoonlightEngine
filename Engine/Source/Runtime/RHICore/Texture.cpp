@@ -3,11 +3,11 @@
 #include "OpenGLRHI/OpenGLTexture.h"
 #include "Renderer/Renderer.h"
 
-std::shared_ptr<ITexture> ITexture::Create(uint32 Width, uint32 Height)
+std::shared_ptr<ITexture> ITexture::Create(const CTextureSpecification& Specification)
 {
     switch (CRenderer::GetGraphicsAPI())
     {
-        case EGraphicsAPI::OpenGL: return std::make_shared<COpenGLTexture>(Width, Height);
+        case EGraphicsAPI::OpenGL: return std::make_shared<COpenGLTexture>(Specification);
         case EGraphicsAPI::Vulkan: verifyEnginef(false, "Failed to create texture! Vulkan isn't supported!") return nullptr;
         case EGraphicsAPI::Direct3D11: verifyEnginef(false, "Failed to create texture! DirectX 11 isn't supported!") return nullptr;
         case EGraphicsAPI::Direct3D12: verifyEnginef(false, "Failed to create texture! DirectX 12 isn't supported!") return nullptr;
