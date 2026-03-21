@@ -2,6 +2,7 @@
 #include "OpenGLFramebuffer.h"
 
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 
 COpenGLFramebuffer::COpenGLFramebuffer(const CFramebufferSpecification& Specification)
     : m_Specification(Specification)
@@ -99,6 +100,9 @@ void COpenGLFramebuffer::Bind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferHandle);
     glViewport(0, 0, static_cast<int32>(m_Specification.Width), static_cast<int32>(m_Specification.Height));
+    
+    glClearBufferfv(GL_COLOR, 0, glm::value_ptr(m_Specification.ClearColor));
+    glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
 }
 
 void COpenGLFramebuffer::Unbind()

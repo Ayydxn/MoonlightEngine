@@ -8,9 +8,11 @@ class MOONLIGHT_API COrthographicCameraController
 {
 public:
     COrthographicCameraController(float AspectRatio, bool bRotatable = true);
-    void OnUpdate(float RenderDeltaTime);
     
+    void OnUpdate(float RenderDeltaTime);
     void OnEvent(IEvent& Event);
+    
+    void Resize(float Width, float Height);
     
     const COrthographicCamera& GetCamera() const { return m_Camera; }
 private:

@@ -56,7 +56,6 @@ void COrthographicCameraController::OnEvent(IEvent& Event)
     {
         m_ZoomLevel -= MouseScrolledEvent.GetYOffset() * 0.25f;
         m_ZoomLevel = glm::max(m_ZoomLevel, 0.25f);
-
         m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 
         return true;
@@ -64,11 +63,15 @@ void COrthographicCameraController::OnEvent(IEvent& Event)
 
     EventDispatcher.Dispatch<CWindowResizeEvent>([this](const CWindowResizeEvent& WindowResizeEvent)
     {
-        m_AspectRatio = static_cast<float>(WindowResizeEvent.GetWidth()) / static_cast<float>(WindowResizeEvent.
-            GetHeight());
-
-        m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
-
+        Resize(static_cast<float>(WindowResizeEvent.GetWidth()), static_cast<float>(WindowResizeEvent.GetHeight()));
+        
         return true;
     });
+}
+
+void COrthographicCameraController::Resize(float Width, float Height)
+{
+    m_AspectRatio = Width / Height;
+    
+    m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 }

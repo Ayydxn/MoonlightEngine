@@ -2,6 +2,8 @@
 
 #include "Texture.h"
 
+#include <glm/vec4.hpp>
+
 struct CFramebufferTextureSpecification
 {
     ETextureFormat Format = ETextureFormat::None;
@@ -21,6 +23,7 @@ struct CFramebufferSpecification
     uint32 Width = 0;
     uint32 Height = 0;
     uint32 Samples = 1;
+    glm::vec4 ClearColor = { 0.15f, 0.15f, 0.15f, 1.0f };
     CFramebufferAttachmentSpecification Attachments;
     bool bIsSwapChainTarget = false;
 };
