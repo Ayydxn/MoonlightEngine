@@ -30,7 +30,7 @@ void COpenGLRenderer::EndFrame()
 {
 }
 
-void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, uint32 IndexCount, const CSceneData* SceneData)
+void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, uint32 IndexCount)
 {
     Cast<COpenGLShader>(RenderPacket.Shader)->Bind();
     

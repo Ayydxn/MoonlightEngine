@@ -15,7 +15,7 @@ public:
     void BeginFrame() override;
     void EndFrame() override;
 
-    void DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, uint32 IndexCount, const CSceneData* SceneData) override;
+    void DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, uint32 IndexCount) override;
 private:
     std::shared_ptr<COpenGLCommandList> m_CommandList;
 };

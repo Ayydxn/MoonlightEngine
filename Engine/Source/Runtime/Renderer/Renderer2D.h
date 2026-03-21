@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreDefines.h"
+#include "Editor/EditorViewportCamera.h"
 #include "RHICore/GraphicsPipeline.h"
 #include "RHICore/IndexBuffer.h"
 #include "RHICore/Shader.h"
@@ -35,6 +36,7 @@ public:
     void Shutdown();
 
     void BeginFrame(const glm::mat4& ViewProjectionMatrix);
+    void BeginFrame(const CEditorViewportCamera& EditorViewportCamera);
     void EndFrame();
     
     void DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const glm::vec4& Color);

@@ -23,8 +23,6 @@ void CRenderer::Initialize()
 
     m_ShaderLibrary = std::make_shared<CShaderLibrary>();
     m_ShaderLibrary->Load("Resources/Shaders/Renderer2DQuad");
-    
-    m_SceneData = new CSceneData();
 }
 
 void CRenderer::Shutdown()
@@ -32,8 +30,6 @@ void CRenderer::Shutdown()
     m_ShaderCompiler->Shutdown();
 
     m_RendererBackend->Shutdown();
-
-    delete m_SceneData;
 }
 
 void CRenderer::BeginFrame()
@@ -46,18 +42,9 @@ void CRenderer::EndFrame()
     m_RendererBackend->EndFrame();
 }
 
-void CRenderer::BeginScene(const COrthographicCamera& Camera)
-{
-    m_SceneData->ViewProjectionMatrix = Camera.GetViewProjectionMatrix();
-}
-
-void CRenderer::EndScene()
-{
-}
-
 void CRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, uint32 IndexCount)
 {
-    m_RendererBackend->DrawIndexed(RenderPacket, Transform, IndexCount, m_SceneData);
+    m_RendererBackend->DrawIndexed(RenderPacket, Transform, IndexCount);
 }
 
 std::string CRenderer::GetGraphicsAPIString()

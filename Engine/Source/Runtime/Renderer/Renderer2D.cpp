@@ -95,6 +95,16 @@ void CRenderer2D::BeginFrame(const glm::mat4& ViewProjectionMatrix)
     m_TextureSlotIndex = 1;
 }
 
+void CRenderer2D::BeginFrame(const CEditorViewportCamera& EditorViewportCamera)
+{
+    m_QuadVertexBufferPointer = m_QuadVertexBufferBase;
+    m_QuadIndexCount = 0;
+    
+    m_CurrentViewProjectionMatrix = EditorViewportCamera.GetViewProjectionMatrix();
+    
+    m_TextureSlotIndex = 1;
+}
+
 void CRenderer2D::EndFrame()
 {
     const uint64 DataSize = reinterpret_cast<uint8*>(m_QuadVertexBufferPointer) - reinterpret_cast<uint8*>(m_QuadVertexBufferBase);

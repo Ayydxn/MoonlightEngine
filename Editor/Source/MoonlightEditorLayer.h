@@ -28,9 +28,8 @@ private:
     std::shared_ptr<ITexture> m_MushroomTexture;
     std::shared_ptr<IFramebuffer> m_SceneFramebuffer;
     
-    COrthographicCameraController m_CameraController;
+    CEditorViewportCamera m_ViewportCamera;
     ImVec2 m_ViewportSize = { 0.0f, 0.0f };
     
-    bool bIsSceneViewportFocused = false;
     float m_QuadRotation = 0.0f;
 };

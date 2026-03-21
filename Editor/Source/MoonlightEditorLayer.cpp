@@ -2,7 +2,7 @@
 #include "Application/Application.h"
 
 CMoonlightEditorLayer::CMoonlightEditorLayer()
-    : CLayer("Moonlight Editor"), m_CameraController(1600.0f / 900.0f)
+    : CLayer("Moonlight Editor")
 {
 }
 
@@ -23,16 +23,14 @@ void CMoonlightEditorLayer::OnAttach()
 
 void CMoonlightEditorLayer::OnUpdate(float DeltaTime)
 {
-    if (bIsSceneViewportFocused)
-        m_CameraController.OnUpdate(DeltaTime);
-
+    m_ViewportCamera.OnUpdate(DeltaTime);
+    
     m_QuadRotation += 20.0f * DeltaTime;
 }
 
 void CMoonlightEditorLayer::OnEvent(IEvent& Event)
 {
-    if (bIsSceneViewportFocused)
-        m_CameraController.OnEvent(Event);
+    m_ViewportCamera.OnEvent(Event);
 }
 
 void CMoonlightEditorLayer::OnRender()
@@ -40,9 +38,8 @@ void CMoonlightEditorLayer::OnRender()
     m_Renderer2D->ResetStats();
 
     m_SceneFramebuffer->Bind();
-
-    CRenderer::BeginScene(m_CameraController.GetCamera());
-    m_Renderer2D->BeginFrame(m_CameraController.GetCamera().GetViewProjectionMatrix());
+    
+    m_Renderer2D->BeginFrame(m_ViewportCamera);
 
     m_Renderer2D->DrawQuad({0.0f, 0.0f}, {15.0f, 15.0f}, m_PlaceholderTexture);
 
@@ -59,7 +56,6 @@ void CMoonlightEditorLayer::OnRender()
     m_Renderer2D->DrawRotatedQuad({0.7f, -0.5f}, {1.0f, 1.0f}, -m_QuadRotation, m_MushroomTexture, 1.0f);
 
     m_Renderer2D->EndFrame();
-    CRenderer::EndScene();
 
     m_SceneFramebuffer->Unbind();
 }
@@ -119,8 +115,6 @@ void CMoonlightEditorLayer::UI_RenderViewport()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("Scene Viewport");
     
-    bIsSceneViewportFocused = ImGui::IsWindowFocused();
-
     const ImVec2 ViewportPanelSize = ImGui::GetContentRegionAvail();
 
     if (ViewportPanelSize.x > 0.0f && ViewportPanelSize.y > 0.0f && (m_ViewportSize.x != ViewportPanelSize.x || m_ViewportSize.y != ViewportPanelSize.y))
@@ -128,7 +122,7 @@ void CMoonlightEditorLayer::UI_RenderViewport()
         m_ViewportSize = ViewportPanelSize;
         
         m_SceneFramebuffer->Resize(static_cast<uint32>(m_ViewportSize.x), static_cast<uint32>(m_ViewportSize.y));
-        m_CameraController.Resize(m_ViewportSize.x, m_ViewportSize.y);
+        m_ViewportCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
     }
 
     ImGui::Image(m_SceneFramebuffer->GetColorAttachment(0)->GetNativeHandle(), m_ViewportSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
