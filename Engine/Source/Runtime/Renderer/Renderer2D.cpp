@@ -148,20 +148,12 @@ void CRenderer2D::StartNewBatch()
     m_TextureSlotIndex = 1;
 }
 
-void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const glm::vec4& Color)
-{
-    DrawQuad({ Position.x, Position.y, 0.0f }, Size, Color);
-}
-
-void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, const glm::vec4& Color)
+void CRenderer2D::DrawQuad(const glm::mat4& Transform, const glm::vec4& Color)
 {
     MOONLIGHT_PROFILE_FUNCTION();
     
     if (m_QuadIndexCount >= m_MaxIndices)
         StartNewBatch();
-    
-    const glm::mat4 Transform = glm::translate(glm::mat4(1.0f), Position) *
-        glm::scale(glm::mat4(1.0f), { Size.x, Size.y, 1.0f });
     
     constexpr float WhiteTextureIndex = 0.0f;
     
@@ -198,21 +190,12 @@ void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, con
     m_Statistics.QuadCount++;
 }
 
-void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const std::shared_ptr<ITexture>& Texture, float TilingFactor)
+void CRenderer2D::DrawQuad(const glm::mat4& Transform, const std::shared_ptr<ITexture>& Texture, float TilingFactor)
 {
-    DrawQuad({ Position.x, Position.y, 0.0f }, Size, Texture, TilingFactor);
-}
-
-void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, const std::shared_ptr<ITexture>& Texture, float TilingFactor)
-{
-    MOONLIGHT_PROFILE_FUNCTION();
-    
     if (m_QuadIndexCount >= m_MaxIndices)
         StartNewBatch();
     
     constexpr glm::vec4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
-    const glm::mat4 Transform = glm::translate(glm::mat4(1.0f), Position) *
-        glm::scale(glm::mat4(1.0f), { Size.x, Size.y, 1.0f });
     float TextureIndex = 0.0f;
     
     for (uint32 i = 1; i < m_TextureSlotIndex; i++)
@@ -263,6 +246,43 @@ void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, con
     m_QuadIndexCount += 6;
     
     m_Statistics.QuadCount++;
+}
+
+void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const glm::vec4& Color)
+{
+    DrawQuad({ Position.x, Position.y, 0.0f }, Size, Color);
+}
+
+void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, const glm::vec4& Color)
+{
+    MOONLIGHT_PROFILE_FUNCTION();
+    
+    if (m_QuadIndexCount >= m_MaxIndices)
+        StartNewBatch();
+    
+    const glm::mat4 Transform = glm::translate(glm::mat4(1.0f), Position) *
+        glm::scale(glm::mat4(1.0f), { Size.x, Size.y, 1.0f });
+    
+    DrawQuad(Transform, Color);
+}
+
+void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const std::shared_ptr<ITexture>& Texture, float TilingFactor)
+{
+    DrawQuad({ Position.x, Position.y, 0.0f }, Size, Texture, TilingFactor);
+}
+
+void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, const std::shared_ptr<ITexture>& Texture, float TilingFactor)
+{
+    MOONLIGHT_PROFILE_FUNCTION();
+    
+    if (m_QuadIndexCount >= m_MaxIndices)
+        StartNewBatch();
+    
+    constexpr glm::vec4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    const glm::mat4 Transform = glm::translate(glm::mat4(1.0f), Position) *
+        glm::scale(glm::mat4(1.0f), { Size.x, Size.y, 1.0f });
+    
+    DrawQuad(Transform, Texture, TilingFactor);
 }
 
 void CRenderer2D::DrawRotatedQuad(const glm::vec2& Position, const glm::vec2& Size, float Rotation, const glm::vec4& Color)

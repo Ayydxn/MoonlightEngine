@@ -17,7 +17,7 @@ project "Moonlight Editor"
         "%{prj.location}/Resources/**/**.**"
     }
 
-    IncludeDependencies({ "spdlog", "glm", "ImGui", "Slang" })
+    IncludeDependencies({ "spdlog", "glm", "ImGui", "Slang", "entt" })
 
     includedirs
     {

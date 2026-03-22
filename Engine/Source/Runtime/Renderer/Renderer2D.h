@@ -39,6 +39,8 @@ public:
     void BeginFrame(const CEditorViewportCamera& EditorViewportCamera);
     void EndFrame();
     
+    void DrawQuad(const glm::mat4& Transform, const glm::vec4& Color);
+    void DrawQuad(const glm::mat4& Transform, const std::shared_ptr<ITexture>& Texture, float TilingFactor = 1.0f);
     void DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const glm::vec4& Color);
     void DrawQuad(const glm::vec3& Position, const glm::vec2& Size, const glm::vec4& Color);
     void DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const std::shared_ptr<ITexture>& Texture, float TilingFactor = 1.0f);

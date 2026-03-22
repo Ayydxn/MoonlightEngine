@@ -272,4 +272,8 @@ Register("tracy", {
     Links = { "tracy" }
 })
 
+Register("entt", {
+    IncludePaths = { ThirdPartyFolder .. "entt/src" }
+})
+
 ListDependencies()

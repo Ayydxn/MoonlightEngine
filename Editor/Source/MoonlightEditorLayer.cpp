@@ -1,5 +1,8 @@
 ﻿#include "MoonlightEditorLayer.h"
 #include "Application/Application.h"
+#include "Scene/Components/SpriteRendererComponent.h"
+#include "Scene/Components/TransformComponent.h"
+#include "Scene/Entity/Entity.h"
 
 CMoonlightEditorLayer::CMoonlightEditorLayer()
     : CLayer("Moonlight Editor")
@@ -8,7 +11,7 @@ CMoonlightEditorLayer::CMoonlightEditorLayer()
 
 void CMoonlightEditorLayer::OnAttach()
 {
-    m_Renderer2D = std::make_shared<CRenderer2D>();
+    m_SceneRenderer = std::make_shared<CSceneRenderer>();
     m_PlaceholderTexture = ITexture::Create("Resources/Textures/Placeholder.png");
     m_MushroomTexture = ITexture::Create("Resources/Textures/Mushroom.png");
     m_SceneFramebuffer = IFramebuffer::Create({
@@ -19,10 +22,19 @@ void CMoonlightEditorLayer::OnAttach()
             { ETextureFormat::RGBA8 }
         }
     });
+    m_ActiveScene = std::make_shared<CScene>();
+    
+    CEntity Entity = m_ActiveScene->CreateEntity();
+    Entity.AddComponent<CSpriteRendererComponent>(glm::vec4 { 1.0f, 0.0f, 0.0f, 1.0f });
+    
+    CEntity SecondEntity = m_ActiveScene->CreateEntity();
+    SecondEntity.GetComponent<CTransformComponent>().Position = { 1.0f, 0.5f, 0.0f };
+    SecondEntity.AddComponent<CSpriteRendererComponent>(glm::vec4 { 0.0f, 1.0f, 0.0f, 1.0f });
 }
 
 void CMoonlightEditorLayer::OnUpdate(float DeltaTime)
 {
+    m_ActiveScene->OnUpdate(DeltaTime);
     m_ViewportCamera.OnUpdate(DeltaTime);
     
     m_QuadRotation += 20.0f * DeltaTime;
@@ -35,28 +47,10 @@ void CMoonlightEditorLayer::OnEvent(IEvent& Event)
 
 void CMoonlightEditorLayer::OnRender()
 {
-    m_Renderer2D->ResetStats();
-
     m_SceneFramebuffer->Bind();
     
-    m_Renderer2D->BeginFrame(m_ViewportCamera);
-
-    m_Renderer2D->DrawQuad({0.0f, 0.0f}, {15.0f, 15.0f}, m_PlaceholderTexture);
-
-    for (float x = -5.0f; x < 5.0f; x += 0.5f)
-    {
-        for (float y = -5.0f; y < 5.0f; y += 0.5f)
-            m_Renderer2D->DrawQuad({x, y}, {0.45f, 0.45f}, {(x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f});
-    }
-
-    m_Renderer2D->DrawRotatedQuad({-1.0f, 0.5f}, {0.5f, 0.5f}, m_QuadRotation, {0.9f, 0.3f, 0.2f, 1.0f});
-    m_Renderer2D->DrawRotatedQuad({0.0f, 0.5f}, {0.7f, 0.5f}, m_QuadRotation, {0.3f, 0.9f, 0.2f, 1.0f});
-    m_Renderer2D->DrawRotatedQuad({1.0f, 0.5f}, {0.7f, 0.5f}, m_QuadRotation, {0.3f, 0.2f, 0.9f, 1.0f});
-    m_Renderer2D->DrawRotatedQuad({-0.7f, -0.5f}, {1.0f, 1.0f}, -m_QuadRotation, m_MushroomTexture, 1.0f);
-    m_Renderer2D->DrawRotatedQuad({0.7f, -0.5f}, {1.0f, 1.0f}, -m_QuadRotation, m_MushroomTexture, 1.0f);
-
-    m_Renderer2D->EndFrame();
-
+    m_ActiveScene->OnRenderEditor(m_SceneRenderer, m_ViewportCamera);
+    
     m_SceneFramebuffer->Unbind();
 }
 
