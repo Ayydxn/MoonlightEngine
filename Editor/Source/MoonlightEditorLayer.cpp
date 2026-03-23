@@ -1,5 +1,6 @@
 ﻿#include "MoonlightEditorLayer.h"
 #include "Application/Application.h"
+#include "Scene/Components/CameraComponent.h"
 #include "Scene/Components/SpriteRendererComponent.h"
 #include "Scene/Components/TransformComponent.h"
 #include "Scene/Entity/Entity.h"
@@ -30,6 +31,9 @@ void CMoonlightEditorLayer::OnAttach()
     CEntity SecondEntity = m_ActiveScene->CreateEntity();
     SecondEntity.GetComponent<CTransformComponent>().Position = { 1.0f, 0.5f, 0.0f };
     SecondEntity.AddComponent<CSpriteRendererComponent>(glm::vec4 { 0.0f, 1.0f, 0.0f, 1.0f });
+    
+    CEntity CameraEntity = m_ActiveScene->CreateEntity();
+    CameraEntity.AddComponent<CCameraComponent>();
 }
 
 void CMoonlightEditorLayer::OnUpdate(float DeltaTime)
@@ -117,6 +121,7 @@ void CMoonlightEditorLayer::UI_RenderViewport()
         
         m_SceneFramebuffer->Resize(static_cast<uint32>(m_ViewportSize.x), static_cast<uint32>(m_ViewportSize.y));
         m_ViewportCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+        m_ActiveScene->OnViewportResize(static_cast<uint32>(m_ViewportSize.x), static_cast<uint32>(m_ViewportSize.y));
     }
 
     ImGui::Image(m_SceneFramebuffer->GetColorAttachment(0)->GetNativeHandle(), m_ViewportSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));

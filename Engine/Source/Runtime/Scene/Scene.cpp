@@ -1,5 +1,7 @@
 ﻿#include "MoonlightPCH.h"
 #include "Scene.h"
+
+#include "Components/CameraComponent.h"
 #include "Components/SpriteRendererComponent.h"
 #include "Components/TransformComponent.h"
 #include "Entity/Entity.h"
@@ -29,6 +31,20 @@ void CScene::OnRenderEditor(const std::shared_ptr<CSceneRenderer>& SceneRenderer
     }
     
     Renderer2D->EndFrame();
+}
+
+void CScene::OnViewportResize(uint32_t ViewportWidth, uint32_t ViewportHeight)
+{
+    m_ViewportWidth = ViewportWidth;
+    m_ViewportHeight = ViewportHeight;
+    
+    const auto View  = m_EntityRegistry.view<CCameraComponent>();
+    for (const auto Entity : View)
+    {
+        auto& CameraComponent = View.get<CCameraComponent>(Entity);
+        if (!CameraComponent.bUseFixedAspectRatio)
+            CameraComponent.Camera.SetViewportSize(ViewportWidth, ViewportHeight);
+    }
 }
 
 CEntity CScene::CreateEntity()

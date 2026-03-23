@@ -2,6 +2,12 @@
 
 #include <glm/glm.hpp>
 
+enum class EProjectionType
+{
+    Perspective,
+    Orthographic
+};
+
 class MOONLIGHT_API CCamera
 {
 public:
