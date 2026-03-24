@@ -59,6 +59,7 @@ public:
     static CApplication& GetInstance() { return *m_ApplicationInstance; }
 
     IWindow& GetWindow() const { return *m_ApplicationWindow; }
+    IImGuiLayer* GetImGuiLayer() const { return m_ImGuiLayer; }
 
     float GetFrameTime() const { return m_FrameTime; }
     float GetDeltaTime() const { return m_DeltaTime; }

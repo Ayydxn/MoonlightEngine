@@ -24,6 +24,17 @@ IImGuiLayer* IImGuiLayer::Create()
     return nullptr;
 }
 
+void IImGuiLayer::OnEvent(IEvent& Event)
+{
+	if (bBlockingEvents)
+	{
+		const ImGuiIO& IO = ImGui::GetIO();
+		
+		Event.bIsHandled |= Event.IsInCategory(KeyboardCategory) & IO.WantCaptureKeyboard;
+		Event.bIsHandled |= Event.IsInCategory(MouseCategory) & IO.WantCaptureMouse;
+	}
+}
+
 // NOTE: Taken from Hazel Engine by TheCherno.
 void IImGuiLayer::SetDarkThemeColors()
 {

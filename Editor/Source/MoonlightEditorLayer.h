@@ -7,8 +7,6 @@
 #include "RHICore/Framebuffer.h"
 #include "Scene/Scene.h"
 
-#include <imgui.h>
-
 class CMoonlightEditorLayer : public CLayer
 {
 public:
@@ -31,7 +29,8 @@ private:
     std::shared_ptr<CScene> m_ActiveScene;
     
     CEditorViewportCamera m_ViewportCamera;
-    ImVec2 m_ViewportSize = { 0.0f, 0.0f };
+    glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
     
+    bool bIsViewportFocused = false;
     float m_QuadRotation = 0.0f;
 };

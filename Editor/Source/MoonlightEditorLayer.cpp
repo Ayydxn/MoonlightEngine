@@ -5,6 +5,8 @@
 #include "Scene/Components/TransformComponent.h"
 #include "Scene/Entity/Entity.h"
 
+#include <imgui.h>
+
 CMoonlightEditorLayer::CMoonlightEditorLayer()
     : CLayer("Moonlight Editor")
 {
@@ -39,7 +41,9 @@ void CMoonlightEditorLayer::OnAttach()
 void CMoonlightEditorLayer::OnUpdate(float DeltaTime)
 {
     m_ActiveScene->OnUpdate(DeltaTime);
-    m_ViewportCamera.OnUpdate(DeltaTime);
+    
+    if (bIsViewportFocused)
+        m_ViewportCamera.OnUpdate(DeltaTime);
     
     m_QuadRotation += 20.0f * DeltaTime;
 }
@@ -113,18 +117,23 @@ void CMoonlightEditorLayer::UI_RenderViewport()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("Scene Viewport");
     
+    bIsViewportFocused = ImGui::IsWindowFocused();
+    
+    CApplication::GetInstance().GetImGuiLayer()->BlockEvents(!bIsViewportFocused || !ImGui::IsWindowHovered());
+    
     const ImVec2 ViewportPanelSize = ImGui::GetContentRegionAvail();
 
     if (ViewportPanelSize.x > 0.0f && ViewportPanelSize.y > 0.0f && (m_ViewportSize.x != ViewportPanelSize.x || m_ViewportSize.y != ViewportPanelSize.y))
     {
-        m_ViewportSize = ViewportPanelSize;
+        m_ViewportSize = { ViewportPanelSize.x, ViewportPanelSize.y };
         
         m_SceneFramebuffer->Resize(static_cast<uint32>(m_ViewportSize.x), static_cast<uint32>(m_ViewportSize.y));
         m_ViewportCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
         m_ActiveScene->OnViewportResize(static_cast<uint32>(m_ViewportSize.x), static_cast<uint32>(m_ViewportSize.y));
     }
 
-    ImGui::Image(m_SceneFramebuffer->GetColorAttachment(0)->GetNativeHandle(), m_ViewportSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+    ImGui::Image(m_SceneFramebuffer->GetColorAttachment(0)->GetNativeHandle(), { m_ViewportSize.x, m_ViewportSize.y },
+        ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
     ImGui::End();
     ImGui::PopStyleVar();
