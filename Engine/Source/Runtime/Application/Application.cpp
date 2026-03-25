@@ -120,21 +120,23 @@ void CApplication::Start()
         /*-----------------*/
         {
             MOONLIGHT_PROFILE_SCOPE("Application Update");
+            
+            m_Accumulator += m_FrameTime;
 
-            OnUpdate(m_DeltaTime);
+            OnUpdate(m_FrameTime);
 
             for (CLayer* Layer : m_LayerStack)
-                Layer->OnUpdate(m_DeltaTime);
+                Layer->OnUpdate(m_FrameTime);
             
-            while (m_DeltaTime >= TicksPerMilliseconds)
+            while (m_Accumulator >= TicksPerMilliseconds)
             {
                 OnFixedUpdate(TicksPerMilliseconds);
             
                 for (CLayer* Layer : m_LayerStack)
                     Layer->OnFixedUpdate(TicksPerMilliseconds);
 
-                m_TicksPerSecond++;
-                m_DeltaTime -= TicksPerMilliseconds;
+                m_TickCount++;
+                m_Accumulator -= TicksPerMilliseconds;
             }
         
             ProcessEvents();
@@ -181,7 +183,7 @@ void CApplication::Start()
 
             m_ApplicationWindow->SwapBuffers();
 
-            m_FramesPerSecond++;
+            m_FrameCount++;
         }
 
         const auto TimeNow = std::chrono::time_point_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now())
@@ -192,8 +194,11 @@ void CApplication::Start()
         {
             LastTime = TimeNow;
             
-            m_FramesPerSecond = 0;
-            m_TicksPerSecond = 0;
+            m_FramesPerSecond = m_FrameCount;
+            m_TicksPerSecond = m_TickCount;
+            
+            m_FrameCount = 0;
+            m_TickCount = 0;
         }
 
         MOONLIGHT_PROFILE_MARK_FRAME;

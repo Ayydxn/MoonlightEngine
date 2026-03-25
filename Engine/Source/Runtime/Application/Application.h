@@ -91,8 +91,11 @@ private:
     float m_FrameTime = 0.0f;
     float m_DeltaTime = 0.0f;
     float m_LastFrameTime = 0.0f;
+    float m_Accumulator = 0.0f;
     int m_FramesPerSecond = 0;
     int m_TicksPerSecond = 0;
+    int m_FrameCount = 0;
+    int m_TickCount = 0;
     
     bool bIsWindowMinimized = false;
     bool bIsRunning = true;
