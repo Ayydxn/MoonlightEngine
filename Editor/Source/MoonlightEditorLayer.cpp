@@ -1,5 +1,6 @@
 ﻿#include "MoonlightEditorLayer.h"
 #include "Application/Application.h"
+#include "Scene/Components/CameraComponent.h"
 #include "Scene/Components/SpriteRendererComponent.h"
 #include "Scene/Components/TransformComponent.h"
 #include "Scene/Entity/Entity.h"
@@ -22,6 +23,9 @@ void CMoonlightEditorLayer::OnAttach()
     CEntity SecondEntity = m_ActiveScene->CreateEntity("Green Square");
     SecondEntity.GetComponent<CTransformComponent>().Position = { 1.0f, 0.5f, 0.0f };
     SecondEntity.AddComponent<CSpriteRendererComponent>(glm::vec4 { 0.0f, 1.0f, 0.0f, 1.0f });
+    
+    CEntity CameraEntity = m_ActiveScene->CreateEntity("Camera");
+    CameraEntity.AddComponent<CCameraComponent>();
     
     m_SceneViewportPanel = std::make_unique<CSceneViewportPanel>(m_SceneRenderer, m_ActiveScene);
     m_SceneHierarchyPanel = std::make_unique<CSceneHierarchyPanel>(m_ActiveScene);

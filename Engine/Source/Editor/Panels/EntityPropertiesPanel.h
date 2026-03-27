@@ -17,7 +17,7 @@ private:
     void DrawEntityComponents();
     
     template<typename T, typename DrawFunction>
-    void DrawComponent(const std::string& Name, DrawFunction UIDrawFunction);
+    void DrawComponent(const std::string& Name, DrawFunction UIDrawFunction, bool bNestInTreeNode = true);
 private:
     CEntity m_Entity;
 };
