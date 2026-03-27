@@ -3,13 +3,27 @@
 #include "CoreDefines.h"
 
 #include <string>
+#include <vector>
 
 struct MOONLIGHT_API CTagComponent
 {
-    std::string Tag;
-    
+    std::vector<std::string> Tags = {};
+
     CTagComponent() = default;
     CTagComponent(const CTagComponent&) = default;
-    CTagComponent(const std::string& Tag)
-        : Tag(Tag) {}
+
+    void AddTag(const std::string& NewTag)
+    {
+        Tags.push_back(NewTag);
+    }
+
+    void RemoveTag(const std::string& Tag)
+    {
+        std::erase(Tags, Tag);
+    }
+
+    bool HasTag(const std::string& Tag) const
+    {
+        return std::ranges::find(Tags, Tag) != Tags.end();
+    }
 };

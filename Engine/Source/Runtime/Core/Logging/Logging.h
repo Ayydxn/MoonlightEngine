@@ -3,6 +3,7 @@
 #undef FMT_STRING
 #undef FMT_STRING_IMPL
 
+#include "Core/CoreDefines.h"
 #include "Core/CoreTypes.h"
 
 #include <spdlog/spdlog.h>

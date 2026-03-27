@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "EntityPropertiesPanel.h"
 #include "Scene/Scene.h"
 #include "Scene/Entity/Entity.h"
 
@@ -16,6 +17,8 @@ private:
     void DrawEntityNode(CEntity Entity);
 private:
     std::shared_ptr<CScene> m_Scene;
+    
+    CEntityPropertiesPanel m_PropertiesPanel;
     
     CEntity m_SelectedEntity;
 };
