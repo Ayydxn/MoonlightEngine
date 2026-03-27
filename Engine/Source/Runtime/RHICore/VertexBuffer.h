@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreDefines.h"
+#include "Assertion/AssertionMacros.h"
 
 #include <initializer_list>
 #include <memory>

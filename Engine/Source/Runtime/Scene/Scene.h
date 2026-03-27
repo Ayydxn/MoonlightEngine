@@ -18,7 +18,7 @@ public:
     
     void OnViewportResize(uint32_t ViewportWidth, uint32_t ViewportHeight);
     
-    CEntity CreateEntity();
+    CEntity CreateEntity(const std::string& Name);
 private:
     entt::registry m_EntityRegistry;
     
@@ -26,4 +26,5 @@ private:
     uint32 m_ViewportHeight = 0;
     
     friend class CEntity;
+    friend class CSceneHierarchyPanel;
 };

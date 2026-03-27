@@ -70,9 +70,3 @@ void COpenGLImGuiLayer::OnDetach()
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }
-
-void COpenGLImGuiLayer::OnImGuiRender()
-{
-    bool bShowDemoWindow = true;
-    ImGui::ShowDemoWindow(&bShowDemoWindow);
-}

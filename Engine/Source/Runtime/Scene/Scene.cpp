@@ -1,8 +1,8 @@
 ﻿#include "MoonlightPCH.h"
 #include "Scene.h"
-
 #include "Components/CameraComponent.h"
 #include "Components/SpriteRendererComponent.h"
+#include "Components/TagComponent.h"
 #include "Components/TransformComponent.h"
 #include "Entity/Entity.h"
 
@@ -47,9 +47,10 @@ void CScene::OnViewportResize(uint32_t ViewportWidth, uint32_t ViewportHeight)
     }
 }
 
-CEntity CScene::CreateEntity()
+CEntity CScene::CreateEntity(const std::string& Name)
 {
     CEntity Entity = { m_EntityRegistry.create(), this };
+    Entity.AddComponent<CTagComponent>(Name.empty() ? "Entity" : Name);
     Entity.AddComponent<CTransformComponent>();
     
     return Entity;

@@ -2,7 +2,6 @@
 #include "EditorViewportCamera.h"
 #include "Input/Input.h"
 
-#include <imgui.h>
 #include <glm/ext/matrix_clip_space.hpp>
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -28,16 +27,10 @@ void CEditorViewportCamera::OnUpdate(float DeltaTime)
     if (bMiddleMouseButtonHeld || bLeftMouseButtonHeld || bRightMouseButtonHeld)
     {
         CInput::SetCursorMode(ECursorMode::Locked);
-        
-        // (Ayydxn) A bit of a hack to prevent the cursor from interacting with ImGui elements while we're controlling the camera.
-        // Should probably move this somewhere else.
-        ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse; 
     }
     else
     {
         CInput::SetCursorMode(ECursorMode::Normal);
-        
-        ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
     }
     
     // Camera controls
