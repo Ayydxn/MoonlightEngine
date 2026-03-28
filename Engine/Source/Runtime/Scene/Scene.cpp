@@ -55,3 +55,8 @@ CEntity CScene::CreateEntity(const std::string& Name)
     
     return Entity;
 }
+
+void CScene::DestroyEntity(CEntity Entity)
+{
+    m_EntityRegistry.destroy(Entity);
+}

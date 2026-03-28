@@ -47,6 +47,9 @@ public:
     bool operator !=(const CEntity& OtherEntity) { return !operator==(OtherEntity); }
     bool operator !=(const CEntity& OtherEntity) const { return !operator==(OtherEntity); }
     
+    operator entt::entity() { return m_Handle; }
+    operator entt::entity() const { return m_Handle; }
+    
     operator bool() { return m_Handle != entt::null; }
     operator bool() const { return m_Handle != entt::null; }
     

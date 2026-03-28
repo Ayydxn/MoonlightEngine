@@ -19,6 +19,7 @@ public:
     void OnViewportResize(uint32_t ViewportWidth, uint32_t ViewportHeight);
     
     CEntity CreateEntity(const std::string& Name);
+    void DestroyEntity(CEntity Entity);
 private:
     entt::registry m_EntityRegistry;
     

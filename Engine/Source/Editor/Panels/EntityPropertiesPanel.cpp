@@ -4,6 +4,7 @@
 #include "Scene/Components/CameraComponent.h"
 #include "Scene/Components/NameComponent.h"
 #include "Scene/Components/SpriteRendererComponent.h"
+#include "Scene/Components/TagComponent.h"
 #include "Scene/Components/TransformComponent.h"
 
 #include <imgui.h>
@@ -27,6 +28,10 @@ void CEntityPropertiesPanel::OnImGuiRender()
     
     DrawEntityComponents();
     
+    ImGui::Separator();
+    
+    DrawAddComponentMenu();
+    
     ImGui::End();
 }
 
@@ -45,7 +50,7 @@ void CEntityPropertiesPanel::DrawEntityComponents()
             if (NameComponent.Name.empty())
                 NameComponent.Name = "Entity";
         }
-    }, false);
+    }, {.bNestInTreeNode = false, .bIsRemovable = false, });
     
     DrawComponent<CTransformComponent>("Transform", [](auto& TransformComponent)
     {
@@ -58,7 +63,7 @@ void CEntityPropertiesPanel::DrawEntityComponents()
         TransformComponent.Rotation = glm::radians(RotationDegrees);
         
         CUIComponents::Vector3Control("Scale", TransformComponent.Scale, 1.0f);
-    });
+    }, { .bIsRemovable = false });
     
     DrawComponent<CCameraComponent>("Camera", [](auto& CameraComponent)
     {
@@ -126,29 +131,161 @@ void CEntityPropertiesPanel::DrawEntityComponents()
     {
         ImGui::ColorEdit4("Color", glm::value_ptr(SpriteRendererComponent.Color));
     });
+    
+    DrawComponent<CTagComponent>("Tags", [this](auto& TagComponent)
+    {
+        auto TryAddTag = [&]()
+        {
+            if (strlen(m_NewTagBuffer) == 0)
+                return;
+
+            if (TagComponent.HasTag(m_NewTagBuffer))
+            {
+                std::memcpy(m_DuplicateTagName, m_NewTagBuffer, sizeof(m_DuplicateTagName));
+                bOpenDuplicatePopup = true;
+            }
+            else
+            {
+                TagComponent.AddTag(m_NewTagBuffer);
+                std::memset(m_NewTagBuffer, 0, sizeof(m_NewTagBuffer));
+            }
+        };
+
+        if (ImGui::InputTextWithHint("##AddTag", "Enter Tag Name...", m_NewTagBuffer, sizeof(m_NewTagBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+            TryAddTag();
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Add"))
+            TryAddTag();
+
+        // Popup open is deferred by one frame to avoid ID stack issues
+        if (bOpenDuplicatePopup)
+        {
+            ImGui::OpenPopup("Duplicate Tag");
+            bOpenDuplicatePopup = false;
+        }
+
+        if (ImGui::BeginPopupModal("Duplicate Tag", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("The tag \"%s\" already exists for this entity!", m_DuplicateTagName);
+            
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::Spacing();
+
+            if (CUIComponents::CenteredButton("OK", { 120.0f, 0.0f }))
+                ImGui::CloseCurrentPopup();
+
+            ImGui::EndPopup();
+        }
+
+        ImGui::Spacing();
+
+        if (ImGui::BeginListBox("##TagsList", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+        {
+            if (TagComponent.Tags.empty())
+            {
+                CUIComponents::CenteredText("No Tags Assigned...", 0.75f);
+            }
+            else
+            {
+                std::string TagToDelete;
+    
+                for (const auto& Tag : TagComponent.Tags)
+                {
+                    ImGui::PushID(Tag.c_str());
+                    ImGui::Selectable(Tag.c_str(), false);
+    
+                    if (ImGui::BeginPopupContextItem())
+                    {
+                        if (ImGui::MenuItem("Delete Tag"))
+                            TagToDelete = Tag;
+                        
+                        ImGui::EndPopup();
+                    }
+    
+                    ImGui::PopID();
+                }
+    
+                if (!TagToDelete.empty())
+                    TagComponent.RemoveTag(TagToDelete);
+            }
+
+            ImGui::EndListBox();
+        }
+
+        ImGui::TextDisabled("(Right-click a tag to delete it)");
+    });
+}
+
+void CEntityPropertiesPanel::DrawAddComponentMenu()
+{
+    if (CUIComponents::CenteredButton("Add Component", { 200.0f, 0.0f }))
+        ImGui::OpenPopup("AvailableComponents");
+    
+    if (ImGui::BeginPopup("AvailableComponents"))
+    {
+        if (ImGui::MenuItem("Camera"))
+        {
+            m_Entity.AddComponent<CCameraComponent>();
+            
+            ImGui::CloseCurrentPopup();
+        }
+        
+        if (ImGui::MenuItem("Sprite Renderer"))
+        {
+            m_Entity.AddComponent<CSpriteRendererComponent>();
+            
+            ImGui::CloseCurrentPopup();
+        }
+        
+        if (ImGui::MenuItem("Tags"))
+        {
+            m_Entity.AddComponent<CTagComponent>();
+            
+            ImGui::CloseCurrentPopup();
+        }
+        
+        ImGui::EndPopup();
+    }
 }
 
 template<typename T, typename DrawFunction>
-void CEntityPropertiesPanel::DrawComponent(const std::string& Name, DrawFunction UIDrawFunction, bool bNestInTreeNode)
+void CEntityPropertiesPanel::DrawComponent(const std::string& Name, DrawFunction UIDrawFunction, CComponentDrawOptions DrawOptions)
 {
     constexpr ImGuiTreeNodeFlags TreeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth |
         ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
     
     if (m_Entity.HasComponent<T>())
     {
-        if (bNestInTreeNode)
+        if (DrawOptions.bNestInTreeNode)
         {
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 { 4, 4 });
             ImGui::Separator();
             
             const bool bIsTreeNodeOpen = ImGui::TreeNodeEx(reinterpret_cast<void*>(typeid(T).hash_code()), TreeNodeFlags, "%s", Name.c_str());
+            
             ImGui::PopStyleVar();
+            
+            bool bWasMarkedForDeletion = false;
+            
+            if (DrawOptions.bIsRemovable && ImGui::BeginPopupContextItem())
+            {
+                if (ImGui::MenuItem("Remove"))
+                    bWasMarkedForDeletion = true;
+                
+                ImGui::EndPopup();
+            }
         
             if (bIsTreeNodeOpen)
             {
                 UIDrawFunction(m_Entity.GetComponent<T>());
             
                 ImGui::TreePop();
+                
+                if (bWasMarkedForDeletion)
+                    m_Entity.RemoveComponent<T>();
             }
             
             return;

@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 /**
@@ -11,5 +12,7 @@ class CUIComponents
 {
 public:
     static void Vector3Control(const std::string& Name, glm::vec3& Values, float ResetValue = 0.0f, float ColumnWidth = 100.0f);
+    
     static void CenteredText(const std::string& Text, float Opacity = 1.0f);
+    static bool CenteredButton(const std::string& Text, const glm::vec2& Size = { 0, 0 });
 };

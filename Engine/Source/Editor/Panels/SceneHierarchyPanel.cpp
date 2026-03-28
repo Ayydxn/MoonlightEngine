@@ -21,6 +21,14 @@ void CSceneHierarchyPanel::OnImGuiRender()
         m_PropertiesPanel.ClearEntity();
     }
     
+    if (ImGui::BeginPopupContextWindow("##HierarchyContextWindow", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
+    {
+        if (ImGui::MenuItem("New Entity"))
+            m_Scene->CreateEntity("Entity");
+        
+        ImGui::EndPopup();
+    }
+    
     ImGui::End();
     
     m_PropertiesPanel.OnImGuiRender();
@@ -37,6 +45,8 @@ void CSceneHierarchyPanel::DrawEntityNode(CEntity Entity)
     bool bIsParentNodeOpened = ImGui::TreeNodeEx(reinterpret_cast<void*>(static_cast<uint64>(static_cast<uint32>(Entity))), Flags, "%s",
         EntityName.Name.c_str());
     
+    bool bMarkedForDeletion = false;
+    
     if (ImGui::IsItemClicked())
     {
         m_SelectedEntity = Entity;
@@ -44,7 +54,23 @@ void CSceneHierarchyPanel::DrawEntityNode(CEntity Entity)
         m_PropertiesPanel.SetEntity(m_SelectedEntity);
     }
     
+    if (ImGui::BeginPopupContextItem())
+    {
+        if (ImGui::MenuItem("Delete"))
+            bMarkedForDeletion = true;
+        
+        ImGui::EndPopup();
+    }
+    
     // TODO: (Ayydxn) In the future, display child entities. 
     if (bIsParentNodeOpened)
         ImGui::TreePop();
+    
+    if (bMarkedForDeletion)
+    {
+        m_Scene->DestroyEntity(Entity);
+        
+        if (m_SelectedEntity == Entity)
+            m_SelectedEntity = {};
+    }
 }

@@ -89,3 +89,16 @@ void CUIComponents::CenteredText(const std::string& Text, float Opacity)
     
     ImGui::PopStyleVar();
 }
+
+bool CUIComponents::CenteredButton(const std::string& Text, const glm::vec2& Size)
+{
+    const ImGuiStyle& Style = ImGui::GetStyle();
+
+    const float ButtonWidth = Size.x > 0.0f ? Size.x : ImGui::CalcTextSize(Text.c_str()).x + Style.FramePadding.x * 2.0f;
+
+    const float Indentation = (ImGui::GetContentRegionAvail().x - ButtonWidth) * 0.5f;
+    if (Indentation > 0.0f)
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + Indentation);
+
+    return ImGui::Button(Text.c_str(), { ButtonWidth, Size.y });
+}
