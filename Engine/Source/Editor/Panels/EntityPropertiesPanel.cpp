@@ -1,7 +1,9 @@
 ﻿#include "MoonlightPCH.h"
 #include "EntityPropertiesPanel.h"
+#include "ImGui/UIComponents.h"
 #include "Scene/Components/CameraComponent.h"
 #include "Scene/Components/NameComponent.h"
+#include "Scene/Components/SpriteRendererComponent.h"
 #include "Scene/Components/TransformComponent.h"
 
 #include <imgui.h>
@@ -16,7 +18,8 @@ void CEntityPropertiesPanel::OnImGuiRender()
     
     if (!m_Entity)
     {
-        ImGui::Text("Select an entity to view its properties");
+        CUIComponents::CenteredText("Select an entity to view its properties", 0.75f);
+        
         ImGui::End();
         
         return;
@@ -46,9 +49,15 @@ void CEntityPropertiesPanel::DrawEntityComponents()
     
     DrawComponent<CTransformComponent>("Transform", [](auto& TransformComponent)
     {
-        ImGui::DragFloat3("Position", glm::value_ptr(TransformComponent.Position), 0.25f);
-        ImGui::DragFloat3("Rotation", glm::value_ptr(TransformComponent.Rotation), 0.25f);
-        ImGui::DragFloat3("Scale", glm::value_ptr(TransformComponent.Scale), 0.25f);
+        CUIComponents::Vector3Control("Position", TransformComponent.Position);
+        
+        // Convert the rotation to degrees so we can display it as such in the UI,
+        // but convert it back to radians after since that is what the engine expects to deal with. 
+        glm::vec3 RotationDegrees = glm::degrees(TransformComponent.Rotation);
+        CUIComponents::Vector3Control("Rotation", RotationDegrees);
+        TransformComponent.Rotation = glm::radians(RotationDegrees);
+        
+        CUIComponents::Vector3Control("Scale", TransformComponent.Scale, 1.0f);
     });
     
     DrawComponent<CCameraComponent>("Camera", [](auto& CameraComponent)
@@ -111,6 +120,11 @@ void CEntityPropertiesPanel::DrawEntityComponents()
         
         if (ImGui::Checkbox("Fixed Aspect Ratio", &bUsingFixedAspectRatio))
             CameraComponent.bUseFixedAspectRatio = bUsingFixedAspectRatio;
+    });
+    
+    DrawComponent<CSpriteRendererComponent>("Sprite Renderer", [](auto& SpriteRendererComponent)
+    {
+        ImGui::ColorEdit4("Color", glm::value_ptr(SpriteRendererComponent.Color));
     });
 }
 
