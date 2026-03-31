@@ -37,28 +37,7 @@ void COpenGLImGuiLayer::EndFrame()
 
 void COpenGLImGuiLayer::OnAttach()
 {
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-
-    ImGuiIO& IO = ImGui::GetIO();
-    IO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    IO.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    
-    IO.ConfigWindowsMoveFromTitleBarOnly = true;
-    
-    IO.FontDefault = IO.Fonts->AddFontFromFileTTF("Resources/Fonts/Inter_28pt-Regular.ttf", 17.0f);
-
-    ImGui::StyleColorsDark();
-
-    ImGuiStyle& Style = ImGui::GetStyle();
-    if (IO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        Style.WindowRounding = 0.0f;
-        Style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-    }
-
-    SetDarkThemeColors();
+    IImGuiLayer::OnAttach();
     
     ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(CApplication::GetInstance().GetWindow().GetHandle()), true);
     ImGui_ImplOpenGL3_Init("#version 460 core");

@@ -11,11 +11,10 @@ public:
     virtual void BeginFrame() = 0;
     virtual void EndFrame() = 0;
     
+    void OnAttach() override;
     void OnEvent(IEvent& Event) override;
     
     void BlockEvents(bool bEnableEventBlocking) { bBlockingEvents = bEnableEventBlocking; }
-
-    void SetDarkThemeColors();
     
     static IImGuiLayer* Create();
 private:

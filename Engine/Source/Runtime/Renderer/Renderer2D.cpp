@@ -115,27 +115,35 @@ void CRenderer2D::EndFrame()
 
 void CRenderer2D::Flush()
 {
-    for (uint32 i = 0; i < m_TextureSlotIndex; i++)
-        m_TextureSlots[i]->Bind(i);
+    // Guard against empty draw calls.
+    // While OpenGL specification defines glDrawElements call with an index count of 0 as a no-op, behavior varies across GPU vendors and driver versions in practice.
+    // NVIDIA drivers (particularly on laptop GPUs) may re-issue the previous frame's draw,
+    // AMD drivers may produce undefined behavior, and some older OpenGL implementations may not handle it gracefully at all.
+    // Skipping the draw call entirely is the safest and most performant approach regardless of platform.
+    if (m_QuadIndexCount)
+    {
+        for (uint32 i = 0; i < m_TextureSlotIndex; i++)
+            m_TextureSlots[i]->Bind(i);
     
-    CGlobalUniforms GlobalUniforms;
-    GlobalUniforms.Transform = glm::mat4(1.0f);
-    GlobalUniforms.ViewProjectionMatrix = m_CurrentViewProjectionMatrix;
+        CGlobalUniforms GlobalUniforms;
+        GlobalUniforms.Transform = glm::mat4(1.0f);
+        GlobalUniforms.ViewProjectionMatrix = m_CurrentViewProjectionMatrix;
     
-    m_GlobalUniformBuffer->SetData(&GlobalUniforms, sizeof(CGlobalUniforms));
+        m_GlobalUniformBuffer->SetData(&GlobalUniforms, sizeof(CGlobalUniforms));
     
-    CRenderPacket RenderPacket;
-    RenderPacket.Shader = m_QuadShader;
-    RenderPacket.Shader->SetFloat("u_TilingFactor", 1.0f);
-    RenderPacket.VertexBuffer = m_QuadVertexBuffer;
-    RenderPacket.IndexBuffer = m_QuadIndexBuffer;
-    RenderPacket.GraphicsPipeline = m_QuadGraphicsPipeline;
-    RenderPacket.Texture = m_WhiteTexture;
-    RenderPacket.UniformBuffer = m_GlobalUniformBuffer;
+        CRenderPacket RenderPacket;
+        RenderPacket.Shader = m_QuadShader;
+        RenderPacket.Shader->SetFloat("u_TilingFactor", 1.0f);
+        RenderPacket.VertexBuffer = m_QuadVertexBuffer;
+        RenderPacket.IndexBuffer = m_QuadIndexBuffer;
+        RenderPacket.GraphicsPipeline = m_QuadGraphicsPipeline;
+        RenderPacket.Texture = m_WhiteTexture;
+        RenderPacket.UniformBuffer = m_GlobalUniformBuffer;
 
-    CRenderer::DrawIndexed(RenderPacket, glm::mat4(1.0f), m_QuadIndexCount);
+        CRenderer::DrawIndexed(RenderPacket, glm::mat4(1.0f), m_QuadIndexCount);
     
-    m_Statistics.DrawCalls++;
+        m_Statistics.DrawCalls++;
+    }
 }
 
 void CRenderer2D::StartNewBatch()

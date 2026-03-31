@@ -37,7 +37,7 @@ void CSceneHierarchyPanel::OnImGuiRender()
 void CSceneHierarchyPanel::DrawEntityNode(CEntity Entity)
 {
     const auto& EntityName = Entity.GetComponent<CNameComponent>();
-    ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow;
+    ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
     
     if (m_SelectedEntity == Entity)
         Flags |= ImGuiTreeNodeFlags_Selected;

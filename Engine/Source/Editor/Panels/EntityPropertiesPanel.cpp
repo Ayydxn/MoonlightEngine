@@ -1,5 +1,6 @@
 ﻿#include "MoonlightPCH.h"
 #include "EntityPropertiesPanel.h"
+#include "ImGui/ImGuiFonts.h"
 #include "ImGui/UIComponents.h"
 #include "Scene/Components/CameraComponent.h"
 #include "Scene/Components/NameComponent.h"
@@ -19,7 +20,11 @@ void CEntityPropertiesPanel::OnImGuiRender()
     
     if (!m_Entity)
     {
+        CImGuiFonts::PushFont("Inter-Italic");
+        
         CUIComponents::CenteredText("Select an entity to view its properties", 0.75f);
+        
+        CImGuiFonts::PopFont();
         
         ImGui::End();
         
@@ -186,7 +191,11 @@ void CEntityPropertiesPanel::DrawEntityComponents()
         {
             if (TagComponent.Tags.empty())
             {
+                CImGuiFonts::PushFont("Inter-Italic");
+                
                 CUIComponents::CenteredText("No Tags Assigned...", 0.75f);
+                
+                CImGuiFonts::PopFont();
             }
             else
             {
@@ -259,39 +268,39 @@ void CEntityPropertiesPanel::DrawComponent(const std::string& Name, DrawFunction
     
     if (m_Entity.HasComponent<T>())
     {
-        if (DrawOptions.bNestInTreeNode)
+        if (!DrawOptions.bNestInTreeNode)
         {
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 { 4, 4 });
-            ImGui::Separator();
-            
-            const bool bIsTreeNodeOpen = ImGui::TreeNodeEx(reinterpret_cast<void*>(typeid(T).hash_code()), TreeNodeFlags, "%s", Name.c_str());
-            
-            ImGui::PopStyleVar();
-            
-            bool bWasMarkedForDeletion = false;
-            
-            if (DrawOptions.bIsRemovable && ImGui::BeginPopupContextItem())
-            {
-                if (ImGui::MenuItem("Remove"))
-                    bWasMarkedForDeletion = true;
-                
-                ImGui::EndPopup();
-            }
-        
-            if (bIsTreeNodeOpen)
-            {
-                UIDrawFunction(m_Entity.GetComponent<T>());
-            
-                ImGui::TreePop();
-                
-                if (bWasMarkedForDeletion)
-                    m_Entity.RemoveComponent<T>();
-            }
-            
+            // We don't want to nest the component's UI in a tree node, so just call the draw function.
+            UIDrawFunction(m_Entity.GetComponent<T>());
             return;
         }
         
-        // We don't want to nest the component's UI in a tree node, so just call the draw function.
-        UIDrawFunction(m_Entity.GetComponent<T>());
+        
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 { 4, 4 });
+        ImGui::Separator();
+            
+        const bool bIsTreeNodeOpen = ImGui::TreeNodeEx(reinterpret_cast<void*>(typeid(T).hash_code()), TreeNodeFlags, "%s", Name.c_str());
+            
+        ImGui::PopStyleVar();
+            
+        bool bWasMarkedForDeletion = false;
+            
+        if (DrawOptions.bIsRemovable && ImGui::BeginPopupContextItem())
+        {
+            if (ImGui::MenuItem("Remove"))
+                bWasMarkedForDeletion = true;
+                
+            ImGui::EndPopup();
+        }
+        
+        if (bIsTreeNodeOpen)
+        {
+            UIDrawFunction(m_Entity.GetComponent<T>());
+            
+            ImGui::TreePop();
+        }
+        
+        if (bWasMarkedForDeletion)
+            m_Entity.RemoveComponent<T>();
     }
 }
