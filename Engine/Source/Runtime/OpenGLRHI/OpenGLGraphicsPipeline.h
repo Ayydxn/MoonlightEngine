@@ -5,7 +5,7 @@
 class COpenGLGraphicsPipeline : public IGraphicsPipeline
 {
 public:
-    COpenGLGraphicsPipeline();
+    COpenGLGraphicsPipeline(const CGraphicsPipelineSpecification& Specification);
     ~COpenGLGraphicsPipeline() override;
 
     void Invalidate() override;

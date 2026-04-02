@@ -1,6 +1,7 @@
 ﻿#include "MoonlightPCH.h"
 #include "OpenGLRenderer.h"
 #include "OpenGLShader.h"
+#include "RHICore/RHI.h"
 
 #include <glad/glad.h>
 #include <tracy/TracyOpenGL.hpp>
@@ -10,7 +11,7 @@ void COpenGLRenderer::Initialize()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    m_CommandList = Cast<COpenGLCommandList>(ICommandList::Create());
+    m_CommandList = Cast<COpenGLCommandList>(CRHI::GetFactory().CreateCommandList());
 }
 
 void COpenGLRenderer::Shutdown()
@@ -30,7 +31,7 @@ void COpenGLRenderer::EndFrame()
 {
 }
 
-void COpenGLRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, uint32 IndexCount)
+void COpenGLRenderer::DrawIndexed(const FRenderPacket& RenderPacket, uint32 IndexCount)
 {
     Cast<COpenGLShader>(RenderPacket.Shader)->Bind();
     

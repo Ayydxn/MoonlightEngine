@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 
+#include "Application/Window.h"
+
 namespace
 {
     GLenum GetShaderDataTypeOpenGLBaseType(EShaderDataType ShaderDataType)
@@ -31,10 +33,11 @@ namespace
     }
 }
 
-COpenGLGraphicsPipeline::COpenGLGraphicsPipeline()
+COpenGLGraphicsPipeline::COpenGLGraphicsPipeline(const CGraphicsPipelineSpecification& Specification)
 {
-    verifyEnginef(m_Specification.VertexBufferLayout.GetElementCount() != 0, "An OpenGL graphics pipeline requires a non-empty vertex buffer layout!")
-
+    verifyEnginef(Specification.VertexBufferLayout.GetElementCount() != 0, "An OpenGL graphics pipeline requires a non-empty vertex buffer layout!")
+    
+    m_Specification = Specification;
     m_Stride = m_Specification.VertexBufferLayout.GetStride();
     
     COpenGLGraphicsPipeline::Invalidate();
@@ -48,7 +51,7 @@ COpenGLGraphicsPipeline::~COpenGLGraphicsPipeline()
 void COpenGLGraphicsPipeline::Invalidate()
 {
     uint32 AttributeIndex = 0;
-    
+     
     glCreateVertexArrays(1, &m_VertexArrayHandle);
     
     for (const auto& VertexBufferElement : m_Specification.VertexBufferLayout)

@@ -1,8 +1,8 @@
 ﻿#include "MoonlightPCH.h"
 #include "Scene.h"
 #include "Components/CameraComponent.h"
-#include "Components/SpriteRendererComponent.h"
 #include "Components/NameComponent.h"
+#include "Components/SpriteRendererComponent.h"
 #include "Components/TransformComponent.h"
 #include "Entity/Entity.h"
 
@@ -18,7 +18,7 @@ void CScene::OnRenderEditor(const std::shared_ptr<CSceneRenderer>& SceneRenderer
 {
     const auto Renderer2D = SceneRenderer->GetRenderer2D();
     Renderer2D->ResetStats();
-    Renderer2D->BeginFrame(ViewportCamera);
+    Renderer2D->BeginFrame(ViewportCamera.GetViewProjectionMatrix());
     
     /* -- Render sprites -- */
     {

@@ -41,8 +41,5 @@ public:
     virtual uint32 GetHeight() const = 0;
     virtual uint64 GetNativeHandle() const = 0;
     
-    static std::shared_ptr<ITexture> Create(const CTextureSpecification& Specification);
-    static std::shared_ptr<ITexture> Create(const std::filesystem::path& Filepath);
-    
     virtual bool operator==(const ITexture& OtherTexture) const = 0;
 };

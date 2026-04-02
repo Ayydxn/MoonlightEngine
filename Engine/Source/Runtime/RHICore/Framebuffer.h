@@ -43,6 +43,4 @@ public:
     virtual const CFramebufferSpecification& GetSpecification() const = 0;
     virtual const std::shared_ptr<ITexture>& GetColorAttachment(uint32 Index = 0) const = 0;
     virtual const std::shared_ptr<ITexture>& GetDepthAttachment() const = 0;
-    
-    static std::shared_ptr<IFramebuffer> Create(const CFramebufferSpecification& Specification);
 };

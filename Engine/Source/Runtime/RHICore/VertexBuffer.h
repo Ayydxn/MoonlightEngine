@@ -130,7 +130,4 @@ public:
     virtual void SetData(const void* Data, uint64 Size) const = 0;
 
     virtual uint64 GetSize() const = 0;
-    
-    static std::shared_ptr<IVertexBuffer> Create(const void* Data, uint64 Size, EVertexBufferUsage Usage = EVertexBufferUsage::Static);
-    static std::shared_ptr<IVertexBuffer> Create(uint64 Size, EVertexBufferUsage Usage = EVertexBufferUsage::Dynamic);
 };

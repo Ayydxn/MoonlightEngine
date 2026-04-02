@@ -5,11 +5,11 @@
 [[vk::binding(0, 0)]]
 cbuffer Uniforms : register(b0)
 {
-    column_major float4x4 u_Transform;
     column_major float4x4 u_ViewProjectionMatrix;
 }
 
-Sampler2D u_Textures[32];
+[[vk::binding(1, 0)]]
+Sampler2D u_Textures[32] : register(t0);
 
 /*------------------*/
 /* -- Structures -- */
@@ -50,7 +50,7 @@ struct FragmentOutput
 VertexOutput VertexMain(VertexInput input)
 {
     VertexOutput output;
-    output.Position = mul(u_ViewProjectionMatrix, mul(u_Transform, float4(input.Position, 1.0)));
+    output.Position = mul(u_ViewProjectionMatrix, float4(input.Position, 1.0));
     output.Color = input.Color;
     output.TextureCoords = input.TextureCoords;
     output.TextureIndex = input.TextureIndex;

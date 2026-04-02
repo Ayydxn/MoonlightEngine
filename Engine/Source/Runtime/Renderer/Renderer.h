@@ -8,7 +8,7 @@
 #include "Shaders/ShaderCompiler.h"
 #include "Shaders/ShaderLibrary.h"
 
-enum class EGraphicsAPI
+enum class EGraphicsAPI : uint8
 {
     OpenGL,
     Vulkan,
@@ -27,7 +27,7 @@ public:
     static void BeginFrame();
     static void EndFrame();
 
-    static void DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform = glm::mat4(1.0f), uint32 IndexCount = 0);
+    static void DrawIndexed(const FRenderPacket& RenderPacket, uint32 IndexCount = 0);
     
     static std::shared_ptr<IRendererContext> GetContext() { return CApplication::GetInstance().GetWindow().GetRendererContext(); }
     static std::shared_ptr<CShaderCompiler> GetShaderCompiler() { return m_ShaderCompiler; }

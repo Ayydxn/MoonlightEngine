@@ -1,13 +1,14 @@
 ﻿#include "MoonlightPCH.h"
 #include "SceneViewportPanel.h"
 #include "Application/Application.h"
+#include "RHICore/RHI.h"
 
 #include <imgui.h>
 
 CSceneViewportPanel::CSceneViewportPanel(const std::shared_ptr<CSceneRenderer>& SceneRenderer, const std::shared_ptr<CScene>& Scene)
     : m_SceneRenderer(SceneRenderer), m_ActiveScene(Scene)
 {
-    m_Framebuffer = IFramebuffer::Create({
+    m_Framebuffer = CRHI::GetFactory().CreateFramebuffer({
         .Width = 1600,
         .Height = 900,
         .Samples = 1,

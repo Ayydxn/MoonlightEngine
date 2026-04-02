@@ -6,7 +6,7 @@
 
 struct MOONLIGHT_API CSpriteRendererComponent
 {
-    glm::vec4 Color = { 0.0f, 0.0f, 0.0f, 1.0f };
+    glm::vec4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
     
     CSpriteRendererComponent() = default;
     CSpriteRendererComponent(const CSpriteRendererComponent&) = default;

@@ -15,7 +15,7 @@ enum class EWindowMode : uint8
     Fullscreen
 };
 
-struct CWindowSpecification
+struct FWindowSpecification
 {
     std::string Title;
     uint32 Width, Height;
@@ -55,12 +55,12 @@ public:
     const std::string& GetTitle() const { return m_WindowState.Title; }
     virtual void SetTitle(const std::string& Title) const = 0;
 
-    const CWindowSpecification& GetSpecification() const { return m_Specification; }
+    const FWindowSpecification& GetSpecification() const { return m_Specification; }
 
     virtual std::shared_ptr<IRendererContext> GetRendererContext() = 0;
     virtual void* GetHandle() const = 0;
 
-    static std::shared_ptr<IWindow> Create(const CWindowSpecification& Specification = CWindowSpecification());
+    static std::shared_ptr<IWindow> Create(const FWindowSpecification& Specification = FWindowSpecification());
 protected:
     struct CWindowState
     {
@@ -75,5 +75,5 @@ protected:
     };
 protected:
     inline static CWindowState m_WindowState = {};
-    inline static CWindowSpecification m_Specification = {}; 
+    inline static FWindowSpecification m_Specification = {}; 
 };

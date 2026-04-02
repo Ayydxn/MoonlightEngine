@@ -5,7 +5,7 @@
     #include "DesktopWindow.h"
 #endif
 
-std::shared_ptr<IWindow> IWindow::Create(const CWindowSpecification& Specification)
+std::shared_ptr<IWindow> IWindow::Create(const FWindowSpecification& Specification)
 {
     m_Specification = Specification;
 

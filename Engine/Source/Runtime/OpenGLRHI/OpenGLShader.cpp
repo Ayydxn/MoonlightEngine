@@ -27,18 +27,24 @@ namespace
 
 COpenGLShader::COpenGLShader(const std::string& Name, const std::string& Source)
 {
+    m_Name = Name;
+    
     const std::shared_ptr<CShaderCompiler> ShaderCompiler = CRenderer::GetShaderCompiler();
     ShaderCompiler->CompileShader(Name, Source, m_CompiledShaderStages);
     
     CreateShaderProgram();
+    InitializeSamplers();
 }
 
 COpenGLShader::COpenGLShader(const std::filesystem::path& Filepath)
 {
+    m_Name = Filepath.stem().string();
+    
     const std::shared_ptr<CShaderCompiler> ShaderCompiler = CRenderer::GetShaderCompiler();
     ShaderCompiler->CompileShaderFromFile(Filepath, m_CompiledShaderStages);
     
     CreateShaderProgram();
+    InitializeSamplers();
 }
 
 COpenGLShader::~COpenGLShader()
@@ -49,31 +55,6 @@ COpenGLShader::~COpenGLShader()
 void COpenGLShader::Bind() const
 {
     glUseProgram(m_ShaderProgramHandle);
-}
-
-void COpenGLShader::SetInt(const std::string& Name, const int32 Value) const
-{
-    glProgramUniform1i(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), Value);
-}
-
-void COpenGLShader::SetIntArray(const std::string& Name, int32* Values, int32 ValueCount) const
-{
-    glProgramUniform1iv(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), ValueCount, Values);
-}
-
-void COpenGLShader::SetFloat(const std::string& Name, float Value) const
-{
-    glProgramUniform1f(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), Value);
-}
-
-void COpenGLShader::SetVector4f(const std::string& Name, const glm::vec4& Value) const
-{
-    glProgramUniform4f(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), Value.x, Value.y, Value.z, Value.w);
-}
-
-void COpenGLShader::SetMatrix4x4f(const std::string& Name, const glm::mat4& Value) const
-{
-    glProgramUniformMatrix4fv(m_ShaderProgramHandle, glGetUniformLocation(m_ShaderProgramHandle, Name.c_str()), 1, false, glm::value_ptr(Value));
 }
 
 void COpenGLShader::CreateShaderProgram()
@@ -135,4 +116,51 @@ void COpenGLShader::CreateShaderProgram()
         glDetachShader(m_ShaderProgramHandle, ShaderID);
         glDeleteShader(ShaderID);
     }
+}
+
+/**
+ * Automatically initializes all sampler uniforms found in the shader program to sequential texture unit indices(0, 1, 2, ...).
+ * This is necessary because Slang's OpenGL-targeted SPIR-V output does not honor register(t0) as an automatic sequential
+ * binding the way HLSL targeting DirectX does — sampler arrays have no guaranteed starting texture unit when compiled to
+ * SPIR-V for OpenGL, so without this, every slot in the array would be uninitialized and sample from an undefined unit.
+ */
+void COpenGLShader::InitializeSamplers() const
+{
+	int32 UniformCount = 0;
+	glGetProgramiv(m_ShaderProgramHandle, GL_ACTIVE_UNIFORMS, &UniformCount);
+
+	for (int32 i = 0; i < UniformCount; i++)
+	{
+		char Name[256];
+		int32 Size = 0;
+		GLenum Type = -1;
+		glGetActiveUniform(m_ShaderProgramHandle, i, sizeof(Name), nullptr, &Size, &Type, Name);
+
+		// Only handles sampler array types
+		// If needed, extend this to support other sampler types and non-array samplers.
+		// Probably instead just query a list of supported sampler types and check against that?
+		if (Type != GL_SAMPLER_2D && Type != GL_SAMPLER_CUBE)
+			continue;
+
+		const int32 Location = GetUniformLocation(Name);
+		if (Location == -1)
+			continue;
+
+		// Size is the array length (1 for non-arrays)
+		std::vector<int32> Slots(Size);
+		std::iota(Slots.begin(), Slots.end(), 0);
+
+		glProgramUniform1iv(m_ShaderProgramHandle, Location, Size, Slots.data());
+	}
+}
+
+int32 COpenGLShader::GetUniformLocation(const std::string& Name) const
+{
+    if (const auto It = m_UniformLocationCache.find(Name); It != m_UniformLocationCache.end())
+        return It->second;
+
+    const int32 Location = glGetUniformLocation(m_ShaderProgramHandle, Name.c_str());
+    m_UniformLocationCache[Name] = Location;
+    
+    return Location;
 }

@@ -5,6 +5,7 @@
 #include "Events/WindowEvents.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
+#include "RHICore/RHI.h"
 
 #include <GLFW/glfw3.h>
 
@@ -51,7 +52,7 @@ void CDesktopWindow::Initialize()
 
     SetWindowMode(m_Specification.WindowMode);
     
-    m_RendererContext = IRendererContext::Create(m_WindowHandle);
+    m_RendererContext = CRHI::GetFactory().CreateRendererContext(m_WindowHandle);
     m_RendererContext->Initialize();
 
     EnableVSync(m_Specification.bEnableVSync);

@@ -12,6 +12,4 @@ public:
     virtual void Submit() = 0;
 
     virtual void* GetActiveCommandBuffer() const = 0;
-
-    static std::shared_ptr<ICommandBuffer> Create(uint32 Count = 0);
 };

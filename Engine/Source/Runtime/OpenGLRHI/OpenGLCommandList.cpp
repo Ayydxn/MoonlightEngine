@@ -3,14 +3,13 @@
 #include "OpenGLGraphicsPipeline.h"
 #include "OpenGLIndexBuffer.h"
 #include "OpenGLTexture.h"
+#include "OpenGLUniformBuffer.h"
 #include "OpenGLVertexBuffer.h"
 #include "Debug/Profiler.h"
 #include "Renderer/Renderer.h"
 
 #include <glad/glad.h>
 #include <tracy/TracyOpenGL.hpp>
-
-#include "OpenGLUniformBuffer.h"
 
 void COpenGLCommandList::SetGraphicsPipeline(const std::shared_ptr<IGraphicsPipeline>& GraphicsPipeline)
 {
@@ -65,7 +64,7 @@ void COpenGLCommandList::DrawIndexed(uint32 IndexCount, uint32 InstanceCount, ui
     verifyEnginef(m_BoundVertexBuffer, "{} requires a bound vertex buffer!", __FUNCTION__)
     verifyEnginef(m_BoundIndexBuffer, "{} requires a bound index buffer!", __FUNCTION__)
 
-    const int32 Count = IndexCount == 0 ? m_BoundIndexBuffer->GetCount() : IndexCount;
+    const int32 Count = IndexCount == 0 ? static_cast<int32>(m_BoundIndexBuffer->GetCount()) : IndexCount;
     
     glDrawElements(GL_TRIANGLES, Count, GL_UNSIGNED_INT, nullptr);
 }

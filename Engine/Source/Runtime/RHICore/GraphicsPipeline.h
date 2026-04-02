@@ -51,8 +51,6 @@ public:
     virtual ~IGraphicsPipeline() = default;
 
     virtual void Invalidate() = 0;
-
-    static std::shared_ptr<IGraphicsPipeline> Create(const CGraphicsPipelineSpecification& Specification);
 protected:
-    inline static CGraphicsPipelineSpecification m_Specification;
+    CGraphicsPipelineSpecification m_Specification;
 };

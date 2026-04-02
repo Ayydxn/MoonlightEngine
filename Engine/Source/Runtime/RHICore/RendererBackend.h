@@ -8,7 +8,7 @@
 
 #include <memory>
 
-struct CRenderPacket
+struct FRenderPacket
 {
     std::shared_ptr<IShader> Shader;
     std::shared_ptr<IVertexBuffer> VertexBuffer;
@@ -31,7 +31,5 @@ public:
     virtual void BeginFrame() = 0;
     virtual void EndFrame() = 0;
 
-    virtual void DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, uint32 IndexCount) = 0;
-    
-    static std::shared_ptr<IRendererBackend> Create();
+    virtual void DrawIndexed(const FRenderPacket& RenderPacket, uint32 IndexCount) = 0;
 };

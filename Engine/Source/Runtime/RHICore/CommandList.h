@@ -18,6 +18,4 @@ public:
     virtual void SetUniformBuffer(const std::shared_ptr<IUniformBuffer>& UniformBuffer) = 0;
     
     virtual void DrawIndexed(uint32 IndexCount, uint32 InstanceCount = 1, uint32 FirstIndex = 0) = 0;
-    
-    static std::shared_ptr<ICommandList> Create();
 };

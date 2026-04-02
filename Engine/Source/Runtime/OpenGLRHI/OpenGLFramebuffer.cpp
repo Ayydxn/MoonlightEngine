@@ -1,5 +1,6 @@
 ﻿#include "MoonlightPCH.h"
 #include "OpenGLFramebuffer.h"
+#include "RHICore/RHI.h"
 
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -36,7 +37,7 @@ void COpenGLFramebuffer::Invalidate()
     
     for (uint32 i = 0; i < static_cast<uint32>(m_ColorAttachmentSpecifications.size()); i++)
     {
-        const auto ColorTexture = ITexture::Create(CTextureSpecification {
+        const auto ColorTexture = CRHI::GetFactory().CreateTexture(CTextureSpecification {
             .Width = m_Specification.Width,
             .Height = m_Specification.Height,
             .Format = m_ColorAttachmentSpecifications[i].Format,
@@ -52,7 +53,7 @@ void COpenGLFramebuffer::Invalidate()
     
     if (m_DepthAttachmentSpecification.Format != ETextureFormat::None)
     {
-        m_DepthAttachment = ITexture::Create(CTextureSpecification {
+        m_DepthAttachment = CRHI::GetFactory().CreateTexture(CTextureSpecification {
             .Width = m_Specification.Width,
             .Height = m_Specification.Height,
             .Format = m_DepthAttachmentSpecification.Format,

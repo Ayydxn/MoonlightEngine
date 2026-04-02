@@ -36,7 +36,6 @@ public:
     void Shutdown();
 
     void BeginFrame(const glm::mat4& ViewProjectionMatrix);
-    void BeginFrame(const CEditorViewportCamera& EditorViewportCamera);
     void EndFrame();
     
     void DrawQuad(const glm::mat4& Transform, const glm::vec4& Color);
@@ -57,6 +56,8 @@ public:
 private:
     void Flush();
     void StartNewBatch();
+    
+    void EmitQuadVertices(const glm::mat4& Transform, const glm::vec4& Color, float TextureIndex, float TilingFactor);
 private:
     struct CQuadVertex
     {
@@ -69,7 +70,6 @@ private:
     
     struct CGlobalUniforms
     {
-        glm::mat4 Transform;
         glm::mat4 ViewProjectionMatrix;
     };
     

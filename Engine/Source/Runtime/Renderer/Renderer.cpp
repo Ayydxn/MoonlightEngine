@@ -1,6 +1,7 @@
 ﻿#include "MoonlightPCH.h"
 #include "Renderer.h"
 #include "Renderer2D.h"
+#include "RHICore/RHI.h"
 
 void CRenderer::PreInitialize()
 {
@@ -18,7 +19,7 @@ void CRenderer::Initialize()
     m_ShaderCompiler = std::make_shared<CShaderCompiler>();
     m_ShaderCompiler->Initialize();
     
-    m_RendererBackend = IRendererBackend::Create();
+    m_RendererBackend = CRHI::GetFactory().CreateRendererBackend();
     m_RendererBackend->Initialize();
 
     m_ShaderLibrary = std::make_shared<CShaderLibrary>();
@@ -42,9 +43,9 @@ void CRenderer::EndFrame()
     m_RendererBackend->EndFrame();
 }
 
-void CRenderer::DrawIndexed(const CRenderPacket& RenderPacket, const glm::mat4& Transform, uint32 IndexCount)
+void CRenderer::DrawIndexed(const FRenderPacket& RenderPacket, uint32 IndexCount)
 {
-    m_RendererBackend->DrawIndexed(RenderPacket, Transform, IndexCount);
+    m_RendererBackend->DrawIndexed(RenderPacket, IndexCount);
 }
 
 std::string CRenderer::GetGraphicsAPIString()

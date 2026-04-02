@@ -5,6 +5,7 @@
 #include "Input/Input.h"
 #include "Misc/CommandLineParser.h"
 #include "Renderer/Renderer.h"
+#include "RHICore/RHI.h"
 
 CApplication::CApplication(const CApplicationSpecification& ApplicationSpecification)
     : m_ApplicationSpecification(ApplicationSpecification), m_CommandLineArguments(ApplicationSpecification.CommandLineArguments)
@@ -16,8 +17,9 @@ CApplication::CApplication(const CApplicationSpecification& ApplicationSpecifica
     ENGINE_LOG_INFO_TAG("Core", "Initializing Moonlight Engine...");
 
     CRenderer::PreInitialize();
-
-    CWindowSpecification ApplicationWindowSpecification;
+    CRHI::Initialize();
+    
+    FWindowSpecification ApplicationWindowSpecification;
     ApplicationWindowSpecification.Title = m_ApplicationSpecification.Name;
     ApplicationWindowSpecification.Width = m_ApplicationSpecification.WindowWidth;
     ApplicationWindowSpecification.Height = m_ApplicationSpecification.WindowHeight;
@@ -87,6 +89,7 @@ CApplication::~CApplication()
     std::queue<std::function<void()>>().swap(m_EventQueue);
 
     CRenderer::Shutdown();
+    CRHI::Shutdown();
 }
 
 void CApplication::Start()

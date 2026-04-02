@@ -2,7 +2,7 @@
 #include "Renderer2D.h"
 #include "Debug/Profiler.h"
 #include "Renderer/Renderer.h"
-#include "RHICore/Shader.h"
+#include "RHICore/RHI.h"
 #include "RHICore/Texture.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -48,15 +48,10 @@ void CRenderer2D::Initialize()
         Offset += 4;
     }
     
-    int32 TextureSamplers[MaxTextureSlots];
-    for (uint32 i = 0; i < MaxTextureSlots; i++)
-        TextureSamplers[i] = i;
-    
     m_QuadShader = CRenderer::GetShaderLibrary()->GetShader("Renderer2DQuad");
-    m_QuadShader->SetIntArray("u_Textures", TextureSamplers, MaxTextureSlots);
-    m_QuadVertexBuffer = IVertexBuffer::Create(m_MaxVertices * sizeof(CQuadVertex));
-    m_QuadIndexBuffer = IIndexBuffer::Create(QuadIndices, m_MaxIndices);
-    m_QuadGraphicsPipeline = IGraphicsPipeline::Create({
+    m_QuadVertexBuffer = CRHI::GetFactory().CreateVertexBuffer(m_MaxVertices * sizeof(CQuadVertex));
+    m_QuadIndexBuffer = CRHI::GetFactory().CreateIndexBuffer(QuadIndices, m_MaxIndices);
+    m_QuadGraphicsPipeline = CRHI::GetFactory().CreateGraphicsPipeline({
         .Shader = m_QuadShader,
         .VertexBufferLayout = QuadVertexBufferLayout,
         .DebugName = "Renderer2D - Quads"
@@ -66,9 +61,9 @@ void CRenderer2D::Initialize()
     m_QuadVertexPositions[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
     m_QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
     
-    m_GlobalUniformBuffer = IUniformBuffer::Create(sizeof(CGlobalUniforms), 0);
+    m_GlobalUniformBuffer = CRHI::GetFactory().CreateUniformBuffer(sizeof(CGlobalUniforms), 0);
     
-    m_WhiteTexture = ITexture::Create(CTextureSpecification {
+    m_WhiteTexture = CRHI::GetFactory().CreateTexture(CTextureSpecification {
         .Width = 1,
         .Height = 1
     });
@@ -82,7 +77,7 @@ void CRenderer2D::Initialize()
 
 void CRenderer2D::Shutdown()
 {
-    delete m_QuadVertexBufferBase;
+    delete[] m_QuadVertexBufferBase;
 }
 
 void CRenderer2D::BeginFrame(const glm::mat4& ViewProjectionMatrix)
@@ -91,16 +86,6 @@ void CRenderer2D::BeginFrame(const glm::mat4& ViewProjectionMatrix)
     m_QuadIndexCount = 0;
     
     m_CurrentViewProjectionMatrix = ViewProjectionMatrix;
-    
-    m_TextureSlotIndex = 1;
-}
-
-void CRenderer2D::BeginFrame(const CEditorViewportCamera& EditorViewportCamera)
-{
-    m_QuadVertexBufferPointer = m_QuadVertexBufferBase;
-    m_QuadIndexCount = 0;
-    
-    m_CurrentViewProjectionMatrix = EditorViewportCamera.GetViewProjectionMatrix();
     
     m_TextureSlotIndex = 1;
 }
@@ -126,21 +111,18 @@ void CRenderer2D::Flush()
             m_TextureSlots[i]->Bind(i);
     
         CGlobalUniforms GlobalUniforms;
-        GlobalUniforms.Transform = glm::mat4(1.0f);
         GlobalUniforms.ViewProjectionMatrix = m_CurrentViewProjectionMatrix;
     
         m_GlobalUniformBuffer->SetData(&GlobalUniforms, sizeof(CGlobalUniforms));
     
-        CRenderPacket RenderPacket;
+        FRenderPacket RenderPacket;
         RenderPacket.Shader = m_QuadShader;
-        RenderPacket.Shader->SetFloat("u_TilingFactor", 1.0f);
         RenderPacket.VertexBuffer = m_QuadVertexBuffer;
         RenderPacket.IndexBuffer = m_QuadIndexBuffer;
         RenderPacket.GraphicsPipeline = m_QuadGraphicsPipeline;
-        RenderPacket.Texture = m_WhiteTexture;
         RenderPacket.UniformBuffer = m_GlobalUniformBuffer;
 
-        CRenderer::DrawIndexed(RenderPacket, glm::mat4(1.0f), m_QuadIndexCount);
+        CRenderer::DrawIndexed(RenderPacket, m_QuadIndexCount);
     
         m_Statistics.DrawCalls++;
     }
@@ -156,52 +138,39 @@ void CRenderer2D::StartNewBatch()
     m_TextureSlotIndex = 1;
 }
 
-void CRenderer2D::DrawQuad(const glm::mat4& Transform, const glm::vec4& Color)
+void CRenderer2D::EmitQuadVertices(const glm::mat4& Transform, const glm::vec4& Color, float TextureIndex, float TilingFactor)
 {
     MOONLIGHT_PROFILE_FUNCTION();
     
     if (m_QuadIndexCount >= m_MaxIndices)
         StartNewBatch();
     
-    constexpr float WhiteTextureIndex = 0.0f;
+    constexpr glm::vec2 TextureCoords[4] = { { 0,0 }, { 1,0 }, { 1,1 }, { 0,1 } };
     
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[0];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 0.0f, 0.0f };
-    m_QuadVertexBufferPointer->TextureIndex = WhiteTextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = 1.0f;
-    m_QuadVertexBufferPointer++;
-
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[1];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 1.0f, 0.0f };
-    m_QuadVertexBufferPointer->TextureIndex = WhiteTextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = 1.0f;
-    m_QuadVertexBufferPointer++;
-
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[2];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 1.0f, 1.0f };
-    m_QuadVertexBufferPointer->TextureIndex = WhiteTextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = 1.0f;
-    m_QuadVertexBufferPointer++;
-
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[3];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 0.0f, 1.0f };
-    m_QuadVertexBufferPointer->TextureIndex = WhiteTextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = 1.0f;
-    m_QuadVertexBufferPointer++;
+    for (int32 i = 0; i < 4; i++)
+    {
+        m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[i];
+        m_QuadVertexBufferPointer->Color = Color;
+        m_QuadVertexBufferPointer->TextureCoords = TextureCoords[i];
+        m_QuadVertexBufferPointer->TextureIndex = TextureIndex;
+        m_QuadVertexBufferPointer->TilingFactor = TilingFactor;
+        m_QuadVertexBufferPointer++;
+    }
     
     m_QuadIndexCount += 6;
-    
     m_Statistics.QuadCount++;
+}
+
+void CRenderer2D::DrawQuad(const glm::mat4& Transform, const glm::vec4& Color)
+{
+    MOONLIGHT_PROFILE_FUNCTION();
+    
+    EmitQuadVertices(Transform, Color, 0.0f, 1.0f);
 }
 
 void CRenderer2D::DrawQuad(const glm::mat4& Transform, const std::shared_ptr<ITexture>& Texture, float TilingFactor)
 {
-    if (m_QuadIndexCount >= m_MaxIndices)
-        StartNewBatch();
+    MOONLIGHT_PROFILE_FUNCTION();
     
     constexpr glm::vec4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
     float TextureIndex = 0.0f;
@@ -223,37 +192,7 @@ void CRenderer2D::DrawQuad(const glm::mat4& Transform, const std::shared_ptr<ITe
         m_TextureSlotIndex++;
     }
     
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[0];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 0.0f, 0.0f };
-    m_QuadVertexBufferPointer->TextureIndex = TextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = TilingFactor;
-    m_QuadVertexBufferPointer++;
-
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[1];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 1.0f, 0.0f };
-    m_QuadVertexBufferPointer->TextureIndex = TextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = TilingFactor;
-    m_QuadVertexBufferPointer++;
-
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[2];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 1.0f, 1.0f };
-    m_QuadVertexBufferPointer->TextureIndex = TextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = TilingFactor;
-    m_QuadVertexBufferPointer++;
-
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[3];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 0.0f, 1.0f };
-    m_QuadVertexBufferPointer->TextureIndex = TextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = TilingFactor;
-    m_QuadVertexBufferPointer++;
-    
-    m_QuadIndexCount += 6;
-    
-    m_Statistics.QuadCount++;
+    EmitQuadVertices(Transform, Color, TextureIndex, TilingFactor);
 }
 
 void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, const glm::vec4& Color)
@@ -264,9 +203,6 @@ void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, con
 void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, const glm::vec4& Color)
 {
     MOONLIGHT_PROFILE_FUNCTION();
-    
-    if (m_QuadIndexCount >= m_MaxIndices)
-        StartNewBatch();
     
     const glm::mat4 Transform = glm::translate(glm::mat4(1.0f), Position) *
         glm::scale(glm::mat4(1.0f), { Size.x, Size.y, 1.0f });
@@ -282,9 +218,6 @@ void CRenderer2D::DrawQuad(const glm::vec2& Position, const glm::vec2& Size, con
 void CRenderer2D::DrawQuad(const glm::vec3& Position, const glm::vec2& Size, const std::shared_ptr<ITexture>& Texture, float TilingFactor)
 {
     MOONLIGHT_PROFILE_FUNCTION();
-    
-    if (m_QuadIndexCount >= m_MaxIndices)
-        StartNewBatch();
     
     constexpr glm::vec4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
     const glm::mat4 Transform = glm::translate(glm::mat4(1.0f), Position) *
@@ -302,46 +235,11 @@ void CRenderer2D::DrawRotatedQuad(const glm::vec3& Position, const glm::vec2& Si
 {
     MOONLIGHT_PROFILE_FUNCTION();
     
-    if (m_QuadIndexCount >= m_MaxIndices)
-        StartNewBatch();
-    
     const glm::mat4 Transform = glm::translate(glm::mat4(1.0f), Position) *
         glm::rotate(glm::mat4(1.0f), glm::radians(Rotation), { 0, 0, 1 }) *
         glm::scale(glm::mat4(1.0f), { Size.x, Size.y, 1.0f });
     
-    constexpr float WhiteTextureIndex = 0.0f;
-    
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[0];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 0.0f, 0.0f };
-    m_QuadVertexBufferPointer->TextureIndex = WhiteTextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = 1.0f;
-    m_QuadVertexBufferPointer++;
-
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[1];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 1.0f, 0.0f };
-    m_QuadVertexBufferPointer->TextureIndex = WhiteTextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = 1.0f;
-    m_QuadVertexBufferPointer++;
-
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[2];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 1.0f, 1.0f };
-    m_QuadVertexBufferPointer->TextureIndex = WhiteTextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = 1.0f;
-    m_QuadVertexBufferPointer++;
-
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[3];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 0.0f, 1.0f };
-    m_QuadVertexBufferPointer->TextureIndex = WhiteTextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = 1.0f;
-    m_QuadVertexBufferPointer++;
-    
-    m_QuadIndexCount += 6;
-    
-    m_Statistics.QuadCount++;
+    DrawQuad(Transform, Color);
 }
 
 void CRenderer2D::DrawRotatedQuad(const glm::vec2& Position, const glm::vec2& Size, float Rotation, const std::shared_ptr<ITexture>& Texture, float TilingFactor)
@@ -352,65 +250,12 @@ void CRenderer2D::DrawRotatedQuad(const glm::vec2& Position, const glm::vec2& Si
 void CRenderer2D::DrawRotatedQuad(const glm::vec3& Position, const glm::vec2& Size, float Rotation, const std::shared_ptr<ITexture>& Texture, float TilingFactor)
 {
     MOONLIGHT_PROFILE_FUNCTION();
-    
-    if (m_QuadIndexCount >= m_MaxIndices)
-        StartNewBatch();
-    
-    constexpr glm::vec4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
-    float TextureIndex = 0.0f;
-    
-    for (uint32 i = 1; i < m_TextureSlotIndex; i++)
-    {
-        if (m_TextureSlots[i] == Texture)
-        {
-            TextureIndex = static_cast<float>(i);
-            break;
-        }
-    }
-    
-    if (TextureIndex == 0.0f)
-    {
-        TextureIndex = static_cast<float>(m_TextureSlotIndex);
-        m_TextureSlots[static_cast<uint64>(TextureIndex)] = Texture;
-        
-        m_TextureSlotIndex++;
-    }
 
     const glm::mat4 Transform = glm::translate(glm::mat4(1.0f), Position) *
         glm::rotate(glm::mat4(1.0f), glm::radians(Rotation), { 0, 0, 1 }) *
         glm::scale(glm::mat4(1.0f), { Size.x, Size.y, 1.0f });
     
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[0];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 0.0f, 0.0f };
-    m_QuadVertexBufferPointer->TextureIndex = TextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = TilingFactor;
-    m_QuadVertexBufferPointer++;
-
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[1];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 1.0f, 0.0f };
-    m_QuadVertexBufferPointer->TextureIndex = TextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = TilingFactor;
-    m_QuadVertexBufferPointer++;
-
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[2];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 1.0f, 1.0f };
-    m_QuadVertexBufferPointer->TextureIndex = TextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = TilingFactor;
-    m_QuadVertexBufferPointer++;
-
-    m_QuadVertexBufferPointer->Position = Transform * m_QuadVertexPositions[3];
-    m_QuadVertexBufferPointer->Color = Color;
-    m_QuadVertexBufferPointer->TextureCoords = { 0.0f, 1.0f };
-    m_QuadVertexBufferPointer->TextureIndex = TextureIndex;
-    m_QuadVertexBufferPointer->TilingFactor = TilingFactor;
-    m_QuadVertexBufferPointer++;
-    
-    m_QuadIndexCount += 6;
-    
-    m_Statistics.QuadCount++;
+    DrawQuad(Transform, Texture, TilingFactor);
 }
 
 void CRenderer2D::ResetStats()
