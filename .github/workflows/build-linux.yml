@@ -1,0 +1,41 @@
+﻿# Automatically build the project and run any configured tests for every push and submitted pull request on Linux.
+# This can help catch issues and provides a first line of defense against bad commits.
+
+name: Build Moonlight Engine (Linux)
+on: [pull_request, push]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        build-configs: [Debug, Release, Distribution]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup Clang
+        uses: egor-tensin/setup-clang@v2
+        with:
+          version: latest
+          platform: x64
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14.3"
+      - name: Setup Premake
+        uses: abel0b/setup-premake@v2.4
+        with:
+          version: "5.0.0-beta8"
+          path: "Engine/ThirdParty/Premake"
+      - name: Setup Moonlight for Building
+        run: |
+          chmod +x Setup.sh
+          ./Setup.sh
+      - name: Build Moonlight Engine
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: make -j$(nproc) config=${{matrix.build-configs}}

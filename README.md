@@ -23,7 +23,19 @@ Please note that while the issue tracker is open to feature requests, developmen
 
 ## 🛠 Building From Sources
 
-### This section still has to be written. Please check again at a later date. Thank you. ❤️
+For detailed build instructions, including prerequisites, platform-specific setup, and troubleshooting, please refer to **[BUILD.md](BUILD.md)**.
+
+The build process supports:
+- **Windows**: Visual Studio 2026 with the MSVC toolchain
+- **Linux**: Makefiles with Clang compiler
+
+### ⚡ Quick Start:
+```bash
+git clone https://github.com/Ayydxn/MoonlightEngine.git
+cd "MoonlightEngine"
+# Run Setup.bat (Windows) or ./Setup.sh (Linux)
+# Follow platform-specific build instructions in BUILD.md
+```
 
 ---
 

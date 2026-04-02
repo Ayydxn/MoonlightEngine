@@ -1,0 +1,35 @@
+﻿---
+name: Config
+description: Configure issue template settings
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Issue Templates
+
+        This repository uses GitHub issue templates to help organize and streamline reporting.
+
+        ### Available Templates
+
+        - **🐛 Bug Report**: Use this for reporting bugs or unexpected behavior
+        - **✨ Feature Request**: Use this for suggesting new features or enhancements
+        - **📋 General Issue**: Use this for other types of issues (documentation, build, compatibility, etc.)
+
+        ### Before Creating an Issue
+
+        1. **Search existing issues** to avoid duplicates
+        2. **Review the documentation**: Check [BUILD.md](../../BUILD.md) and [README.md](../../README.md)
+        3. **Verify reproducibility** - Try to reproduce the issue consistently
+        4. **Gather environment details** - System info, compiler version, build configuration
+        5. **Collect error messages** - Include full error output and relevant logs
+
+        ### General Guidelines
+
+        - Be clear and descriptive in your title
+        - Provide sufficient context for others to understand
+        - Include code snippets, screenshots, or error output when relevant
+        - Follow the template structure - it helps maintainers understand and respond faster
+        - Use professional language and avoid off-topic content
+
+        Thank you for helping improve Moonlight Engine! 🙏
+
