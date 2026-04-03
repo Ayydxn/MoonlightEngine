@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        build-configs: [Debug, Release, Distribution]
+        build-configs: [debug, release, distribution]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Repository
