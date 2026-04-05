@@ -148,7 +148,12 @@ void CDesktopWindow::Initialize()
     {
         const auto& WindowState = *static_cast<CWindowState*>(glfwGetWindowUserPointer(Window));
 
-        CMouseMovedEvent MouseMovedEvent(static_cast<float>(XPosition), static_cast<float>(YPosition));
+        const float XPos = static_cast<float>(XPosition);
+        const float YPos = static_cast<float>(YPosition);
+        
+        CInput::OnMouseMoved(XPos, YPos);
+        
+        CMouseMovedEvent MouseMovedEvent(XPos, YPos);
         WindowState.EventCallbackFunc(MouseMovedEvent);
     });
 
@@ -156,7 +161,12 @@ void CDesktopWindow::Initialize()
     {
         const auto& WindowState = *static_cast<CWindowState*>(glfwGetWindowUserPointer(Window));
 
-        CMouseScrolledEvent MouseScrolledEvent(static_cast<float>(XScroll), static_cast<float>(YScroll));
+        const float XOffset = static_cast<float>(XScroll);
+        const float YOffset = static_cast<float>(YScroll);
+        
+        CInput::OnMouseScrolled(XOffset, YOffset);
+        
+        CMouseScrolledEvent MouseScrolledEvent(XOffset, YOffset);
         WindowState.EventCallbackFunc(MouseScrolledEvent);
     });
 

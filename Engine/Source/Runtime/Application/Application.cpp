@@ -125,12 +125,16 @@ void CApplication::Start()
             MOONLIGHT_PROFILE_SCOPE("Application Update");
             
             m_Accumulator += m_FrameTime;
+            
+            CInput::BeginFrame();
 
             OnUpdate(m_FrameTime);
 
             for (CLayer* Layer : m_LayerStack)
                 Layer->OnUpdate(m_FrameTime);
             
+            CInput::EndFrame();
+                        
             while (m_Accumulator >= TicksPerMilliseconds)
             {
                 OnFixedUpdate(TicksPerMilliseconds);
@@ -271,9 +275,6 @@ void CApplication::PopOverlay(CLayer* Overlay)
 
 void CApplication::ProcessEvents()
 {
-    CInput::TransitionPressedKeys();
-    CInput::TransitionPressedMouseButtons();
-    
     m_ApplicationWindow->ProcessEvents();
     
     std::scoped_lock<std::mutex> Lock(m_EventQueueMutex);
