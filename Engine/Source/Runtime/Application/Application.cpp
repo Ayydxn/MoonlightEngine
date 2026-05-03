@@ -115,7 +115,7 @@ void CApplication::Start()
         const float ElapsedTime = m_Clock.GetElapsedTime();
         
         m_FrameTime = std::min(ElapsedTime - m_LastFrameTime, 0.0333f);
-        m_DeltaTime += m_FrameTime;
+        m_DeltaTime = m_FrameTime;
         m_LastFrameTime = ElapsedTime;
         
         /*-----------------*/

@@ -33,7 +33,7 @@ std::shared_ptr<IVertexBuffer> COpenGLRHIFactory::CreateVertexBuffer(const void*
 
 std::shared_ptr<IIndexBuffer> COpenGLRHIFactory::CreateIndexBuffer(uint32* Indices, uint32 Count)
 {
-    return std::make_shared<COpenGLIndexBuffer>(Indices, Count);
+    return std::make_shared<COpenGLIndexBuffer>(Indices, static_cast<uint64>(Count));
 }
 
 std::shared_ptr<ITexture> COpenGLRHIFactory::CreateTexture(const CTextureSpecification& Specification)
@@ -43,7 +43,7 @@ std::shared_ptr<ITexture> COpenGLRHIFactory::CreateTexture(const CTextureSpecifi
 
 std::shared_ptr<IUniformBuffer> COpenGLRHIFactory::CreateUniformBuffer(uint64 Size, uint32 BindingPoint)
 {
-    return std::make_shared<COpenGLUniformBuffer>(Size, BindingPoint);
+    return std::make_shared<COpenGLUniformBuffer>(static_cast<uint32>(Size), BindingPoint);
 }
 
 std::shared_ptr<IShader> COpenGLRHIFactory::CreateShader(const std::filesystem::path& Filepath)

@@ -50,8 +50,8 @@ public:
     operator entt::entity() { return m_Handle; }
     operator entt::entity() const { return m_Handle; }
     
-    operator bool() { return m_Handle != entt::null; }
-    operator bool() const { return m_Handle != entt::null; }
+    operator bool() { return m_Handle != entt::null && m_Scene != nullptr; }
+    operator bool() const { return m_Handle != entt::null && m_Scene != nullptr; }
     
     operator uint32() { return static_cast<uint32>(m_Handle); }
     operator uint32() const { return static_cast<uint32>(m_Handle); }

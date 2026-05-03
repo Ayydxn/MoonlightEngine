@@ -14,6 +14,19 @@ namespace
     bool bIsGLFWInitialized = false;
 }
 
+CDesktopWindow::CDesktopWindow(const FWindowSpecification& Specification)
+{
+    m_Specification = Specification;
+
+    m_WindowState.Title = Specification.Title;
+    m_WindowState.Width = Specification.Width;
+    m_WindowState.Height = Specification.Height;
+    m_WindowState.bIsDecorationEnabled = Specification.bEnableDecoration;
+    m_WindowState.WindowMode = Specification.WindowMode;
+    m_WindowState.bIsVSyncEnabled = Specification.bEnableVSync;
+    m_WindowState.bIsResizingEnabled = Specification.bEnableResizing;
+}
+
 CDesktopWindow::~CDesktopWindow()
 {
     glfwDestroyWindow(m_WindowHandle);
@@ -258,7 +271,7 @@ void CDesktopWindow::EnableVSync(bool bEnableVSync)
     m_WindowState.bIsVSyncEnabled = bEnableVSync;
 }
 
-void CDesktopWindow::SetWindowMode(EWindowMode NewWindowMode) const
+void CDesktopWindow::SetWindowMode(EWindowMode NewWindowMode)
 {
     const GLFWvidmode* VideoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
@@ -294,7 +307,7 @@ void CDesktopWindow::SetWindowMode(EWindowMode NewWindowMode) const
     m_WindowState.WindowMode = NewWindowMode;
 }
 
-void CDesktopWindow::EnableResizing(bool bEnableResizing) const
+void CDesktopWindow::EnableResizing(bool bEnableResizing)
 {
     if (bEnableResizing && !m_WindowState.bIsResizingEnabled)
     {
@@ -310,7 +323,7 @@ void CDesktopWindow::EnableResizing(bool bEnableResizing) const
     }
 }
 
-void CDesktopWindow::SetTitle(const std::string& Title) const
+void CDesktopWindow::SetTitle(const std::string& Title)
 {
     glfwSetWindowTitle(m_WindowHandle, Title.c_str());
     

@@ -18,11 +18,11 @@ enum class EWindowMode : uint8
 struct FWindowSpecification
 {
     std::string Title;
-    uint32 Width, Height;
-    EWindowMode WindowMode;
-    bool bEnableVSync;
-    bool bEnableDecoration;
-    bool bEnableResizing;
+    uint32 Width = 1600, Height = 900;
+    EWindowMode WindowMode = EWindowMode::Windowed;
+    bool bEnableVSync = true;
+    bool bEnableDecoration = true;
+    bool bEnableResizing = true;
 };
 
 class MOONLIGHT_API IWindow
@@ -49,11 +49,11 @@ public:
     virtual void EnableVSync(bool bEnableVSync) = 0;
     bool IsVSyncEnabled() const { return m_WindowState.bIsVSyncEnabled; }
 
-    virtual void SetWindowMode(EWindowMode NewWindowMode) const = 0;
-    virtual void EnableResizing(bool bEnableResizing) const = 0;
+    virtual void SetWindowMode(EWindowMode NewWindowMode) = 0;
+    virtual void EnableResizing(bool bEnableResizing) = 0;
 
     const std::string& GetTitle() const { return m_WindowState.Title; }
-    virtual void SetTitle(const std::string& Title) const = 0;
+    virtual void SetTitle(const std::string& Title) = 0;
 
     const FWindowSpecification& GetSpecification() const { return m_Specification; }
 
@@ -74,6 +74,6 @@ protected:
         EventCallbackFunction EventCallbackFunc;
     };
 protected:
-    inline static CWindowState m_WindowState = {};
-    inline static FWindowSpecification m_Specification = {}; 
+    CWindowState m_WindowState = {};
+    FWindowSpecification m_Specification = {}; 
 };

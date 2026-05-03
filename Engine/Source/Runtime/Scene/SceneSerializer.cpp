@@ -37,9 +37,25 @@ void CSceneSerializer::Serialize(const std::filesystem::path& Filepath) const
 void CSceneSerializer::Deserialize(const std::filesystem::path& Filepath) const
 {
     std::ifstream InputStream(Filepath.string());
-    const auto SceneData = nlohmann::ordered_json::parse(InputStream);
+    if (!InputStream.is_open())
+        return;
     
-    ENGINE_LOG_INFO_TAG("Core", "Deserializing Scene '{}'...", SceneData.at("SceneName").get<std::string>());
+    nlohmann::basic_json<nlohmann::ordered_map> SceneData;
+
+    try
+    {
+        SceneData = nlohmann::ordered_json::parse(InputStream);
+    }
+    catch (const nlohmann::json::exception& Exception)
+    {
+        ENGINE_LOG_ERROR_TAG("Scene", "Failed to parse scene file '{}'! ({})", Filepath.string(), Exception.what());
+        return;
+    }
+    
+    ENGINE_LOG_INFO_TAG("Scene", "Deserializing Scene '{}'...", SceneData.at("SceneName").get<std::string>());
+    
+    if (!SceneData.contains("Entities"))
+        return;
     
     // Deserialize entities
     for (auto& EntityData : SceneData.at("Entities"))
