@@ -1,0 +1,65 @@
+{
+    "SceneName": "Name",
+    "Entities": [
+        {
+            "Name": "Player",
+            "Components": {
+                "Transform": {
+                    "Position": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Rotation": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Scale": {
+                        "X": 1.0,
+                        "Y": 1.0,
+                        "Z": 1.0
+                    }
+                },
+                "Sprite Renderer": {
+                    "Color": {
+                        "Red": 1.0,
+                        "Green": 1.0,
+                        "Blue": 1.0,
+                        "Alpha": 1.0
+                    }
+                }
+            }
+        },
+        {
+            "Name": "Ground",
+            "Components": {
+                "Transform": {
+                    "Position": {
+                        "X": 0.0,
+                        "Y": -4.900000095367432,
+                        "Z": 0.0
+                    },
+                    "Rotation": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Scale": {
+                        "X": 19.600000381469727,
+                        "Y": 7.800000190734863,
+                        "Z": 1.0
+                    }
+                },
+                "Sprite Renderer": {
+                    "Color": {
+                        "Red": 0.0,
+                        "Green": 0.7903226017951965,
+                        "Blue": 0.15933926403522491,
+                        "Alpha": 1.0
+                    }
+                }
+            }
+        }
+    ]
+}

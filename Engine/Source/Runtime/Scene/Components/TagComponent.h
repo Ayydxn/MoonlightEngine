@@ -2,6 +2,8 @@
 
 #include "CoreDefines.h"
 
+#include <nlohmann/json.hpp>
+
 #include <string>
 #include <vector>
 
@@ -27,3 +29,15 @@ struct MOONLIGHT_API CTagComponent
         return std::ranges::find(Tags, Tag) != Tags.end();
     }
 };
+
+inline void to_json(nlohmann::ordered_json& Json, const CTagComponent& TagComponent)
+{
+    Json = nlohmann::ordered_json {
+            { "Values", TagComponent.Tags }
+    };
+}
+
+inline void from_json(const nlohmann::ordered_json& Json, CTagComponent& TagComponent)
+{
+    Json.at("Values").get_to(TagComponent.Tags);
+}

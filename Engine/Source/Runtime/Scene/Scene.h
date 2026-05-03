@@ -28,4 +28,5 @@ private:
     
     friend class CEntity;
     friend class CSceneHierarchyPanel;
+    friend class CSceneSerializer;
 };

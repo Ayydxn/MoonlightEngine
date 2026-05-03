@@ -1,6 +1,9 @@
 ﻿#pragma once
 
 #include "CoreDefines.h"
+#include "JSON/JSONTypeConverters.h"
+
+#include <nlohmann/json.hpp>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
@@ -12,12 +15,13 @@ struct MOONLIGHT_API CTransformComponent
     glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
     glm::vec3 Rotation = { 0.0f, 0.0f, 0.0f };
     glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
-    
+
     CTransformComponent() = default;
     CTransformComponent(const CTransformComponent&) = default;
+
     CTransformComponent(const glm::vec3& Position, const glm::vec3& Rotation, const glm::vec3& Scale)
         : Position(Position), Rotation(Rotation), Scale(Scale) {}
-    
+
     glm::mat4 GetTransformMatrix() const
     {
         return glm::translate(glm::mat4(1.0f), Position) *
@@ -25,3 +29,19 @@ struct MOONLIGHT_API CTransformComponent
             glm::scale(glm::mat4(1.0f), Scale);
     }
 };
+
+inline void to_json(nlohmann::ordered_json& Json, const CTransformComponent& TransformComponent)
+{
+    Json = nlohmann::ordered_json {
+        { "Position", TransformComponent.Position },
+        { "Rotation", TransformComponent.Rotation },
+        { "Scale", TransformComponent.Scale },
+    };
+}
+
+inline void from_json(const nlohmann::ordered_json& Json, CTransformComponent& TransformComponent)
+{
+    Json.at("Position").get_to(TransformComponent.Position);
+    Json.at("Rotation").get_to(TransformComponent.Rotation);
+    Json.at("Scale").get_to(TransformComponent.Scale);
+}

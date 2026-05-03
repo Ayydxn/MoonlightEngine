@@ -1,5 +1,6 @@
 ﻿#include "MoonlightEditorLayer.h"
 #include "Application/Application.h"
+#include "Scene/SceneSerializer.h"
 
 #include <imgui.h>
 
@@ -74,6 +75,20 @@ void CMoonlightEditorLayer::UI_RenderMenuBar()
     {
         if (ImGui::BeginMenu("File"))
         {
+            if (ImGui::MenuItem("Save"))
+            {
+                const CSceneSerializer SceneSerializer(m_ActiveScene);
+                SceneSerializer.Serialize("Resources/Scenes/Sandbox.json");
+            }
+            
+            if (ImGui::MenuItem("Load"))
+            {
+                const CSceneSerializer SceneSerializer(m_ActiveScene);
+                SceneSerializer.Deserialize("Resources/Scenes/Sandbox.json");
+            }
+            
+            ImGui::Separator();
+            
             if (ImGui::MenuItem("Exit"))
                 CApplication::GetInstance().Close();
 

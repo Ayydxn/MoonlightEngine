@@ -276,4 +276,8 @@ Register("entt", {
     IncludePaths = { ThirdPartyFolder .. "entt/src" }
 })
 
+Register("json", {
+    IncludePaths = { ThirdPartyFolder .. "json/include" }
+})
+
 ListDependencies()
