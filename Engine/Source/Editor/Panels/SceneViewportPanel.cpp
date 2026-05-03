@@ -46,7 +46,11 @@ void CSceneViewportPanel::OnImGuiRender()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("Scene Viewport");
     
+    const bool bWasFocused = bIsFocused;
     bIsFocused = ImGui::IsWindowFocused();
+    
+    if (bWasFocused && !bIsFocused)
+        m_Camera.ReleaseCursor();
     
     CApplication::GetInstance().GetImGuiLayer()->BlockEvents(!bIsFocused || !ImGui::IsWindowHovered());
     

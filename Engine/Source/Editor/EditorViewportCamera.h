@@ -12,6 +12,8 @@ public:
     void OnUpdate(float DeltaTime);
     void OnEvent(IEvent& Event);
     
+    void ReleaseCursor();
+    
     float GetDistance() const { return m_Distance; }
     void SetDistance(float Distance) { m_Distance = Distance; }
 
@@ -52,6 +54,8 @@ private:
     glm::vec3 m_FocalPoint = glm::vec4(0.0f);
     glm::vec2 m_InitialMousePosition = glm::vec2(0.0f);
     glm::vec2 m_LastMousePosition = glm::vec2(0.0f);
+    
+    bool bIsCursorLocked = false;
     
     float m_FOV = 90.0f;
     float m_AspectRatio = 1.778f;

@@ -26,11 +26,16 @@ void CEditorViewportCamera::OnUpdate(float DeltaTime)
     // Lock the cursor if we're doing any camera movement
     if (bMiddleMouseButtonHeld || bLeftMouseButtonHeld || bRightMouseButtonHeld)
     {
-        CInput::SetCursorMode(ECursorMode::Locked);
+        if (!bIsCursorLocked)
+        {
+            CInput::SetCursorMode(ECursorMode::Locked);
+            bIsCursorLocked = true;
+        }
     }
-    else
+    else if (bIsCursorLocked)
     {
         CInput::SetCursorMode(ECursorMode::Normal);
+        bIsCursorLocked = false;
     }
     
     // Camera controls
@@ -85,6 +90,15 @@ void CEditorViewportCamera::OnEvent(IEvent& Event)
         
         return false;
     });
+}
+
+void CEditorViewportCamera::ReleaseCursor()
+{
+    if (bIsCursorLocked)
+    {
+        CInput::SetCursorMode(ECursorMode::Normal);
+        bIsCursorLocked = false;
+    }
 }
 
 void CEditorViewportCamera::UpdateProjectionMatrix()
